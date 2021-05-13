@@ -56,7 +56,10 @@ public class Example8 extends MainApplication {
 
 		// changing the simulation settings folder
 		setCustomSettingsFolder(settingsPath);
-		
+
+		//fix ho inserito Cluster come EdgeDataCenter
+		//setCustomEdgeDataCenters(ClusterEdgeDevice.class);
+
 		// telling PureEdgeSim to use the custom orchestrator class
 		Example8.setCustomEdgeOrchestrator(FuzzyLogicOrchestrator.class);
 		

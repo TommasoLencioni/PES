@@ -37,9 +37,18 @@ public class FuzzyLogicOrchestrator extends CustomEdgeOrchestrator {
 		super(simulationManager);
 	}
 
+	/**
+	 * Cerca una VM sulla quale fare offloading del task.
+	 * Nel tutorial è chiamato findResources
+	 * @param architecture Architettura della simulazione (computing paradigm)
+	 * @param task Task del quale fare l'offloading
+	 * @return l'indice della VM sulla quale fare offloading
+	 */
 	protected int findVM(String[] architecture, Task task) {
+		//Here Chiamato nel tutorial STATE_OF_THE_ART
 		if ("INCREASE_LIFETIME".equals(algorithm))
 			return increseLifetime(architecture, task);
+		//Here Chiamato nel tutorial PROPOSED
 		else if ("FUZZY_LOGIC".equals(algorithm))
 			return fuzzyLogic(task);
 		else {
@@ -53,7 +62,8 @@ public class FuzzyLogicOrchestrator extends CustomEdgeOrchestrator {
 		return -1;
 	}
 
-	private int fuzzyLogic(Task task) { 
+	private int fuzzyLogic(Task task) {
+		//Loads the FDT from the file stage1.fcl
 		String fileName = "PureEdgeSim/examples/Example8_settings/stage1.fcl";
 		FIS fis = FIS.load(fileName, true);
 		// Error while loading?
@@ -65,8 +75,11 @@ public class FuzzyLogicOrchestrator extends CustomEdgeOrchestrator {
 		int count = 0;
 		for (int i = 0; i < vmList.size(); i++) {
 			if (((DataCenter) vmList.get(i).getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD) {
+				//Aggiunge l'uso attuale della VM
 				vmUsage += vmList.get(i).getCpuPercentUtilization() * 100;
+				//Incrementa di 1 le VM disponibili
 				count++;
+				//fix Aggiunge l'uso attuale della CPU del Datacenter della VM (?)
 				vmUsage += ((DataCenter) vmList.get(i).getHost().getDatacenter()).getResources().getAvgCpuUtilization();
 
 			}
@@ -81,11 +94,14 @@ public class FuzzyLogicOrchestrator extends CustomEdgeOrchestrator {
 
 		// Evaluate
 		fis.evaluate();
-
+		//fix non ho capito per cosa stia quel 50
+		// superato quello dal risultato di defuzzify (non sono riuscito a capire concretamente cosa restituisca)
+		// allora utilizzo increaseLifetime con architettura Cloud?
 		if (fis.getVariable("offload").defuzzify() > 50) {
 			String[] architecture2 = { "Cloud" };
 			return increseLifetime(architecture2, task);
 		} else {
+			//Escludo che possa utilizzare l'architettura cloud farò l'offload solo su edge e mist
 			String[] architecture2 = { "Edge", "Mist" };
 			return stage2(architecture2, task);
 		}
@@ -103,15 +119,23 @@ public class FuzzyLogicOrchestrator extends CustomEdgeOrchestrator {
 			return -1;
 		}
 		for (int i = 0; i < vmList.size(); i++) {
+			//Con offloadingIsPossible si checka anche se la distanza è minore del range
+			//fix Perché storage >0? Se fosse 1 e lo spazio richiesto dal task fosse >1?
 			if (offloadingIsPossible(task, vmList.get(i), architecture2)
 					&& vmList.get(i).getStorage().getCapacity() > 0) {
+				//fix praticamente questo if è inutile perché l'outcome è lo stesso
+				// Nel FDT risulterà sempre low
 				if (!task.getEdgeDevice().getMobilityManager().isMobile())
 					fis.setVariable("vm_local", 0);
 				else
 					fis.setVariable("vm_local", 0);
+
+				//Inserisce nel FDT quante migliaia di MIPS il processore può ancora eseguire
 				fis.setVariable("vm", (1 - vmList.get(i).getCpuPercentUtilization()) * vmList.get(i).getMips() / 1000);
 				fis.evaluate();
 
+				//Se è il primo offload che valuto o se l'output dell'offload del FDT è minore del minimo
+				// allora setto il nuovo minimo e stabilisco l'indice della VM sulla quale effettuare l'offload
 				if (min == -1 || min > fis.getVariable("offload").defuzzify()) {
 					min = fis.getVariable("offload").defuzzify();
 					vm = i;
@@ -124,6 +148,10 @@ public class FuzzyLogicOrchestrator extends CustomEdgeOrchestrator {
 
 	@Override
 	public void resultsReturned(Task task) {
+		//Reinforcement Learning Implemetation
+		//int ruleIndex = getDecisionRuleFromHistory(task.getId());
+		//FuzzyDecisionTree FDT = task.getEdgeDevice().getDecisiontree();
+
 		// How to get the task execution status, (if failed or succeed, which can be
 		// used for reinforcement learning based algorithms)
 		if (task.getStatus() == Status.FAILED) {

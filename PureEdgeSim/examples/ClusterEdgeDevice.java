@@ -183,7 +183,7 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 
 	}
 
-	//TODO fa le stesse cose del tutorial solo che il metodo chiama modularmente compareWeightWithNeighbors,
+	//Here fa le stesse cose del tutorial solo che il metodo chiama modularmente compareWeightWithNeighbors,
 	// cosa che non fa nel tutorial
 	/**
 	 * Metodo per aggiornare lo stato del cluster chiamato nel ProcessEvent
