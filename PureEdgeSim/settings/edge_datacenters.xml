@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <edge_datacenters>
-	 <datacenter arch="x86" os="Linux" >
+	<datacenter arch="x86" os="Linux" >
 		<idleConsumption>0.00015</idleConsumption> 
 		<maxConsumption>0.016</maxConsumption> 
 		<isOrchestrator>false</isOrchestrator>   
 		<location>
-			<x_pos>250</x_pos> 
-			<y_pos>2500</y_pos> 
+			<x_pos>125</x_pos>
+			<y_pos>125</y_pos>
 		</location>
 		<hosts>
 			<host>

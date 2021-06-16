@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <applications>
 	<application name="AUGMENTED_REALITY">
-	    <rate>10</rate>
+	    <rate>10</rate> <!-- Numero di task da offloaddare ogni random (?)-->
 		<usage_percentage>20</usage_percentage> <!-- percentage of devices using this type of applications -->
 		<max_delay>5</max_delay> <!-- latency in seconds -->
 		<container_size>25000</container_size><!--application/container size in kilobytes -->

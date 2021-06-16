@@ -49,6 +49,7 @@ public class FilesParser {
 				&& checkAppFile(appFile));
 	}
 
+	//Qui posso aggiungere campi custom parsandoli
 	private boolean checkSimulationProperties(String simProp) {
 		SimLog.println("FilesParser- Checking simulation properties file");
 		boolean result = false;

@@ -100,6 +100,7 @@ public class NetworkModel extends NetworkModelAbstract {
 			scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 	}
 
+	//Qui l'aggiornamento viene fatto in base all'intervallo preso dai parametri (diverso dall'intervallo di simulazione)
 	protected void updateTasksProgress() {
 		// Ignore finished transfers, so we will start looping from the first index of
 		// the remaining transfers

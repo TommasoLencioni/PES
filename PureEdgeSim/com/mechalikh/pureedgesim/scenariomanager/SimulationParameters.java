@@ -26,6 +26,7 @@ import java.util.List;
 import com.mechalikh.pureedgesim.tasksgenerator.Application;
 public class SimulationParameters { 
 
+	//Qui, a regola, posso aggiungere campi custom
 	public static String EDGE_DEVICES_FILE="";     // Edge devices xml file path
 	public static String EDGE_DATACENTERS_FILE=""; // Edge datacenters xml file path
 	public static String CLOUD_DATACENTERS_FILE="";// Cloud data centers xml file path
@@ -53,9 +54,9 @@ public class SimulationParameters {
 	public static int MIN_NUM_OF_EDGE_DEVICES;    // Min number of edge devices
 	public static int MAX_NUM_OF_EDGE_DEVICES;    // Max number of edge devices  
 	public static int EDGE_DEVICE_COUNTER_STEP;   // Edge devices growing rate    
-	public static enum TYPES {                    // Types of resources  
+	public enum TYPES {                    // Types of resources
 		CLOUD, EDGE_DATACENTER, EDGE_DEVICE
-	};
+	}
 	
 	// Simulation logger parameters
 	public static boolean DEEP_LOGGING = false;   // Deep logging (to show every detail)
