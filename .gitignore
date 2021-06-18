@@ -6,6 +6,8 @@ output/
 *.iml
 *.ipr
 *.iws
+.travis.yml
+.appveyor.yml
 
 #Eclipse project files
 .classpath
