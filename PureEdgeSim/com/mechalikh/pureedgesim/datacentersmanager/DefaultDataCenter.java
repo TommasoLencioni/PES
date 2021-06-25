@@ -44,6 +44,8 @@ public class DefaultDataCenter extends DataCenter {
 
 	@Override
 	public void processEvent(final SimEvent ev) {
+		//here passo per il default datacenter
+		//System.out.println("Passo per il default datacenter");
 		switch (ev.getTag()) {
 		case UPDATE_STATUS:
 			updateStatus();

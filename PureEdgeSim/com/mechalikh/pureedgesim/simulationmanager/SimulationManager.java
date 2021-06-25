@@ -77,7 +77,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 		for (Task task : tasksList) {
 			if (!SimulationParameters.ENABLE_ORCHESTRATORS)
 				task.setOrchestrator(task.getEdgeDevice());
-
 			// Schedule the tasks offloading
 			schedule(this, task.getTime(), SEND_TO_ORCH, task);
 		}
@@ -110,11 +109,15 @@ public class SimulationManager extends SimulationManagerAbstract {
 			break;
 
 		case EXECUTE_TASK:
+			//here
+			//System.out.println("Eseguo il task");
 			// Execute the task
 			if (taskFailed(task, 2))
 				return;
 			getBroker().submitCloudlet(task);
+			//Aggiorna l'uso di risorse del datacenter
 			((DataCenter) task.getVm().getHost().getDatacenter()).getResources().addCpuUtilization(task);
+			//Aggiorna l'uso di energia del datacenter
 			((DataCenter) task.getVm().getHost().getDatacenter()).getEnergyModel()
 					.updateCpuEnergyConsumption(task.getLength()
 							/ ((DataCenter) task.getVm().getHost().getDatacenter()).getResources().getTotalMips());
@@ -169,6 +172,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 				// especially when 1% doesn't affect the simulation results that much, change
 				// this value to lower ( 95% or 90%) in order to make simulation faster. however
 				// this may affect the results
+				//here attendo la terminazione della simulazione aspettando altri 10 secondi
 				schedule(this, 10, PRINT_LOG);
 				break;
 			}

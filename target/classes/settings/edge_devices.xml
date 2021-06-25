@@ -6,7 +6,7 @@
 		is defined here <percentage> -->
 	<device arch="arm64" os="linux" vmm="xen"> <!-- this is a car, for example -->
 		<mobility>true</mobility><!-- the device is mobile or fixed -->
-		<speed>16.8</speed><!-- 60Km/h the speed of the device in meters per second : 1.4m/s equals 5km/h, 0 = non mobile-->
+		<speed>14</speed><!-- 60Km/h the speed of the device in meters per second : 1.4m/s equals 5km/h, 0 = non mobile-->
 		<minPauseDuration>0</minPauseDuration><!-- the minimum delay before moving to a new location-->
 		<maxPauseDuration>3</maxPauseDuration><!-- the maximum delay before moving to a new location-->
 		<minMobilityDuration>1</minMobilityDuration><!-- the minimum delay before stopping-->

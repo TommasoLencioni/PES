@@ -39,6 +39,8 @@ public class CustomBroker extends DatacenterBrokerSimple {
 	@Override
 	public void processEvent(final SimEvent ev) {
 		super.processEvent(ev);
+		//here
+		//System.out.println(ev);
 		switch (ev.getTag()) {
 			case CloudSimTags.CLOUDLET_RETURN: // the task execution finished 
 				scheduleNow(simulationManager, SimulationManager.TRANSFER_RESULTS_TO_ORCH, ev.getData());
