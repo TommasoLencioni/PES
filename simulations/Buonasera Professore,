@@ -1,0 +1,20 @@
+Buonasera Professore,
+Ho ufficialmente terminato gli esami e adesso mi posso dedicare a tempo pieno alla tesi.
+
+Ho effettuato le correzione della potenza di calcolo dei devices (adesso e' 0).
+
+Ho esplorato il codice e ho tracciato la vita di un task e il suo spostarsi tramite il tag di cloudsim.
+
+Ho individueto la lista di tasks generati ma devo sempre vedere meglio se e' effettivamente presente una coda di tasks all'interno del cloud (purtoppo il codice di CloudSim non e' molto chiaro ed e' pieno di chiamate a metodi della libreria).
+
+Penso di essermi risposto alla domanda "Come mai se non attendo la terminazione dei task la percentuale di successo e' maggiore": mi pare che sia perche' in SimulationManager viene rimandato l'evento Print_log di 10 ogni se il flag e' attivo e sono stati completati meno task di quelli generati.
+Se il flag non e' attivo viene stampato il log di terminazione.
+
+Riguardo al fallimento per mobilita' ho controllato il codice e non sembra esserci niente di inaspettato se non un intero "phase" del quale non mi e' chiaro l'uso.
+Pero' continuo ad avere fallimenti di task per mobilita' nonostante quella inserita sia sufficiente a inscrivere l'area di simulazione.
+Mantenendo l'area di simulazione 250x250:
+- Ponendo il range degli edge devices a 180 (~250/sqrt(2)) e quello degli edge datacenter a 200 e' garantita l'assenza di fallimenti.
+- Invertendo i due valori si hanno comunque fallimenti per mobilita'
+
+A questo punto non so come la dicitura coverage area debba essere interpretata.
+Nel codice vengono trattate allo stesso modo.
