@@ -53,10 +53,12 @@ public class DefaultMobilityModel extends Mobility {
 		// Make sure that the device stay in the simulation area
 		reoriontate(X_position, Y_position);
 
+		//here se sono in movimento da abbastanza mi fermo
 		if (mobilityDuration <= 0) {
 			pause();
 		}
 
+		//here se sono stato fermo abbastanza posso proseguire il movimento
 		if (pauseDuration <= 0) {
 			resume();
 		}
@@ -93,7 +95,11 @@ public class DefaultMobilityModel extends Mobility {
 		// Reorientate the device to a new direction
 		orientationAngle = new Random().nextInt(359);
 		// The mobility will be resumed for the following period of time
-		mobilityDuration = new Random().nextInt(100);
+		//here non ha senso che mobiliyduration venga impostato a un casuale tra 0 e 100 se ho una durata minima e massima di mobilita'
+		//mobilityDuration = new Random().nextInt(100);
+		mobilityDuration = (getMaxMobilityDuration() - getMinMobilityDuration()) > 0
+				? new Random().nextInt((int) (getMaxMobilityDuration() - getMinMobilityDuration())) + getMinMobilityDuration()
+				: 0;
 	}
 
 	private void reoriontate(double x_position, double y_position) {

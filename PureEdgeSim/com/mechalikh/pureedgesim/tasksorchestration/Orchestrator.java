@@ -148,9 +148,9 @@ public abstract class Orchestrator {
 
 	protected boolean offloadingIsPossible(Task task, Vm vm, String[] architecture) {
 		SimulationParameters.TYPES vmType = ((DataCenter) vm.getHost().getDatacenter()).getType();
-		return ((arrayContains(architecture, "Cloud") && vmType == SimulationParameters.TYPES.CLOUD) // cloud computing
-				|| (arrayContains(architecture, "Edge") && vmType == SimulationParameters.TYPES.EDGE_DATACENTER // Edge
-																												// computing
+		return ((arrayContains(architecture, "Cloud") && vmType == SimulationParameters.TYPES.CLOUD) // Cloud computing
+				||
+				(arrayContains(architecture, "Edge") && vmType == SimulationParameters.TYPES.EDGE_DATACENTER // Edge computing
 				// compare destination (edge data center) location and origin (edge device)
 				// location, if they
 				// are in same area offload to his device
@@ -161,17 +161,19 @@ public abstract class Orchestrator {
 										&& sameLocation(((DataCenter) vm.getHost().getDatacenter()),
 												task.getOrchestrator(), SimulationParameters.EDGE_DATACENTERS_RANGE))))
 
-				|| (arrayContains(architecture, "Mist") && vmType == SimulationParameters.TYPES.EDGE_DEVICE // Mist
+				||
+				(arrayContains(architecture, "Mist") && vmType == SimulationParameters.TYPES.EDGE_DEVICE // Mist
 																											// computing
 				// compare destination (edge device) location and origin (edge device) location,
 				// if they are in same area offload to this device
+						&& !((DataCenter) vm.getHost().getDatacenter()).isDead())
+
 						&& (sameLocation(((DataCenter) vm.getHost().getDatacenter()), task.getEdgeDevice(),
 								SimulationParameters.EDGE_DEVICES_RANGE)
-								// or compare the location of their orchestrators
-								|| (SimulationParameters.ENABLE_ORCHESTRATORS
-										&& sameLocation(((DataCenter) vm.getHost().getDatacenter()),
-												task.getOrchestrator(), SimulationParameters.EDGE_DEVICES_RANGE)))
-						&& !((DataCenter) vm.getHost().getDatacenter()).isDead()));
+							// or compare the location of their orchestrators
+							|| (SimulationParameters.ENABLE_ORCHESTRATORS
+								&& sameLocation(((DataCenter) vm.getHost().getDatacenter()),
+								task.getOrchestrator(), SimulationParameters.EDGE_DEVICES_RANGE))));
 	}
 
 	public abstract void resultsReturned(Task task);

@@ -56,6 +56,9 @@ public class CustomDataCenter extends DefaultDataCenter {
 	public void startInternal() {
 		super.startInternal();
 		schedule(this, SimulationParameters.INITIALIZATION_TIME, UPDATE_STATUS);
+		//here I added the schedule of the custom DO_SOMETHING event
+		//schedule(this, SimulationParameters.INITIALIZATION_TIME, DO_SOMETHING);
+		//scheduleNow(this, DO_SOMETHING);
 
 	}
 
@@ -68,7 +71,7 @@ public class CustomDataCenter extends DefaultDataCenter {
 	@Override
 	public void processEvent(final SimEvent ev) {
 		switch (ev.getTag()) {
-		case DO_SOMETHING:
+			case DO_SOMETHING:
 			System.out.println("Event received, you can do any action here");
 			break;
 		default:

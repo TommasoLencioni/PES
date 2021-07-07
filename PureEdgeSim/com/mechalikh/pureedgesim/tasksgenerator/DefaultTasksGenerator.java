@@ -86,6 +86,7 @@ public class DefaultTasksGenerator extends TasksGenerator {
 			// Then pick up random second in this minute "st". Shift the time by the defined
 			// value "INITIALIZATION_TIME" in order to start after generating all the
 			// resources
+			//15 minuti e' una cazzata
 			time += new Random().nextInt(15) + SimulationParameters.INITIALIZATION_TIME;
 			insert(time, app, dev);
 		}

@@ -23,6 +23,7 @@ package com.mechalikh.pureedgesim.simulationmanager;
 import java.io.IOException;
 import java.util.List;
 
+import examples.CustomDataCenter;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -73,7 +74,9 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 		simLog.print("SimulationManager- Simulation: " + getSimulationId() + "  , iteration: " + getIterationId());
 
-		// Tasks scheduling
+		//Here per ogni task in Tasklist si controlla se gli orchestratori siano disabilitati (se così fosse il device diventa orchestratore)
+		// Dopo di che si schedula il task con tag SEND_TO_ORCH
+		//Tasks scheduling
 		for (Task task : tasksList) {
 			if (!SimulationParameters.ENABLE_ORCHESTRATORS)
 				task.setOrchestrator(task.getEdgeDevice());

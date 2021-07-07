@@ -56,6 +56,7 @@ public class CustomEdgeOrchestrator extends Orchestrator {
 		double weight;
 		double minWeight = 20;
 		// get best vm for this task
+		// here trova la VM sul quale schedulare
 		for (int i = 0; i < orchestrationHistory.size(); i++) {
 			if (offloadingIsPossible(task, vmList.get(i), architecture)) {
 				weight = getWeight(task, ((DataCenter) vmList.get(i).getHost().getDatacenter()));

@@ -27,7 +27,7 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 /* A simple custom mobility model that increase the X and Y coordinates by 1 (meter) every time.
  * This model uses the current Location of the device (from the Mobility.class) in order to calculate the next position
  * this model is over simplified , it doesn't use any speed or whatever, it is just used to give an example of how it works
- * you can create amore realistic model, or use the "MobilityManager" model provided by pureEdgeSim.  
+ * you can create a more realistic model, or use the "MobilityManager" model provided by pureEdgeSim.
  */
 
 public class CustomMobilityManager extends Mobility {

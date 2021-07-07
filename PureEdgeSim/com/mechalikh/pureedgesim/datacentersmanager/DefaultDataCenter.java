@@ -28,6 +28,7 @@ import org.cloudbus.cloudsim.vms.Vm;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 
+//here qualsiasi cosa che calcoli
 public class DefaultDataCenter extends DataCenter {
 	protected static final int UPDATE_STATUS = 2000; // Avoid conflicting with CloudSim Plus Tags
 
@@ -49,7 +50,7 @@ public class DefaultDataCenter extends DataCenter {
 		switch (ev.getTag()) {
 		case UPDATE_STATUS:
 			updateStatus();
-
+			//here si autoschedula
 			if (!isDead()) {
 				schedule(this, SimulationParameters.UPDATE_INTERVAL, UPDATE_STATUS);
 			}
