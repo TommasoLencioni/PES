@@ -216,6 +216,7 @@ public class NetworkModel extends NetworkModelAbstract {
 			returnResultToDevice(transfer);
 			updateEnergyConsumption(transfer, "Result_Orchestrator");
 		}
+		//here is the of RESULTS_TO_DEV
 		// Results transferred to the device
 		else {
 			resultsReturnedToDevice(transfer);

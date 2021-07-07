@@ -112,7 +112,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 			break;
 
 		case EXECUTE_TASK:
-			//here
 			//System.out.println("Eseguo il task");
 			// Execute the task
 			if (taskFailed(task, 2))
@@ -152,13 +151,14 @@ public class SimulationManager extends SimulationManagerAbstract {
 				} else
 					simLog.printSameLine("#", "red");
 			}
+			//here schedulato ogni SIMULATION_TIME / 100, semplicemente aggiorna la barra rossa di simulazione
 			schedule(this, SimulationParameters.SIMULATION_TIME / 100, SHOW_PROGRESS);
 			break;
 
 		case UPDATE_REAL_TIME_CHARTS:
 			// Update simulation Map
 			simulationVisualizer.updateCharts();
-
+			//here schedulato ogni CHARTS_UPDATE_INTERVAL, semplicemente aggiorna i grafici della simulazione
 			// Schedule the next update
 			schedule(this, SimulationParameters.CHARTS_UPDATE_INTERVAL, UPDATE_REAL_TIME_CHARTS);
 			break;
