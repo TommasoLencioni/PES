@@ -3,7 +3,7 @@
 	<datacenter arch="x86" os="Linux" >
 		<idleConsumption>0.00015</idleConsumption> 
 		<maxConsumption>0.016</maxConsumption> 
-		<isOrchestrator>false</isOrchestrator>   
+		<isOrchestrator>true</isOrchestrator>
 		<location>
 			<x_pos>125</x_pos>
 			<y_pos>125</y_pos>

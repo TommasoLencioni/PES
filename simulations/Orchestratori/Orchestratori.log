@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  8 JUL 2021 12:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  8 JUL 2021 17:44
 entering extended mode
 **./Orchestratori.tex
 (Orchestratori.tex
@@ -270,69 +270,50 @@ LaTeX Info: Redefining \nameref on input line 24.
 \openout3 = `Orchestratori.out'.
 
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 26.
+(Font)              <12> on input line 47.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 26.
- [1
+(Font)              <8> on input line 47.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 47.
 
-{C:/Users/lenci/AppData/Local/MiKTeX/pdftex/config/pdftex.map}]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 43.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 43.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 43.
-
-Overfull \hbox (20.78462pt too wide) in paragraph at lines 38--64
+Overfull \hbox (20.78462pt too wide) in paragraph at lines 42--71
 \OT1/cmr/m/n/12 Ho provato a mon-i-torare la banda prima dell'assegnazione dell
 'orchestratore
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 38--64
+Underfull \hbox (badness 10000) in paragraph at lines 42--71
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 38--64
+Underfull \hbox (badness 10000) in paragraph at lines 42--71
 
  []
 
-pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
-been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.64  	\end{itemize}
-                     [1]
-Underfull \hbox (badness 10000) in paragraph at lines 76--79
+[1
 
- []
-
-
-Overfull \hbox (23.7656pt too wide) in paragraph at lines 80--94
-[] 
- []
-
-[2] [3] (Orchestratori.aux)
+{C:/Users/lenci/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2]
+(Orchestratori.aux)
 Package rerunfilecheck Info: File `Orchestratori.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 5310 strings out of 479618
- 84602 string characters out of 2865026
- 387387 words of memory out of 3000000
- 22396 multiletter control sequences out of 15000+200000
- 408935 words of font info for 45 fonts, out of 3000000 for 9000
+ 5301 strings out of 479618
+ 84474 string characters out of 2865026
+ 388376 words of memory out of 3000000
+ 22389 multiletter control sequences out of 15000+200000
+ 407763 words of font info for 41 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 71i,6n,74p,383b,397s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 71i,6n,74p,377b,393s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\lenci\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
 1200.pk><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
 ts/cm/cmbx12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/type1/publ
 ic/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/ty
-pe1/public/amsfonts/cm/cmr17.pfb>
-Output written on Orchestratori.pdf (4 pages, 51924 bytes).
+pe1/public/amsfonts/cm/cmti12.pfb>
+Output written on Orchestratori.pdf (2 pages, 50635 bytes).
 PDF statistics:
- 45 PDF objects out of 1000 (max. 8388607)
- 8 named destinations out of 1000 (max. 500000)
+ 34 PDF objects out of 1000 (max. 8388607)
+ 5 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

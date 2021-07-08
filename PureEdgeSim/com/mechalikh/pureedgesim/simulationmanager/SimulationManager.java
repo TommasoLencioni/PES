@@ -179,7 +179,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 				schedule(this, 10, PRINT_LOG);
 				break;
 			}
-
+			System.err.println("Mancano ancora " + (simLog.getGeneratedTasks() - tasksCount) + " da eseguire");
 			simLog.printSameLine(" 100% ]", "red");
 
 			if (SimulationParameters.DISPLAY_REAL_TIME_CHARTS && !SimulationParameters.PARALLEL) {
