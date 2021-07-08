@@ -13,7 +13,7 @@
 		<maxMobilityDuration>100</maxMobilityDuration><!-- the maximum delay before stopping-->
 		<battery>true</battery> <!-- relies on battery? -->
 		<percentage>100</percentage> <!-- percentage of this device type -->
-		<batteryCapacity>40000</batteryCapacity> <!-- battery capacity in Watt-Hour -->
+		<batteryCapacity>18.75</batteryCapacity> <!-- battery capacity in Watt-Hour -->
 		<idleConsumption>4</idleConsumption><!-- idle energy consumption/
 			second, default=0 .000010975 -->
 		<maxConsumption>10</maxConsumption><!-- max energy consumption/second,

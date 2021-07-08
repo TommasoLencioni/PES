@@ -1,0 +1,99 @@
+\documentclass[12pt, a4paper]{report} %standard 12 punti, specifica anche la dimensione del documento
+\usepackage[utf8]{inputenc} %specifica l'encoding
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+%\counterwithin*{figure}{section} Posso resettare anche il contatore delle figure a ogni sezione
+\counterwithin*{equation}{section} %Resetta il contatore delle equazioni a ogni sezione 
+\counterwithin*{equation}{subsection}
+
+\title{Report "Prove potenza e distanza"}
+\author{Tommaso Lencioni}
+%\date{} % Activate to display a given date or no date (if empty),
+         % otherwise the current date is printed 
+
+\begin{document}
+\maketitle
+\section*{Osservazioni}
+ \begin{itemize}
+ 	\item Nel file Orchestratori\_Notion.pdf ho riassunto gli step della vita di un task con tutti i suoi passaggi tra le varie classi del simulatore.
+ 	\item In base al comportamento del metodo offloadingIsPossible della classe Orchestrator.java si ha una situazione chiara di come venga stabilita la possibilita' di offload:
+ 	\begin{itemize}
+ 		\item Su Cloud e' sempre possibile perche' si presume che tutti i dispositivi possano raggiungere il cloud.
+ 		\item Su Edge Datacenter e' subordinato alla sua distaza del dispositivo che genera il task (o, nel caso di orchestrazione attiva, dal suo orchestratore).
+ 		\item Su Mist (non piu' edge datacenter ma solo potenza di calcolo degli edge devices) e' permesso solo se il dispositivo che ha la VM che stiamo valutando non sia morto e sia in range (stavolta quello degli edge devices) del dispositivo che ha generato il task (o, nel caso di orchestrazione attiva, dal suo orchestratore).
+ 	\end{itemize}
+ 	\item Il concetto di Fog inteso come un avvicinamento del Cloud all'Edge non e' presente nel simulatore quindi lo escluderei dal "vocabolario" delle mie prove.
+ 	Dato che gli edge devices, qualora previsto, possano sempre fare offload su Cloud penso che si possa dare per scontata una certa vicinanza logica e fisica del Cloud (inteso come tipo di archiettura utilizzabile nel simulatore) tipica del Fog Computing.\\
+ 	Discorso a se stante sono le RSU che sono veri e propri dispositivi (gli unici con questa funzione nei miei test) utilizzati come datacenter e individuati dal simulatore specificatamente come \textbf{EdgeDataCenters} e sfruttabili con architettura di calcolo Edge.
+ 	\item L'utilizzo degli orchestratori e' risultato non vantaggioso nelle mie prove in quanto introduce dell'overhead di comunicazione con il dispositivo che fa questa funzione (a meno che non sia esso stesso il generatore di tasks, questo nel caso gli orchestratori non siano abilitati).\\
+	Questa degradazione di prestazione e' data dal vincolo stringente di 1 secondo di dealay massimo sull'applicazione dei sensori.\\
+	Ho provato a monitorare la banda prima dell'assegnazione dell'orchestratore in modo da non assegnarlo qual'ora la rete non potesse garantire i requisiti di delay ma ho notato che l'utilizzo della WAN e' sempre molto basso, non avrebbe senso fare una valutazione del genere.\\
+	Riporto nella tabella seguente i risultati che ho ottenuto rendendo la RSU un orchestratore e simulando 150 devices.\\
+	\\
+ 	\begin{tabular}{| c | c | c || c ||} %c center, l left, r right
+		\hline
+		Architettura & Orchestratore & Percentuale successo tasks\\ [1ex] 
+		\hline
+		\hline
+		Cloud & Nessuno & 54\%\\
+		\hline
+		Cloud & Edge & 12.41 \%\\
+		\hline
+		Cloud & Cloud & 33.24\%\\
+		\hline
+		Edge & Nessuno & 54\%\\
+		\hline
+		Edge & Edge & 33.37\%\\
+		\hline
+		Edge & Cloud & 12.54\%\\
+		\hline
+\end{tabular}
+	\\
+	\\
+	Ho provato anche a raddoppiare la potenza di calcolo dei datacenters (sia cloud che edge) ma il risultato non cambia.
+ 	\end{itemize}
+\subsection*{Dubbi}
+\begin{itemize}
+\item Riguardo al fallimento per mobilita' ho controllato il codice e non sembra esserci niente di inaspettato se non un intero "phase" del quale non mi è chiaro l'uso.\\
+Pero' continuo ad avere fallimenti di task per mobilita' nonostante quella inserita sia sufficiente a inscrivere l'area di simulazione.
+Mantenendo l'area di simulazione 250x250:
+\begin{itemize}
+	\item Ponendo il range degli edge devices a 180 (circa 250/sqrt(2)) e quello degli edge datacenter a 200 è garantita l'assenza di fallimenti.
+	\item Invertendo i due valori si hanno comunque fallimenti per mobilita'.
+\end{itemize}
+A questo punto non so come la dicitura "coverage area" degli edge datacenter debba essere interpretata.
+Nel codice vengono trattate allo stesso modo del range degli edge devices.
+\item Per quanto riguarda i problemi riscontrati con la non terminazione della simulazione coincidente con l'aumento del numero di cores richiesti dalle applicazioni ho cominciato impostando nei simulation parameters wait\_for\_all\_tasks=false e save\_charts=false (la simulazione non terminava di salvarle nonostante il log fosse pronto).\\
+Da notare che in tutte le configurazioni il numero di tasks generati e' circa 35,900.\\
+Ho effettuato diverse prove mantenendo il numero dei devices e le prestazioni dell'infrastruttura costanti e ho osservato che:\\
+\subsubsection*{Cloud}
+\begin{tabular}{| c | c | c || c ||} %c center, l left, r right
+		\hline
+		Cores app sensori & Cores app infotainment & Percentuale successo tasks\\ [1ex] 
+		\hline
+		\hline
+		1 & 1 & 54.8\%\\
+		\hline
+		2 & 1 & 88.1\%\\
+		\hline
+		1 & 2 & 88.3\%\\
+		\hline
+		2 & 2 & 100\%\\
+		\hline
+\end{tabular}
+
+
+\subsubsection*{Edge}
+In tutte e 4 le combinazioni di cores la percentuale di successo è di circa 54\%.
+\end{itemize}
+\end{document}

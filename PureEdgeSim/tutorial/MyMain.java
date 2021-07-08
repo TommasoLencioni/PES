@@ -1,6 +1,7 @@
 package tutorial;
 import com.mechalikh.pureedgesim.MainApplication;
 import examples.ClusterEdgeDevice;
+import examples.CustomEdgeOrchestrator;
 
 public class MyMain extends MainApplication {
 
@@ -10,7 +11,7 @@ public class MyMain extends MainApplication {
 
     public static void main(String[] args) {
         // Load the custom devices class
-        MyMain.setCustomEdgeDataCenters(ClusterEdgeDevice.class);
+        //MyMain.setCustomEdgeDataCenters(ClusterEdgeDevice.class);
         // Launch the simulation
         MyMain.launchSimulation();
     }

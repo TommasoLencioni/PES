@@ -51,7 +51,6 @@ public class DefaultEdgeOrchestrator extends Orchestrator {
 		int vm = -1;
 		double min = -1;
 		double new_min;// vm with minimum assigned tasks;
-
 		// get best vm for this task
 		for (int i = 0; i < orchestrationHistory.size(); i++) {
 			if (offloadingIsPossible(task, vmList.get(i), architecture)) {
@@ -86,6 +85,7 @@ public class DefaultEdgeOrchestrator extends Orchestrator {
 		int vm = -1;
 		int minTasksCount = -1; // vm with minimum assigned tasks;
 		// get best vm for this task
+
 		for (int i = 0; i < orchestrationHistory.size(); i++) {
 			if (offloadingIsPossible(task, vmList.get(i), architecture) && (minTasksCount == -1
 					|| minTasksCount > orchestrationHistory.get(i).size())) {

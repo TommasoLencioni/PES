@@ -277,9 +277,11 @@ public class SimulationManager extends SimulationManagerAbstract {
 				tasksCount++;
 				return;
 			}
+			//System.out.println("Assegno un orchestratore " + task.getFileSize() + " " + task.getOutputSize());
 			task.setOrchestrator(orchestratorsList.get(selected));
 		}
-
+		//System.out.println("La dimensione del task e' " + task.getFileSize() + " " + task.getOutputSize());
+		//System.out.println("L'uso della wan e' " + networkModel.getWanUtilization());
 		scheduleNow(networkModel, NetworkModelAbstract.SEND_REQUEST_FROM_DEVICE_TO_ORCH, task);
 	}
 

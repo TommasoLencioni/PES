@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <applications>
 	<application name="SENSOR_DATA_COMMUNICATION">
-	    <rate>20</rate> <!-- ??? -->
+	    <rate>20</rate> <!-- time += 60 / SimulationParameters.APPLICATIONS_LIST.get(app).getRate(); task[i].setTime(time); -->
 		<usage_percentage>20</usage_percentage> <!-- percentage of devices using this type of applications -->
 		<max_delay>1</max_delay> <!-- latency in seconds -->
 		<container_size>15000</container_size><!--application/container size in kilobytes -->
 		<request_size>100</request_size><!-- the offloading request that will be sent to the orchestrator and then to the device where the task will be offloaded in kilobytes -->
 		<results_size>500</results_size><!-- the results of the offlaoded task in kilobytes -->
 		<task_length>10000</task_length><!--MI: million instructions -->
-		<required_core>2</required_core>
+		<required_core>1</required_core>
 	</application>
 	<application name="ENTERTAINMENT">
-		<rate>10</rate> <!-- ??? -->
+		<rate>10</rate>
 		<usage_percentage>20</usage_percentage> <!-- percentage of devices using this type of applications -->
 		<max_delay>5</max_delay> <!-- latency in seconds -->
 		<container_size>5000</container_size><!--application/container size in kilobytes -->
 		<request_size>100</request_size><!-- the offloading request that will be sent to the orchestrator and then to the device where the task will be offloaded in kilobytes -->
 		<results_size>40000</results_size><!-- the results of the offlaoded task in kilobytes -->
 		<task_length>15000</task_length><!--MI: million instructions -->
-		<required_core>2</required_core>
+		<required_core>1</required_core>
 	</application>
 </applications>

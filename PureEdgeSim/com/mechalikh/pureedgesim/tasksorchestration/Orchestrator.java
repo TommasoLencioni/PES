@@ -71,6 +71,10 @@ public abstract class Orchestrator {
 		} else if ("MIST_AND_CLOUD".equals(architecture)) {
 			mistAndCloud(task);
 		}
+		else {
+			System.err.println("Architecture not recognized, please specify orchestration_architectures in simulation_parameters.properties");
+			System.exit(-1);
+		}
 	}
 
 	// If the orchestration scenario is MIST_ONLY send Tasks only to edge devices
