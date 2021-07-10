@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<edge_devices>
+	<!-- here you can define the types of edge devices, and how many devices 
+		of this type there will be in this case , there are 4 types of devices(defined 
+		here), 30 percent of all devices will be of the first type, this percentage 
+		is defined here <percentage> -->
+	<device arch="arm64" os="linux" vmm="xen"> <!-- this is a car, for example -->
+		<mobility>true</mobility><!-- the device is mobile or fixed -->
+		<speed>14</speed><!-- 60Km/h the speed of the device in meters per second : 1.4m/s equals 5km/h, 0 = non mobile-->
+		<minPauseDuration>0</minPauseDuration><!-- the minimum delay before moving to a new location-->
+		<maxPauseDuration>3</maxPauseDuration><!-- the maximum delay before moving to a new location-->
+		<minMobilityDuration>1</minMobilityDuration><!-- the minimum delay before stopping-->
+		<maxMobilityDuration>100</maxMobilityDuration><!-- the maximum delay before stopping-->
+		<battery>true</battery> <!-- relies on battery? -->
+		<percentage>100</percentage> <!-- percentage of this device type -->
+		<batteryCapacity>18.75</batteryCapacity> <!-- battery capacity in Watt-Hour -->
+		<idleConsumption>4</idleConsumption><!-- idle energy consumption/
+			second, default=0 .000010975 -->
+		<maxConsumption>10</maxConsumption><!-- max energy consumption/second,
+			when device cpu is use at 100% , default=0 .0011 -->
+		<isOrchestrator>false</isOrchestrator> <!-- it has a task orchestrator or not -->
+		<generateTasks>true</generateTasks> <!-- it generates data/tasks or not -->
+		<hosts>
+			<host>
+				<core>4</core>
+				<mips>16000</mips>
+				<ram>4000</ram>
+				<storage>32000</storage>
+				<VMs>
+				</VMs>
+			</host>
+		</hosts>
+	</device>
+</edge_devices>
