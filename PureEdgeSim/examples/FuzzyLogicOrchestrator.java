@@ -81,7 +81,6 @@ public class FuzzyLogicOrchestrator extends CustomEdgeOrchestrator {
 				count++;
 				//fix Aggiunge l'uso attuale della CPU del Datacenter della VM (?)
 				vmUsage += ((DataCenter) vmList.get(i).getHost().getDatacenter()).getResources().getAvgCpuUtilization();
-
 			}
 		}
 

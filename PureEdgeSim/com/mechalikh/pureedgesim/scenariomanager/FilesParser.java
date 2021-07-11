@@ -129,6 +129,10 @@ public class FilesParser {
 			SimulationParameters.AMPLIFIER_DISSIPATION_MULTIPATH = Double
 					.parseDouble(prop.getProperty("amplifier_dissipation_multipath").trim()); // J/bit/m^4
 
+			SimulationParameters.TEST_PARAMETER = Integer
+					.parseInt(prop.getProperty("test_parameter").trim());
+			System.out.println("TEST_PARAMETER E' " + SimulationParameters.TEST_PARAMETER);
+
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

@@ -91,5 +91,6 @@ public class SimulationParameters {
                                                          // this variable will allow the user to wait for the execution of all tasks or to 
                                                          // end the simulation when the predifined time ends.
 	
-	
+	// Custom parameter
+	public static int TEST_PARAMETER;
 }
