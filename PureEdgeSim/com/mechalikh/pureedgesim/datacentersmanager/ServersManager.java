@@ -62,6 +62,9 @@ public class ServersManager {
 	private Class<? extends EnergyModel> energyModel;
 	private Class<? extends DataCenter> edgeDataCenterType;
 
+	//my
+	private int i=0;
+
 	public ServersManager(SimulationManager simulationManager, Class<? extends Mobility> mobilityManager,
 			Class<? extends EnergyModel> energyModel, Class<? extends DataCenter> edgedatacenter) {
 		datacentersList = new ArrayList<>();
@@ -84,29 +87,49 @@ public class ServersManager {
 	}
 
 	private void selectOrchestrators() {
+		//my
+		System.out.println("La dimensione dei datacenter e' "+ datacentersList.size());
 		for (DataCenter edgeDataCenter : datacentersList) {
-			if ("".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-					|| ("CLOUD".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-							&& edgeDataCenter.getType() == SimulationParameters.TYPES.CLOUD)) {
-				edgeDataCenter.setAsOrchestrator(true);
-				orchestratorsList.add(edgeDataCenter);
-			} else if ("EDGE".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-					&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DATACENTER) {
-				edgeDataCenter.setAsOrchestrator(true);
-				orchestratorsList.add(edgeDataCenter);
-			} else if ("MIST".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-					&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DEVICE) {
-				edgeDataCenter.setAsOrchestrator(true);
-				orchestratorsList.add(edgeDataCenter);
-			}
-			//TODO ho aggiunto l'orchestrazione tramite CLUSTER
-			else if ("CLUSTER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-					&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DEVICE) {
-				edgeDataCenter.setAsOrchestrator(true);
-				orchestratorsList.add(edgeDataCenter);
+			//my
+			if ((SimulationParameters.ORCH_SCALING && (i<(Math.sqrt(datacentersList.size()))))
+				|| (!SimulationParameters.ORCH_SCALING && (i<SimulationParameters.MAX_ORCH)) ) {
+				if ("".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
+						|| ("CLOUD".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
+						&& edgeDataCenter.getType() == SimulationParameters.TYPES.CLOUD)) {
+					edgeDataCenter.setAsOrchestrator(true);
+					orchestratorsList.add(edgeDataCenter);
+					i++;
+				} else if ("EDGE".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
+						&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DATACENTER) {
+					edgeDataCenter.setAsOrchestrator(true);
+					orchestratorsList.add(edgeDataCenter);
+					i++;
+				} else if ("MIST".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
+						&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DEVICE) {
+					edgeDataCenter.setAsOrchestrator(true);
+					orchestratorsList.add(edgeDataCenter);
+					i++;
+				}
+				//TODO ho aggiunto l'orchestrazione tramite CLUSTER
+				else if ("CLUSTER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
+						&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DEVICE) {
+					edgeDataCenter.setAsOrchestrator(true);
+					orchestratorsList.add(edgeDataCenter);
+					i++;
+				}
+				//my aggiungo orchestrazione sia Cloud che Edge
+				else if ("EDGE_AND_CLOUD".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
+						&& ((edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DATACENTER)
+								|| (edgeDataCenter.getType() == SimulationParameters.TYPES.CLOUD))) {
+					edgeDataCenter.setAsOrchestrator(true);
+					orchestratorsList.add(edgeDataCenter);
+					i++;
+				}
 			}
 		}
-
+		//my
+		System.out.println("I ora e' " + i);
+		System.out.println("Ho creato " + orchestratorsList.size());
 	}
 
 	public void generateEdgeDevices() throws Exception {

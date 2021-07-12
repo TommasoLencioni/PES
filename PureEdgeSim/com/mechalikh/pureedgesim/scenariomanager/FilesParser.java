@@ -129,10 +129,13 @@ public class FilesParser {
 			SimulationParameters.AMPLIFIER_DISSIPATION_MULTIPATH = Double
 					.parseDouble(prop.getProperty("amplifier_dissipation_multipath").trim()); // J/bit/m^4
 
+			//Custom parameters
 			SimulationParameters.TEST_PARAMETER = Integer
 					.parseInt(prop.getProperty("test_parameter").trim());
-			System.out.println("TEST_PARAMETER E' " + SimulationParameters.TEST_PARAMETER);
-
+			SimulationParameters.ORCH_SCALING = Boolean
+					.parseBoolean(prop.getProperty("orch_scaling").trim());
+			SimulationParameters.MAX_ORCH = Integer
+					.parseInt(prop.getProperty("max_orch").trim());
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

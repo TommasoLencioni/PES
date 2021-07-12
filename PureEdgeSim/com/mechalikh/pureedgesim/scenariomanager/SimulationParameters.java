@@ -26,7 +26,6 @@ import java.util.List;
 import com.mechalikh.pureedgesim.tasksgenerator.Application;
 public class SimulationParameters { 
 
-	//Qui, a regola, posso aggiungere campi custom
 	public static String EDGE_DEVICES_FILE="";     // Edge devices xml file path
 	public static String EDGE_DATACENTERS_FILE=""; // Edge datacenters xml file path
 	public static String CLOUD_DATACENTERS_FILE="";// Cloud data centers xml file path
@@ -93,4 +92,6 @@ public class SimulationParameters {
 	
 	// Custom parameter
 	public static int TEST_PARAMETER;
+	public static boolean ORCH_SCALING;
+	public static int MAX_ORCH;
 }
