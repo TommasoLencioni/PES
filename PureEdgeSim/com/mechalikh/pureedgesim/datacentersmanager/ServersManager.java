@@ -88,6 +88,7 @@ public class ServersManager {
 
 	private void selectOrchestrators() {
 		//my
+		i=0;
 		System.out.println("La dimensione dei datacenter e' "+ datacentersList.size());
 		for (DataCenter edgeDataCenter : datacentersList) {
 			//my

@@ -91,7 +91,6 @@ public class SimulationParameters {
                                                          // end the simulation when the predifined time ends.
 	
 	// Custom parameter
-	public static int TEST_PARAMETER;
 	public static boolean ORCH_SCALING;
 	public static int MAX_ORCH;
 }
