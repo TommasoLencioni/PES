@@ -137,10 +137,13 @@ public class NetworkModel extends NetworkModelAbstract {
 		double oldRemainingSize = transfer.getRemainingFileSize();
 
 		// Update progress (remaining file size)
-		if (SimulationParameters.REALISTIC_NETWORK_MODEL)
+		if (SimulationParameters.REALISTIC_NETWORK_MODEL) {
 			transfer.setRemainingFileSize(transfer.getRemainingFileSize()
 					- (SimulationParameters.NETWORK_UPDATE_INTERVAL * transfer.getCurrentBandwidth()));
+			//System.out.println("Totransfer: " + transfer.getRemainingFileSize());
+		}
 		else
+			//Se non viene utilizzato il network model realistico ad ogni update i dati da trasferire diventano 0
 			transfer.setRemainingFileSize(0);
 
 		// Update LAN network usage delay
