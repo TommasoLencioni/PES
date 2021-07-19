@@ -21,14 +21,7 @@
 		<isOrchestrator>false</isOrchestrator> <!-- it has a task orchestrator or not -->
 		<generateTasks>true</generateTasks> <!-- it generates data/tasks or not -->
 		<hosts>
-			<host>
-				<core>4</core>
-				<mips>16000</mips>
-				<ram>4000</ram>
-				<storage>32000</storage>
-				<VMs>
-				</VMs>
-			</host>
+
 		</hosts>
 	</device>
 </edge_devices>

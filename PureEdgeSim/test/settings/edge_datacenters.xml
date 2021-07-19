@@ -12,7 +12,7 @@
 			<host>
 				<core>8</core>
 				<mips>800000</mips>
-				<ram>16000</ram> 
+				<ram>16000</ram>
 				<storage>200000</storage>
 				<VMs>
 					<VM>
@@ -26,13 +26,13 @@
 						<mips>200000</mips>
 						<ram>4000</ram>
 						<storage>20000</storage>
-					</VM> 
+					</VM>
 				</VMs>
 			</host>
 			<host>
 				<core>8</core>
 				<mips>800000</mips>
-				<ram>16000</ram> 
+				<ram>16000</ram>
 				<storage>200000</storage>
 				<VMs>
 					<VM>
@@ -46,7 +46,7 @@
 						<mips>200000</mips>
 						<ram>4000</ram>
 						<storage>20000</storage>
-					</VM> 
+					</VM>
 				</VMs>
 			</host>
 		</hosts>

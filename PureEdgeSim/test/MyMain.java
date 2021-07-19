@@ -28,6 +28,9 @@ public class MyMain extends MainApplication {
         // changing the simulation settings folder
         setCustomSettingsFolder(settingsPath);
 
+        // tell PureEdgeSim to use this custom orchestrator and orchestration algorithm
+        setCustomEdgeOrchestrator(MyEdgeOrchestrator.class);
+
         // Launch the simulation
         MyMain.launchSimulation();
     }
