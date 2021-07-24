@@ -112,12 +112,14 @@ public class ServersManager {
 					i++;
 				}
 				//TODO ho aggiunto l'orchestrazione tramite CLUSTER
+				/*
 				else if ("CLUSTER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
 						&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DEVICE) {
 					edgeDataCenter.setAsOrchestrator(true);
 					orchestratorsList.add(edgeDataCenter);
 					i++;
 				}
+				 */
 				//my aggiungo orchestrazione sia Cloud che Edge
 				else if ("EDGE_AND_CLOUD".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
 						&& ((edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DATACENTER)
@@ -128,9 +130,6 @@ public class ServersManager {
 				}
 			}
 		}
-		//my
-		System.out.println("I ora e' " + i);
-		System.out.println("Ho creato " + orchestratorsList.size());
 	}
 
 	public void generateEdgeDevices() throws Exception {
@@ -168,13 +167,15 @@ public class ServersManager {
 		float devicesInstances = getSimulationManager().getScenario().getDevicesCount() * instancesPercentage / 100;
 
 		for (int j = 0; j < devicesInstances; j++) {
+			//if (datacentersList.size() > getSimulationManager().getScenario().getDevicesCount()
+			//		+ SimulationParameters.NUM_OF_EDGE_DATACENTERS) {
+				//my
 			if (datacentersList.size() > getSimulationManager().getScenario().getDevicesCount()
-					+ SimulationParameters.NUM_OF_EDGE_DATACENTERS) {
+					+ SimulationParameters.NUM_OF_EDGE_DATACENTERS + SimulationParameters.NUM_OF_CLOUD_DATACENTERS) {
 				getSimulationManager().getSimulationLogger().print(
 						"ServersManager- Wrong percentages values (the sum is superior than 100%), check edge_devices.xml file !");
 				break;
 			}
-
 			datacentersList.add(createDatacenter(edgeElement, SimulationParameters.TYPES.EDGE_DEVICE));
 
 		}

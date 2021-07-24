@@ -74,18 +74,15 @@ public class MyEdgeOrchestrator extends Orchestrator {
 					&& task.getLength()/vmList.get(i).getMips()<task.getMaxLatency()
 					//&& (1 - vmList.get(i).getCpuPercentUtilization() * vmList.get(i).getMips()>vmList.get(i).getMips()/100)
 					){
-				// if this is the first time,
-				// or new min found, so we choose it as the best VM
-				// set the first vm as the best one
 				vm = i;
-				System.out.println(vmList.get(i).getCpuPercentUtilization() + " Ho fatto l'offload su Edge");
+				//System.out.println(vmList.get(i).getCpuPercentUtilization() + " Ho fatto l'offload su Edge");
 			}
 		}
 
 		//Se non sono riuscito a trovare una VM su Edge allora la cerco su Cloud
 		if (vm<0) {
 			String[] Architecture = { "Cloud" };
-			System.out.println("Ho fatto l'offload su Cloud");
+			//System.out.println("Ho fatto l'offload su Cloud");
 			return increseLifetime(Architecture, task);
 		}
 
