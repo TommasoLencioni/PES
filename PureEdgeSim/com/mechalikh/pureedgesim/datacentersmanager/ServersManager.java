@@ -89,7 +89,7 @@ public class ServersManager {
 	private void selectOrchestrators() {
 		//my
 		i=0;
-		System.out.println("La dimensione dei datacenter e' "+ datacentersList.size());
+		//System.out.println("La dimensione dei datacenter e' "+ datacentersList.size());
 		for (DataCenter edgeDataCenter : datacentersList) {
 			//my
 			if ((SimulationParameters.ORCH_SCALING && (i<(Math.sqrt(datacentersList.size()))))
@@ -112,14 +112,13 @@ public class ServersManager {
 					i++;
 				}
 				//TODO ho aggiunto l'orchestrazione tramite CLUSTER
-				/*
 				else if ("CLUSTER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-						&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DEVICE) {
+						//here utilizzo EDGE_DATACENTER E NON EDGE_DEVICE
+						&& edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DATACENTER) {
 					edgeDataCenter.setAsOrchestrator(true);
 					orchestratorsList.add(edgeDataCenter);
 					i++;
 				}
-				 */
 				//my aggiungo orchestrazione sia Cloud che Edge
 				else if ("EDGE_AND_CLOUD".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
 						&& ((edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DATACENTER)

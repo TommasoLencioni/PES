@@ -31,6 +31,9 @@ public class MyMain extends MainApplication {
         // tell PureEdgeSim to use this custom orchestrator and orchestration algorithm
         setCustomEdgeOrchestrator(MyEdgeOrchestrator.class);
 
+        // Clustering
+        setCustomEdgeDataCenters(ClusterEdgeDevice.class);
+
         // Launch the simulation
         MyMain.launchSimulation();
     }

@@ -113,13 +113,13 @@
 		<hosts>
 			<host>
 				<core>8</core>
-				<mips>800000</mips>
+				<mips>800001</mips>
 				<ram>16000</ram>
 				<storage>200000</storage>
 				<VMs>
 					<VM>
 						<core>4</core>
-						<mips>200000</mips>
+						<mips>200001</mips>
 						<ram>4000</ram>
 						<storage>20000</storage>
 					</VM>
