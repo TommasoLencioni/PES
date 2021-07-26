@@ -24,7 +24,6 @@ import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
-import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -40,9 +39,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	protected LeaderEdgeDevice leader;
 	public List<LeaderEdgeDevice> subjected;
 	public List<LeaderEdgeDevice> cluster;
-	private double originalWeight = 0;
-	private double weightDrop = 0.1;
-	private int time = 0;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
@@ -79,43 +75,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			super.processEvent(ev);
 			break;
 		}
-	}
-
-	/**
-	 * Metodo per calcolare il peso originale del device
-	 * - Per ogni device in range che è "EDGE_DEVICE" incrementa il suo contatore dei vicini
-	 * - Se è mobile si azzera la componente mobilità del peso
-	 * - Se è a batteria viene pesata la percentuale attuale /100 (se non è alimentato a batteria battery pesa 2 che
-	 * equivarrebbe al 200% di carica)
-	 * - Si valutano i MIBS dell'unica (?) VM sul device edge e se ne prendono i MIPS normalizzati
-	 * @return il peso calcolato con le feature pesate
-	 */
-	public double getOriginalWeight() {
-		int neighbors = 0;
-		double distance = 0; 
-		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
-			if (simulationManager.getServersManager().getDatacenterList().get(i)
-					.getType() == SimulationParameters.TYPES.EDGE_DEVICE) {
-			 	if (distance <= SimulationParameters.EDGE_DEVICES_RANGE) {
-					// neighbor
-					neighbors++; 
-				}
-			}
-		}
-		double battery = 2;
-		double mobility = 1;
-		if (getMobilityManager().isMobile())
-			mobility = 0;
-		if (getEnergyModel().isBatteryPowered())
-			battery = getEnergyModel().getBatteryLevel() / 100;
-		double mips = 0;
-		if (getResources().getVmList().size() > 0)
-			mips = getResources().getVmList().get(0).getMips(); 
-
-		// mips is divided by 200000 to normalize it, it is out of the parenthesis so
-		// the weight becomes 0 when mips = 0
-		return weight = mips / 200000 * ((battery * 0.5 / neighbors) + (neighbors * 0.2) + (mobility * 0.3));
-
 	}
 
 	/**
@@ -179,32 +138,38 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	//my
 	private void leader(){
 		//Gauge for max number of MIPS
-		double max=0;
+		double max_MIPS =0;
 		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
 			DataCenter candidate = simulationManager.getServersManager().getDatacenterList().get(i);
 			//Condition for evaluating a datacenter
 			if ((this!=candidate)
 				&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
 				&& (getDistance(this, candidate)<= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
-				//Condition for choosing a leader
+				//here debug
 				System.out.println(this.getName() + " " + this.getResources().getTotalMips() +
 						" " + candidate.getName() + " " + candidate.getResources().getTotalMips());
+				//Condition for choosing a leader
 				if (this.getResources().getTotalMips()<candidate.getResources().getTotalMips()
-					&& max<candidate.getResources().getTotalMips()){
-					max=candidate.getResources().getTotalMips();
+					&& max_MIPS <candidate.getResources().getTotalMips()){
+					max_MIPS =candidate.getResources().getTotalMips();
 					leader = (LeaderEdgeDevice) candidate;
-					((LeaderEdgeDevice) candidate).subjected.add(this);
 				}
 			}
 		}
 		if (leader!= null) {
+			//debug
 			System.out.println("Il mio leader e' " + leader.getId());
+
+			//necessary
+			this.setAsOrchestrator(false);
+			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
+			leader.subjected.add(this);
+			///
 		}
 		else{
 			System.out.println("I miei sottoposti sono:"+ subjected.size());
 			for (DataCenter el: subjected){
 				System.out.println(el.getName());
-
 			}
 		}
 	}

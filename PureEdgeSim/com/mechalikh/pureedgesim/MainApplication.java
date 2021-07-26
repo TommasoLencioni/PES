@@ -165,7 +165,7 @@ public class MainApplication extends MainApplicationAbstract{
 				//my
 				System.out.println(simulationManager.getServersManager().getDatacenterList().size());
 				for (DataCenter el: simulationManager.getServersManager().getDatacenterList()){
-					System.out.println(el.getName());
+					System.out.println("Sono " + el.getName());
 					System.out.println(el.getType());
 					if (((LeaderEdgeDevice) el).getLeader()==null){
 						System.out.println("Leader di:");
@@ -174,6 +174,8 @@ public class MainApplication extends MainApplicationAbstract{
 						}
 					}
 				}
+				System.out.println("Qui si controllano gli orchestratori che sono " +
+						simulationManager.getServersManager().getOrchestratorsList().size());
 			}
 			SimLog.println("MyMain- Simulation Finished!");
 			// Generate and save charts
