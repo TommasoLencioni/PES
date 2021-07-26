@@ -32,31 +32,30 @@ import org.cloudbus.cloudsim.vms.Vm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClusterEdgeDevice extends DefaultDataCenter {
-	private static final int UPDATE_CLUSTERS = 11000; // Avoid conflicting with CloudSim Plus Tags
+public class LeaderEdgeDevice extends DefaultDataCenter {
+	private static final int LEADER_ELECTION = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
 	private double weight = 0;
-	private ClusterEdgeDevice parent;
-	protected ClusterEdgeDevice Orchestrator;
-	protected ClusterEdgeDevice leader;
+	private LeaderEdgeDevice parent;
+	protected LeaderEdgeDevice Orchestrator;
+	protected LeaderEdgeDevice leader;
+	public List<LeaderEdgeDevice> subjected;
+	public List<LeaderEdgeDevice> cluster;
 	private double originalWeight = 0;
 	private double weightDrop = 0.1;
 	private int time = 0;
-	public List<Task> cache = new ArrayList<Task>();
-	public List<ClusterEdgeDevice> cluster;
-	public List<double[]> Remotecache = new ArrayList<double[]>();
-	public List<double[]> probability = new ArrayList<double[]>();
 
-	public ClusterEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
-                             List<? extends Vm> vmList) {
+	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
+							List<? extends Vm> vmList) {
 		super(simulationManager, hostList, vmList);
-		cluster = new ArrayList<ClusterEdgeDevice>();
+		subjected = new ArrayList<LeaderEdgeDevice>();
+		leader=null;
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
 	// be scheduled within the startInternal() method:
 	@Override
 	public void startInternal() {
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, UPDATE_CLUSTERS); 
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, LEADER_ELECTION);
 		super.startInternal();
 	}
 
@@ -67,21 +66,16 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 	public void processEvent(SimEvent ev) {
 		//System.out.println("--- " + this.getType() + " --- " + this.Orchestrator);
 		switch (ev.getTag()) {
-		case UPDATE_CLUSTERS:
+		case LEADER_ELECTION:
 			if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
-					&& "CLUSTER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-					&& (getSimulation().clock() - time > 30)) {
-				//fix non ho capito sopra perché fa il check col time con 30 hard coded
-				// a quanto ho capito comincia a chiamare cluster dopo che sono passati 30 secondi poi a intervalli di 30 secondi
-				// Nel tutorial non c'è questa "limitazione" nell'update
-				time = (int) getSimulation().clock();
-				//cluster();
+					&& this.isOrchestrator
+					&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
 				leader();
-				// schedule the next update
-				schedule(this, 1, UPDATE_CLUSTERS);
 			}
 			break;
 		default:
+			//Task task = (Task) ev.getData();
+			//if task.getMaxLatency()
 			super.processEvent(ev);
 			break;
 		}
@@ -130,7 +124,7 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 	 * @param device2
 	 * @return la distanza euclidea
 	 */
-	private double getDistance(ClusterEdgeDevice device1, DataCenter device2) {
+	private double getDistance(LeaderEdgeDevice device1, DataCenter device2) {
 		return Math.abs(Math.sqrt(Math
 				.pow((device1.getMobilityManager().getCurrentLocation().getXPos()
 						- device2.getMobilityManager().getCurrentLocation().getXPos()), 2)
@@ -138,15 +132,8 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 						- device2.getMobilityManager().getCurrentLocation().getYPos()), 2)));
 	}
 
-	private double getOrchestratorWeight() {
-		if (this.isOrchestrator())
-			return originalWeight;
-		if (this.Orchestrator == null || !this.Orchestrator.isOrchestrator())
-			return 0; 
-		return getOrchestrator().getOrchestratorWeight();
-	}
 
-	public void setOrchestrator(ClusterEdgeDevice newOrchestrator) {
+	public void setOrchestrator(LeaderEdgeDevice newOrchestrator) {
 		//this device has changed its cluster, so it should be removed from the previous one
 		if (Orchestrator != null)
 			Orchestrator.cluster.remove(this);
@@ -184,86 +171,29 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 
 	}
 
-	//Here fa le stesse cose del tutorial solo che il metodo chiama modularmente compareWeightWithNeighbors,
-	// cosa che non fa nel tutorial
-	/**
-	 * Metodo per aggiornare lo stato del cluster chiamato nel ProcessEvent
-	 * Ottiene il peso originale
-	 * - Se il peso dell'orchestrator è inferiore del peso originale
-	 * O
-	 * - Ho un parent la cui distanza da me supera il range stabilito dai parametri di simulazione per gli edge devices
-	 *
-	 * Allora divento orchestrator di me stesso e il mio peso è il peso originale
-	 *
-	 * Poi comparo il mio peso con quello dei vicini con compareWeightWithNeighbors
-	 */
-	private void cluster() {
-		System.out.println("Sono vivo");
-		originalWeight = getOriginalWeight();
-		//System.out.println(originalWeight);
-		if ((getOrchestratorWeight() < originalWeight) || ((parent != null) && (getDistance(this, parent) > SimulationParameters.EDGE_DEVICES_RANGE))) {
-			setOrchestrator(this);
-			weight = getOrchestratorWeight();
-		}
 
-		compareWeightWithNeighbors();
-
-	}
-
-	/**
-	 * Compara il peso del Device con quello dei vicini
-	 * Se è minore allora il vicino col peso maggiore diventa il suo orchestrator e il peso del device figlio diventa
-	 * 1/10 di quello del padre (weightDrop == 0.1)
-	 */
-	private void compareWeightWithNeighbors() {
-		for (int i = 2; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
-			if (simulationManager.getServersManager().getDatacenterList().get(i)
-					.getType() == SimulationParameters.TYPES.EDGE_DEVICE
-					&& getDistance(this, simulationManager.getServersManager().getDatacenterList()
-							.get(i)) <= SimulationParameters.EDGE_DEVICES_RANGE
-					// neighbors
-					&& (weight < ((ClusterEdgeDevice) simulationManager.getServersManager().getDatacenterList()
-							.get(i)).weight)) {
- 
-				setOrchestrator((ClusterEdgeDevice) simulationManager.getServersManager().getDatacenterList().get(i));
-				weight =  getOrchestratorWeight()
-						* weightDrop;
-
-			}
-
-		}
-	}
-
-	public ClusterEdgeDevice getOrchestrator() { 
+	public LeaderEdgeDevice getOrchestrator() {
 		return Orchestrator;
 	}
  
 	//my
 	private void leader(){
-		/*
-		originalWeight = getOriginalWeight();
-		//System.out.println(originalWeight);
-		if ((getOrchestratorWeight() < originalWeight) || ((parent != null) && (getDistance(this, parent) > SimulationParameters.EDGE_DEVICES_RANGE))) {
-			setOrchestrator(this);
-			weight = getOrchestratorWeight();
-		}
-		*/
-
+		//Gauge for max number of MIPS
 		double max=0;
 		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
+			DataCenter candidate = simulationManager.getServersManager().getDatacenterList().get(i);
 			//Condition for evaluating a datacenter
-			if ((this!=simulationManager.getServersManager().getDatacenterList().get(i))
-				&& (simulationManager.getServersManager().getDatacenterList().get(i)
-				.getType() == SimulationParameters.TYPES.EDGE_DATACENTER)
-				&& (getDistance(this, simulationManager.getServersManager().getDatacenterList().get(i))
-					<= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
+			if ((this!=candidate)
+				&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+				&& (getDistance(this, candidate)<= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
 				//Condition for choosing a leader
 				System.out.println(this.getName() + " " + this.getResources().getTotalMips() +
-						" " + simulationManager.getServersManager().getDatacenterList().get(i).getName() + " " + simulationManager.getServersManager().getDatacenterList().get(i).getResources().getTotalMips());
-				if (this.getResources().getTotalMips()<simulationManager.getServersManager().getDatacenterList().get(i).getResources().getTotalMips()
-					&& max<simulationManager.getServersManager().getDatacenterList().get(i).getResources().getTotalMips()){
-					max=simulationManager.getServersManager().getDatacenterList().get(i).getResources().getTotalMips();
-					leader = (ClusterEdgeDevice) simulationManager.getServersManager().getDatacenterList().get(i);
+						" " + candidate.getName() + " " + candidate.getResources().getTotalMips());
+				if (this.getResources().getTotalMips()<candidate.getResources().getTotalMips()
+					&& max<candidate.getResources().getTotalMips()){
+					max=candidate.getResources().getTotalMips();
+					leader = (LeaderEdgeDevice) candidate;
+					((LeaderEdgeDevice) candidate).subjected.add(this);
 				}
 			}
 		}
@@ -271,8 +201,16 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 			System.out.println("Il mio leader e' " + leader.getId());
 		}
 		else{
-			System.out.println("Il mio leader e' NESSUNO");
+			System.out.println("I miei sottoposti sono:"+ subjected.size());
+			for (DataCenter el: subjected){
+				System.out.println(el.getName());
 
+			}
 		}
 	}
+
+	public LeaderEdgeDevice getLeader() {
+		return leader;
+	}
+
 }

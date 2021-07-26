@@ -21,7 +21,7 @@ public class MyMain extends MainApplication {
 
     public static void main(String[] args) {
         // Load the custom devices class
-        //MyMain.setCustomEdgeDataCenters(ClusterEdgeDevice.class);
+        //MyMain.setCustomEdgeDataCenters(LeaderEdgeDevice.class);
 
         //From example 6
         setCustomOutputFolder(outputPath);
@@ -32,7 +32,7 @@ public class MyMain extends MainApplication {
         setCustomEdgeOrchestrator(MyEdgeOrchestrator.class);
 
         // Clustering
-        setCustomEdgeDataCenters(ClusterEdgeDevice.class);
+        setCustomEdgeDataCenters(LeaderEdgeDevice.class);
 
         // Launch the simulation
         MyMain.launchSimulation();

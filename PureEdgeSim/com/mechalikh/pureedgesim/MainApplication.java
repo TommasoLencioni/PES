@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudsimplus.util.Log;
 
@@ -42,6 +44,7 @@ import com.mechalikh.pureedgesim.tasksgenerator.TasksGenerator;
 import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
 
 import ch.qos.logback.classic.Level;
+import test.LeaderEdgeDevice;
 
 public class MainApplication extends MainApplicationAbstract{
 
@@ -159,7 +162,18 @@ public class MainApplication extends MainApplicationAbstract{
 				SimLog.println("");
 				SimLog.println(
 						"######################################################################################################################################################################");
-
+				//my
+				System.out.println(simulationManager.getServersManager().getDatacenterList().size());
+				for (DataCenter el: simulationManager.getServersManager().getDatacenterList()){
+					System.out.println(el.getName());
+					System.out.println(el.getType());
+					if (((LeaderEdgeDevice) el).getLeader()==null){
+						System.out.println("Leader di:");
+						for (DataCenter sub: ((LeaderEdgeDevice) el).subjected){
+							System.out.println(sub.getName());
+						}
+					}
+				}
 			}
 			SimLog.println("MyMain- Simulation Finished!");
 			// Generate and save charts
