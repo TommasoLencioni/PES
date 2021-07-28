@@ -67,7 +67,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 	@Override
 	public void startInternal() {
-
 		// Initialize logger variables
 		simLog.setGeneratedTasks(tasksList.size());
 		simLog.setCurrentOrchPolicy(scenario.getStringOrchArchitecture());
@@ -261,7 +260,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 			double min = -1;
 			int selected = 0;
 			double distance;
-
 			for (int i = 0; i < orchestratorsList.size(); i++) {
 				if (orchestratorsList.get(i).getType() != SimulationParameters.TYPES.CLOUD) {
 					distance = orchestratorsList.get(i).getMobilityManager().distanceTo(task.getEdgeDevice());
@@ -277,11 +275,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 				tasksCount++;
 				return;
 			}
-			//System.out.println("Assegno un orchestratore " + task.getFileSize() + " " + task.getOutputSize());
 			task.setOrchestrator(orchestratorsList.get(selected));
 		}
-		//System.out.println("La dimensione del task e' " + task.getFileSize() + " " + task.getOutputSize());
-		//System.out.println("L'uso della wan e' " + networkModel.getWanUtilization());
 		scheduleNow(networkModel, NetworkModelAbstract.SEND_REQUEST_FROM_DEVICE_TO_ORCH, task);
 	}
 

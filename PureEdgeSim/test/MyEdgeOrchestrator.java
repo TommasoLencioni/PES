@@ -26,6 +26,8 @@ import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.vms.Vm;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -40,11 +42,22 @@ public class MyEdgeOrchestrator extends Orchestrator {
 
 	protected int findVM(String[] architecture, Task task) {
 		if ("MY_ALGORITHM".equals(algorithm)) {
-			 ArrayList<String> arch = new ArrayList<>(Arrays.asList(architecture));
-			if (!(arch.contains("Cloud") && arch.contains("Edge"))) {
+			if (!arrayContains(architecture, "Cloud") && arrayContains(architecture, "Edge")) {
 				SimLog.println("");
-				SimLog.println("At least Cloud and Edge must me specified as architecture in order to use '" + algorithm
-						+ "', please check the simulation parameters file...");
+				simLog.printSameLine("At least Cloud and Edge must me specified as architecture in order to use '" + algorithm
+						+ "', please check the simulation parameters file...", "red");
+				// Cancel the simulation
+				SimulationParameters.STOP = true;
+				simulationManager.getSimulation().terminate();
+			}
+			String[] edge_first = { "Edge" };
+			return myAlgorithm(edge_first, task);
+		}
+		if ("LEADER".equals(algorithm)) {
+			if (!arrayContains(architecture, "Cloud") && arrayContains(architecture, "Edge")) {
+				SimLog.println("");
+				simLog.printSameLine("At least Cloud and Edge must me specified as architecture in order to use '" + algorithm
+						+ "', please check the simulation parameters file...", "red");
 				// Cancel the simulation
 				SimulationParameters.STOP = true;
 				simulationManager.getSimulation().terminate();
@@ -68,7 +81,8 @@ public class MyEdgeOrchestrator extends Orchestrator {
 	private int myAlgorithm(String[] architecture, Task task) {
 		int vm = -1;
 		// get best vm for this task
-
+		//my questo algoritmo controlla se l'offload e' possibile su edge e se non riesce prova su cloud
+		// TODO da implementare lo scorre delle VM dei devices subjected (vedere come si carica vmList e orcjestrationHistory)
 		for (int i = 0; i < orchestrationHistory.size(); i++) {
 			if (offloadingIsPossible(task, vmList.get(i), architecture)
 					&& task.getLength()/vmList.get(i).getMips()<task.getMaxLatency()
@@ -80,6 +94,68 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		}
 
 		//Se non sono riuscito a trovare una VM su Edge allora la cerco su Cloud
+		if (vm<0) {
+			String[] Architecture = { "Cloud" };
+			//System.out.println("Ho fatto l'offload su Cloud");
+			return increseLifetime(Architecture, task);
+		}
+
+		// assign the tasks to the found vm
+		return vm;
+	}
+
+	private int leader(String[] architecture, Task task) {
+		int vm = -1;
+		// get best vm for this task
+		//my questo algoritmo controlla se l'offload e' possibile sull'orchestrator
+		// se non riesce prova sul leader
+		//	se non riesce nemmeno lui prova su un sottoposto del leader
+		//	se non riesce nemmeno sui sottoposti prova su Cloud
+		//	se non riesce nemmeno sul cloud fallisce
+		// TODO da implementare lo scorre delle VM dei devices subjected (vedere come si carica vmList e orcjestrationHistory)
+		//for (int i = 0; i < orchestrationHistory.size(); i++) {
+		for (Host host_el: task.getOrchestrator().getHostList()) {
+			for (Vm vm_el : host_el.getVmList()){
+				if (offloadingIsPossible(task, vm_el, architecture)
+						&& task.getLength()/vm_el.getMips()<task.getMaxLatency()){
+					vm = vmList.indexOf(vm_el);
+				}
+			}
+		}
+
+		//Se non sono riuscito a trovare una VM sull'orchestratore allora la cerco sul leader
+		LeaderEdgeDevice leader=null;
+		if (vm<0 && task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)) {
+			leader = ((LeaderEdgeDevice) task.getOrchestrator()).getLeader();
+			if (leader!=null){
+				for (Host host_el: task.getOrchestrator().getHostList()) {
+					for (Vm vm_el : host_el.getVmList()){
+						if (offloadingIsPossible(task, vm_el, architecture)
+								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()){
+							vm = vmList.indexOf(vm_el);
+						}
+					}
+				}
+			}
+		}
+
+		//todo check situations and edge cases
+		if (vm<0 && leader!=null) {
+			List<LeaderEdgeDevice>  subjected = leader.subjected;
+			if (!subjected.isEmpty()){
+				for (LeaderEdgeDevice sub: subjected) {
+					for (Host host_el : sub.getHostList()) {
+						for (Vm vm_el : host_el.getVmList()) {
+							if (offloadingIsPossible(task, vm_el, architecture)
+									&& task.getLength() / vm_el.getMips() < task.getMaxLatency()) {
+								vm = vmList.indexOf(vm_el);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if (vm<0) {
 			String[] Architecture = { "Cloud" };
 			//System.out.println("Ho fatto l'offload su Cloud");
