@@ -34,7 +34,8 @@ import com.mechalikh.pureedgesim.scenariomanager.Scenario;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters.TYPES;
 import com.mechalikh.pureedgesim.simulationvisualizer.SimulationVisualizer;
-import com.mechalikh.pureedgesim.tasksgenerator.Task; 
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
+import test.LeaderEdgeDevice;
 
 public class SimulationManager extends SimulationManagerAbstract {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
@@ -260,6 +261,12 @@ public class SimulationManager extends SimulationManagerAbstract {
 			double min = -1;
 			int selected = 0;
 			double distance;
+			/*
+			System.out.println("Gli orchestratori sono:");
+			for(DataCenter orc: orchestratorsList){
+				System.out.println(orc.getName());
+			}
+			 */
 			for (int i = 0; i < orchestratorsList.size(); i++) {
 				if (orchestratorsList.get(i).getType() != SimulationParameters.TYPES.CLOUD) {
 					distance = orchestratorsList.get(i).getMobilityManager().distanceTo(task.getEdgeDevice());

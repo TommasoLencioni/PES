@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  27 JUL 2021 17:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  28 JUL 2021 17:31
 entering extended mode
-**"./Leader election and offload.tex"
-("Leader election and offload.tex"
+**"./Leader election.tex"
+("Leader election.tex"
 LaTeX2e <2020-10-01> patch level 4
 L3 programming layer <2021-01-09> xparse <2020-03-03>
 (C:\Users\lenci\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
@@ -200,8 +200,8 @@ tex.def
 File: l3backend-pdftex.def 2021-01-09 L3 backend support: PDF output (pdfTeX)
 \l__kernel_color_stack_int=\count197
 \l__pdf_internal_box=\box49
-) ("Leader election and offload.aux")
-\openout1 = `"Leader election and offload.aux"'.
+) ("Leader election.aux")
+\openout1 = `"Leader election.aux"'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
 LaTeX Font Info:    ... okay on input line 24.
@@ -265,34 +265,32 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 24.
 LaTeX Info: Redefining \pageref on input line 24.
 LaTeX Info: Redefining \nameref on input line 24.
- ("Leader election and offload.out")
-("Leader election and offload.out")
+ ("Leader election.out") ("Leader election.out")
 \@outlinefile=\write3
-\openout3 = `"Leader election and offload.out"'.
+\openout3 = `"Leader election.out"'.
 
  [1
 
-{C:/Users/lenci/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] ("Leader el
-ection and offload.aux")
-Package rerunfilecheck Info: File `"Leader election and offload".out' has not c
-hanged.
+{C:/Users/lenci/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3] ("Leade
+r election.aux")
+Package rerunfilecheck Info: File `"Leader election".out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 5282 strings out of 479618
- 84602 string characters out of 2865026
- 385455 words of memory out of 3000000
- 22378 multiletter control sequences out of 15000+200000
- 404978 words of font info for 32 fonts, out of 3000000 for 9000
+ 5291 strings out of 479618
+ 84483 string characters out of 2865026
+ 384395 words of memory out of 3000000
+ 22379 multiletter control sequences out of 15000+200000
+ 405583 words of font info for 34 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 71i,5n,74p,277b,449s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 71i,6n,74p,268b,442s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\lenci\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
 1200.pk><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
 ts/cm/cmbx12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/type1/publ
 ic/amsfonts/cm/cmr12.pfb>
-Output written on "Leader election and offload.pdf" (2 pages, 32116 bytes).
+Output written on "Leader election.pdf" (3 pages, 37815 bytes).
 PDF statistics:
- 31 PDF objects out of 1000 (max. 8388607)
- 5 named destinations out of 1000 (max. 500000)
+ 44 PDF objects out of 1000 (max. 8388607)
+ 13 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

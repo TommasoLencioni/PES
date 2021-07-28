@@ -169,7 +169,7 @@ public class MainApplication extends MainApplicationAbstract{
 					System.out.println(el.getType());
 					if (((LeaderEdgeDevice) el).getLeader()==null){
 						System.out.println("Leader di:");
-						for (DataCenter sub: ((LeaderEdgeDevice) el).subjected){
+						for (DataCenter sub: ((LeaderEdgeDevice) el).subordinate){
 							System.out.println(sub.getName());
 						}
 					}

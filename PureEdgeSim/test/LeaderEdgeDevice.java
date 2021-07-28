@@ -33,18 +33,18 @@ import java.util.List;
 
 public class LeaderEdgeDevice extends DefaultDataCenter {
 	private static final int LEADER_ELECTION = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
-	private double weight = 0;
-	private LeaderEdgeDevice parent;
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
-	public List<LeaderEdgeDevice> subjected;
+	protected boolean isLeader;
+	public List<LeaderEdgeDevice> subordinate;
 	public List<LeaderEdgeDevice> cluster;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
 		super(simulationManager, hostList, vmList);
-		subjected = new ArrayList<LeaderEdgeDevice>();
+		subordinate = new ArrayList<LeaderEdgeDevice>();
 		leader=null;
+		isLeader=false;
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
@@ -109,7 +109,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			simulationManager.getServersManager().getOrchestratorsList().remove(this);
 			//System.err.println(simulationManager.getServersManager().getOrchestratorsList().size());
 			//set the new orchestrator as the parent node ( a tree-like topology)
-			parent = newOrchestrator;
+			//parent = newOrchestrator;
 			// this device is no more an orchestrator so set it to false
 			this.setAsOrchestrator(false);
 			
@@ -120,7 +120,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
         // configure the new orchestrator (it can be another device, or this device)
 		newOrchestrator.setAsOrchestrator(true);
 		newOrchestrator.Orchestrator = newOrchestrator;
-		newOrchestrator.parent = null;
+		//newOrchestrator.parent = null;
 		//in case the cluster doesn't has the orchestrator as member
 		if (!newOrchestrator.cluster.contains(newOrchestrator))
 			newOrchestrator.cluster.add(newOrchestrator);
@@ -146,9 +146,11 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
 				&& (getDistance(this, candidate)<= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
 				//here debug
-				System.out.println(this.getName() + " " + this.getResources().getTotalMips() +
-						" " + candidate.getName() + " " + candidate.getResources().getTotalMips());
+				//System.out.println(this.getName() + " " + this.getResources().getTotalMips() +
+				//		" " + candidate.getName() + " " + candidate.getResources().getTotalMips());
 				//Condition for choosing a leader
+
+				//The election's criterion can be customized
 				if (this.getResources().getTotalMips()<candidate.getResources().getTotalMips()
 					&& max_MIPS <candidate.getResources().getTotalMips()){
 					max_MIPS =candidate.getResources().getTotalMips();
@@ -156,19 +158,24 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				}
 			}
 		}
+		//If I'm not the leader
 		if (leader!= null) {
 			//debug
 			System.out.println("Il mio leader e' " + leader.getId());
-
 			//necessary
-			this.setAsOrchestrator(false);
-			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
-			leader.subjected.add(this);
+			//this.setAsOrchestrator(false);
+			//this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
+			//this.setAsOrchestrator(true);
+			leader.subordinate.add(this);
 			///
 		}
-		else{
-			System.out.println("I miei sottoposti sono:"+ subjected.size());
-			for (DataCenter el: subjected){
+		//If I'm the leader
+		else if (this.getType()==SimulationParameters.TYPES.EDGE_DATACENTER){
+			isLeader=true;
+			this.setAsOrchestrator(false);
+			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
+			System.out.println("I miei sottoposti sono:"+ subordinate.size());
+			for (DataCenter el: subordinate){
 				System.out.println(el.getName());
 			}
 		}

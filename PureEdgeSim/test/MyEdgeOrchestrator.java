@@ -63,7 +63,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 				simulationManager.getSimulation().terminate();
 			}
 			String[] edge_first = { "Edge" };
-			return myAlgorithm(edge_first, task);
+			return leader(edge_first, task);
 		}
 		else if ("INCREASE_LIFETIME".equals(algorithm)) {
 			return increseLifetime(architecture, task);
@@ -82,7 +82,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		int vm = -1;
 		// get best vm for this task
 		//my questo algoritmo controlla se l'offload e' possibile su edge e se non riesce prova su cloud
-		// TODO da implementare lo scorre delle VM dei devices subjected (vedere come si carica vmList e orcjestrationHistory)
+		// TODO da implementare lo scorre delle VM dei devices subordinate (vedere come si carica vmList e orcjestrationHistory)
 		for (int i = 0; i < orchestrationHistory.size(); i++) {
 			if (offloadingIsPossible(task, vmList.get(i), architecture)
 					&& task.getLength()/vmList.get(i).getMips()<task.getMaxLatency()
@@ -104,51 +104,74 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		return vm;
 	}
 
+	/***
+		Get best vm for this task
+		This algorith checks whether the offload is possible on the orchestrator
+	 		else tries on the orchestrator's leader
+	 		else tries on the leader's subordinate
+	 		else tries on the Cloud with the increseLifetime
+	 		else it fails
+	 */
 	private int leader(String[] architecture, Task task) {
 		int vm = -1;
-		// get best vm for this task
-		//my questo algoritmo controlla se l'offload e' possibile sull'orchestrator
-		// se non riesce prova sul leader
-		//	se non riesce nemmeno lui prova su un sottoposto del leader
-		//	se non riesce nemmeno sui sottoposti prova su Cloud
-		//	se non riesce nemmeno sul cloud fallisce
-		// TODO da implementare lo scorre delle VM dei devices subjected (vedere come si carica vmList e orcjestrationHistory)
-		//for (int i = 0; i < orchestrationHistory.size(); i++) {
+
+		//Cycle through all the orchestrator hosts and VMs
 		for (Host host_el: task.getOrchestrator().getHostList()) {
 			for (Vm vm_el : host_el.getVmList()){
 				if (offloadingIsPossible(task, vm_el, architecture)
-						&& task.getLength()/vm_el.getMips()<task.getMaxLatency()){
+						//custom conditions can be set here
+						&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/1000
+
+					){
 					vm = vmList.indexOf(vm_el);
+					System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
 				}
 			}
 		}
 
-		//Se non sono riuscito a trovare una VM sull'orchestratore allora la cerco sul leader
+		//If the task can't be offloaded on the leader then tries on all the subordinate of it
+		//Cycle through all the orchestrator's leader's hosts and VMs
 		LeaderEdgeDevice leader=null;
 		if (vm<0 && task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)) {
 			leader = ((LeaderEdgeDevice) task.getOrchestrator()).getLeader();
+			System.err.println("Il leader di "+ task.getOrchestrator().getName() + "e' "+ leader.getName());
 			if (leader!=null){
-				for (Host host_el: task.getOrchestrator().getHostList()) {
+				for (Host host_el: leader.getHostList()) {
 					for (Vm vm_el : host_el.getVmList()){
 						if (offloadingIsPossible(task, vm_el, architecture)
-								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()){
+								//custom conditions can be set here
+								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()
+
+								){
 							vm = vmList.indexOf(vm_el);
+							System.err.println("Offload su leader " + vm_el.getHost().getDatacenter().getName());
 						}
 					}
 				}
 			}
 		}
 
-		//todo check situations and edge cases
+		//If the task can't be offloaded on the leader then tries on all the subordinate of it
+		//Cycle through all the subordinates's hosts and VMs
 		if (vm<0 && leader!=null) {
-			List<LeaderEdgeDevice>  subjected = leader.subjected;
-			if (!subjected.isEmpty()){
-				for (LeaderEdgeDevice sub: subjected) {
-					for (Host host_el : sub.getHostList()) {
-						for (Vm vm_el : host_el.getVmList()) {
-							if (offloadingIsPossible(task, vm_el, architecture)
-									&& task.getLength() / vm_el.getMips() < task.getMaxLatency()) {
-								vm = vmList.indexOf(vm_el);
+			System.err.println("Provo l'offload su subordinate");
+			List<LeaderEdgeDevice>  subordinate = leader.subordinate;
+			if (!subordinate.isEmpty()){
+				for (LeaderEdgeDevice sub: subordinate) {
+					//Avoid checking again on the orchestrator
+					if (sub != task.getOrchestrator()) {
+						for (Host host_el : sub.getHostList()) {
+							for (Vm vm_el : host_el.getVmList()) {
+								if (offloadingIsPossible(task, vm_el, architecture)
+										//custom conditions can be set here
+										&& task.getLength() / vm_el.getMips() < task.getMaxLatency() / 1000
+
+								) {
+									vm = vmList.indexOf(vm_el);
+									System.err.println("Offload su subordinate" + vm_el.getHost().getDatacenter().getName());
+								} else {
+									System.err.println("Offload su subordinate non possibile");
+								}
 							}
 						}
 					}
@@ -156,9 +179,10 @@ public class MyEdgeOrchestrator extends Orchestrator {
 			}
 		}
 
+		//If the task can't be offloaded on subordinates then it tries on Cloud with INCREASE_LIFETIME algorithm
 		if (vm<0) {
 			String[] Architecture = { "Cloud" };
-			//System.out.println("Ho fatto l'offload su Cloud");
+			System.out.println("Ho fatto l'offload su Cloud");
 			return increseLifetime(Architecture, task);
 		}
 
