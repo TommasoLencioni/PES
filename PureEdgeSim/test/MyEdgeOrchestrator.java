@@ -29,9 +29,6 @@ import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MyEdgeOrchestrator extends Orchestrator {
@@ -82,7 +79,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		int vm = -1;
 		// get best vm for this task
 		//my questo algoritmo controlla se l'offload e' possibile su edge e se non riesce prova su cloud
-		// TODO da implementare lo scorre delle VM dei devices subordinate (vedere come si carica vmList e orcjestrationHistory)
+		// TODO da implementare lo scorre delle VM dei devices subordinates (vedere come si carica vmList e orcjestrationHistory)
 		for (int i = 0; i < orchestrationHistory.size(); i++) {
 			if (offloadingIsPossible(task, vmList.get(i), architecture)
 					&& task.getLength()/vmList.get(i).getMips()<task.getMaxLatency()
@@ -108,7 +105,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		Get best vm for this task
 		This algorith checks whether the offload is possible on the orchestrator
 	 		else tries on the orchestrator's leader
-	 		else tries on the leader's subordinate
+	 		else tries on the leader's subordinates
 	 		else tries on the Cloud with the increseLifetime
 	 		else it fails
 	 */
@@ -120,7 +117,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 			for (Vm vm_el : host_el.getVmList()){
 				if (offloadingIsPossible(task, vm_el, architecture)
 						//custom conditions can be set here
-						&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/1000
+						&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/10000
 
 					){
 					vm = vmList.indexOf(vm_el);
@@ -129,18 +126,17 @@ public class MyEdgeOrchestrator extends Orchestrator {
 			}
 		}
 
-		//If the task can't be offloaded on the leader then tries on all the subordinate of it
+		//If the task can't be offloaded on the leader then tries on all the subordinates of it
 		//Cycle through all the orchestrator's leader's hosts and VMs
 		LeaderEdgeDevice leader=null;
 		if (vm<0 && task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)) {
 			leader = ((LeaderEdgeDevice) task.getOrchestrator()).getLeader();
-			System.err.println("Il leader di "+ task.getOrchestrator().getName() + "e' "+ leader.getName());
 			if (leader!=null){
 				for (Host host_el: leader.getHostList()) {
 					for (Vm vm_el : host_el.getVmList()){
 						if (offloadingIsPossible(task, vm_el, architecture)
 								//custom conditions can be set here
-								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()
+								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/1000
 
 								){
 							vm = vmList.indexOf(vm_el);
@@ -151,11 +147,10 @@ public class MyEdgeOrchestrator extends Orchestrator {
 			}
 		}
 
-		//If the task can't be offloaded on the leader then tries on all the subordinate of it
+		//If the task can't be offloaded on the leader then tries on all the subordinates of it
 		//Cycle through all the subordinates's hosts and VMs
 		if (vm<0 && leader!=null) {
-			System.err.println("Provo l'offload su subordinate");
-			List<LeaderEdgeDevice>  subordinate = leader.subordinate;
+			List<LeaderEdgeDevice>  subordinate = leader.subordinates;
 			if (!subordinate.isEmpty()){
 				for (LeaderEdgeDevice sub: subordinate) {
 					//Avoid checking again on the orchestrator
@@ -164,13 +159,11 @@ public class MyEdgeOrchestrator extends Orchestrator {
 							for (Vm vm_el : host_el.getVmList()) {
 								if (offloadingIsPossible(task, vm_el, architecture)
 										//custom conditions can be set here
-										&& task.getLength() / vm_el.getMips() < task.getMaxLatency() / 1000
+										&& task.getLength() / vm_el.getMips() < task.getMaxLatency() / 100
 
 								) {
 									vm = vmList.indexOf(vm_el);
-									System.err.println("Offload su subordinate" + vm_el.getHost().getDatacenter().getName());
-								} else {
-									System.err.println("Offload su subordinate non possibile");
+									System.err.println("Offload su subordinates" + vm_el.getHost().getDatacenter().getName());
 								}
 							}
 						}

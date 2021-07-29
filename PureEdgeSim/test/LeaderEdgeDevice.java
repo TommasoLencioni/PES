@@ -36,13 +36,13 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
 	protected boolean isLeader;
-	public List<LeaderEdgeDevice> subordinate;
+	public List<LeaderEdgeDevice> subordinates;
 	public List<LeaderEdgeDevice> cluster;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
 		super(simulationManager, hostList, vmList);
-		subordinate = new ArrayList<LeaderEdgeDevice>();
+		subordinates = new ArrayList<LeaderEdgeDevice>();
 		leader=null;
 		isLeader=false;
 	}
@@ -166,7 +166,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			//this.setAsOrchestrator(false);
 			//this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
 			//this.setAsOrchestrator(true);
-			leader.subordinate.add(this);
+			leader.subordinates.add(this);
 			///
 		}
 		//If I'm the leader
@@ -174,8 +174,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			isLeader=true;
 			this.setAsOrchestrator(false);
 			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
-			System.out.println("I miei sottoposti sono:"+ subordinate.size());
-			for (DataCenter el: subordinate){
+			System.out.println("I miei sottoposti (per ora) sono:"+ subordinates.size());
+			for (DataCenter el: subordinates){
 				System.out.println(el.getName());
 			}
 		}

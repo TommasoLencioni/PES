@@ -26,23 +26,25 @@
 \section*{Idea}
 \begin{itemize}
 	\item An edge data center should be able to elect a leader among the other edge data centers in reach (if they meet some arbitrary conditions).
-	\item In my implementation a leader can't be an orchestrator. This can be easily changed.
 	\item A leader (that can have a leader as well) can execute tasks on its VM or offload them to its subordinates.
 	\item As last chance the task is offloaded on the Cloud.
 \end{itemize}
 
 \section*{Implementation}
+In my implementation a leader can't be an orchestrator. This can be easily changed.
 \subsection*{LeaderEdgeDevice class}
-I started by creating a custom class (LeaderEdgeDevice) that extends DefaultDataCenter using the proposed ClusterEdgeDevice as a base.
+I started by creating a custom class (\textit{LeaderEdgeDevice}) that extends DefaultDataCenter using the proposed ClusterEdgeDevice as a base.
 
-In startInternal a task with tag LEADER\_ELECTION is scheduled with INITIALIZATION\_TIME + 1 delay.
+In \textbf{startInternal} a task with tag LEADER\_ELECTION is scheduled with INITIALIZATION\_TIME + 1 delay.
 
 In process event the custom tag is caught.
 
 There is a check for:
  	\begin{itemize}
  		\item the device being an edge data center,
- 		\item the device being an orchestrator. This allows data centers not flagged as orchestrators to not have a leader (although possibly being elected as such by other data centers, even that case is easily fixable).
+ 		\item the device being an orchestrator.
+ 		
+ 		This allows data centers not flagged as orchestrators to not have a leader (although possibly being elected as such by other data centers, even that case is easily fixable).
  		\item "LEADER" is the orchestration method,
   	\end{itemize}
 
@@ -87,6 +89,7 @@ If the previous steps should result in no VM selected a try is done with the alg
 The condition based on which every level is scanned in search for a VM is completely arbitrary.
 
 \section*{Limitations}
+
 \subsection*{Chaining}
 A case of chaining can occur when the data center A has B as leader but B in turn has C as leader.
 
@@ -94,5 +97,28 @@ Both A and B are orchestrator so they can both receive tasks.
 
 During findVM, if a task has A as orchestrator, the task can only be offloaded to B, its subordinates (excluding A) and the Cloud.
 
-This doesn't allow B to offload the original task to C, in fact B act only as leader in this scenario.
+This doesn't allow B to offload the original task to C. In fact B act only as a leader in this scenario.
+
+\subsubsection*{Recursion}
+A particular case of the situation above is when A = C.
+
+This is not a problem and follow the limitation described above.
+
+
+\subsection*{Isolation}
+If an edge data center is isolated in such manner that it doesn't have both leader and subordinates it became useless.
+
+Not having a leader elect it as such but it has no subordinates so it won't receive tasks due to the fact that is removed from the orchestrators list.
+
+\subsection*{Parity}
+In case of condition parity between data centers every device will act as leader, thus not being an orchestrator neither having subordinates.
+
+This could lead to an empty orchestrators list.
+
+\subsection*{Rejection}
+A datacenter can't reject to be elected as leader. 
+
+This will force it to execute a task of its self proclaimed subordinates.
+
+This behavior is easily fixable by placing a check for the value of a custom setting flag "consent" before electing.
 \end{document}
