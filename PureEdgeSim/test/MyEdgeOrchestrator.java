@@ -103,7 +103,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 
 	/***
 		Get best vm for this task
-		This algorith checks whether the offload is possible on the orchestrator
+		This algorith checks whether offload is possible on the orchestrator
 	 		else tries on the orchestrator's leader
 	 		else tries on the leader's subordinates
 	 		else tries on the Cloud with the increseLifetime
@@ -126,7 +126,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 			}
 		}
 
-		//If the task can't be offloaded on the leader then tries on all the subordinates of it
+		//If the task can't be offloaded on the orchestrator then tries on the leader
 		//Cycle through all the orchestrator's leader's hosts and VMs
 		LeaderEdgeDevice leader=null;
 		if (vm<0 && task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)) {
@@ -159,7 +159,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 							for (Vm vm_el : host_el.getVmList()) {
 								if (offloadingIsPossible(task, vm_el, architecture)
 										//custom conditions can be set here
-										&& task.getLength() / vm_el.getMips() < task.getMaxLatency() / 100
+										&& task.getLength() / vm_el.getMips() < task.getMaxLatency()
 
 								) {
 									vm = vmList.indexOf(vm_el);

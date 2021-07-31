@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  29 JUL 2021 17:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  31 JUL 2021 09:21
 entering extended mode
 **"./Leader election.tex"
 ("Leader election.tex"
@@ -269,29 +269,34 @@ LaTeX Info: Redefining \nameref on input line 24.
 \@outlinefile=\write3
 \openout3 = `"Leader election.out"'.
 
- [1
 
-{C:/Users/lenci/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3] ("Leade
-r election.aux")
+Underfull \hbox (badness 10000) in paragraph at lines 36--40
+
+ []
+
+[1
+
+{C:/Users/lenci/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2] [3]
+[4] ("Leader election.aux")
 Package rerunfilecheck Info: File `"Leader election".out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 5297 strings out of 479618
- 84473 string characters out of 2865026
+ 5299 strings out of 479618
+ 84490 string characters out of 2865026
  383395 words of memory out of 3000000
  22380 multiletter control sequences out of 15000+200000
  405930 words of font info for 35 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 71i,6n,74p,268b,432s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 71i,5n,74p,268b,438s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\lenci\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
 1200.pk><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
 ts/cm/cmbx12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/type1/publ
 ic/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/ty
 pe1/public/amsfonts/cm/cmti12.pfb>
-Output written on "Leader election.pdf" (3 pages, 50277 bytes).
+Output written on "Leader election.pdf" (4 pages, 52311 bytes).
 PDF statistics:
- 52 PDF objects out of 1000 (max. 8388607)
- 17 named destinations out of 1000 (max. 500000)
+ 58 PDF objects out of 1000 (max. 8388607)
+ 19 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

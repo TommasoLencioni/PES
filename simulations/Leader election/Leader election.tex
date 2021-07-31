@@ -31,7 +31,15 @@
 \end{itemize}
 
 \section*{Implementation}
-In my implementation a leader can't be an orchestrator. This can be easily changed.
+In my implementation a leader can't be an orchestrator.
+
+This can be easily changed.
+\\
+\\
+At the moment the leader election is done once at the start of the simulation because the conditions on which a device is elected are statics.
+
+This can be changed rescheduling the election with a delay.
+
 \subsection*{LeaderEdgeDevice class}
 I started by creating a custom class (\textit{LeaderEdgeDevice}) that extends DefaultDataCenter using the proposed ClusterEdgeDevice as a base.
 
@@ -81,14 +89,14 @@ Here this order of seek for a suitable VM is followed:
 \begin{enumerate}
 	\item Among the hosts of the orchestrator.
 	\item Among the hosts of the leader of the orchestrator (there should not be a situation where the orchestrator has no leader and is chosen for the previous step so the presence of a leader should be certain at this phase).
-	\item Among the hosts of the leader's subordinates.
+	\item Among the hosts of the leader's subordinates (excluding the original orchestrator).
 \end{enumerate}
 
 If the previous steps should result in no VM selected a try is done with the algorithm INCREASE\_LIFETIME (could have been anything else) on the Cloud.
 
 The condition based on which every level is scanned in search for a VM is completely arbitrary.
 
-\section*{Limitations}
+\section*{Particular cases}
 
 \subsection*{Chaining}
 A case of chaining can occur when the data center A has B as leader but B in turn has C as leader.
@@ -98,7 +106,6 @@ Both A and B are orchestrator so they can both receive tasks.
 During findVM, if a task has A as orchestrator, the task can only be offloaded to B, its subordinates (excluding A) and the Cloud.
 
 This doesn't allow B to offload the original task to C. In fact B act only as a leader in this scenario.
-
 \subsubsection*{Recursion}
 A particular case of the situation above is when A = C.
 
@@ -121,4 +128,16 @@ A datacenter can't reject to be elected as leader.
 This will force it to execute a task of its self proclaimed subordinates.
 
 This behavior is easily fixable by placing a check for the value of a custom setting flag "consent" before electing.
+
+\section*{Limitations}
+My actual implementation take as granted the omniscience of the edge data center in regards of its leader and its subordinates.
+
+This is not realistic because the method findVM could discover a VM not owned by the orchestrator.
+
+To simulate this behaviour a custom event could be scheduled to the leader/subordinates simulating the forward of the request.
+
+Due to PES managing orchestration in a stateless way this is possible but only at the cost of invalidating the results of the simulation.
+
+In fact findVM would result in a failure at the eyes of SimulationManager but, in reality, a new schedule for the task is yet to be done following the steps: leader, subordinates and cloud.
+
 \end{document}
