@@ -36,6 +36,7 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters.TYPES;
 import com.mechalikh.pureedgesim.simulationvisualizer.SimulationVisualizer;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import test.LeaderEdgeDevice;
+import test.MyEdgeOrchestrator;
 
 public class SimulationManager extends SimulationManagerAbstract {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
@@ -225,14 +226,52 @@ public class SimulationManager extends SimulationManagerAbstract {
 		if (taskFailed(task, 1))
 			return;
 
+		//HERE This is the original section
+		// The limitation in the simulator forces to modify a non-customizable class such as SimulationManager
+
 		// Find the best VM for executing the task
-		edgeOrchestrator.initialize(task);
+		//edgeOrchestrator.initialize(task);
+
+		//
+
+		//HERE This is the custom section
+
+
+
+		//here Encode the result from the class MyEdgeOrchestrator in a number smaller than 0
+		//	-1	->	no VM found
+		//	-2	->	the task must be scheduled to the leader
+		//	-3	->	the task must be scheduled to a subjected
+		//	-4	-> 	the task must be scheduled to the cloud
+
+		// Find the best VM for executing the task
+		int foundVM = ((MyEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
+		switch (foundVM) {
+			case -1:
+				System.out.println("Non ho trovato una VM");
+				break;
+
+			case -2:
+				System.out.println("Schedulo il task al leader");
+				scheduleNow(this, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+				break;
+
+			case -3:
+				System.out.println("Schedulo il task al cloud con delay");
+				schedule(this, SimulationParameters.WAN_PROPAGATION_DELAY,
+						SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+
+		}
+
+		//here END of my custom section
 
 		// Stop in case no resource was available for this task, the offloading is
 		// failed
 		if (task.getVm() == Vm.NULL) {
-			simLog.incrementTasksFailedLackOfRessources(task);
-			tasksCount++;
+			if(foundVM == -1) {
+				simLog.incrementTasksFailedLackOfRessources(task);
+				tasksCount++;
+			}
 			return;
 		} else {
 			simLog.taskSentFromOrchToDest(task);

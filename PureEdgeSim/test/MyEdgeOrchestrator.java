@@ -38,6 +38,10 @@ public class MyEdgeOrchestrator extends Orchestrator {
 	}
 
 	protected int findVM(String[] architecture, Task task) {
+		return 0;
+	}
+
+	protected int my_findVM(String[] architecture, Task task) {
 		if ("MY_ALGORITHM".equals(algorithm)) {
 			if (!arrayContains(architecture, "Cloud") && arrayContains(architecture, "Edge")) {
 				SimLog.println("");
@@ -111,7 +115,100 @@ public class MyEdgeOrchestrator extends Orchestrator {
 	 */
 	private int leader(String[] architecture, Task task) {
 		int vm = -1;
+		int phase = -1;
+		System.out.println("Task : " + task.getId() + ", orchestratore e' " + task.getOrchestrator().getType());
 
+		//I cannot get information about the history of the task so I discern the phases according to the
+		//	type of the orchestrator
+		if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)){
+			if (((LeaderEdgeDevice) task.getOrchestrator()).isLeader){
+				phase=1;
+			}
+			else phase=0;
+		}
+		else if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) phase=2;
+
+		//According to the phase of leadering different host are evaluated
+		switch (phase){
+			case 0:
+				//Cycle through all the orchestrator hosts and VMs
+				for (Host host_el: task.getOrchestrator().getHostList()) {
+					for (Vm vm_el : host_el.getVmList()){
+						if (offloadingIsPossible(task, vm_el, architecture)
+								//custom conditions can be set here
+								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/10000
+
+						){
+							vm = vmList.indexOf(vm_el);
+							System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
+						}
+					}
+				}
+				//If I didn't find a VM and the orchestrator has a leader the new orchestrator became this leader
+				if (vm < 0 && ((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null){
+					task.setOrchestrator(((LeaderEdgeDevice) task.getOrchestrator()).getLeader());
+					vm=-2;
+				}
+				break;
+
+			case 1:
+				//Cycle through all the orchestrator's leader's hosts and VMs
+				for (Host host_el: task.getOrchestrator().getHostList()) {
+					for (Vm vm_el : host_el.getVmList()){
+						if (offloadingIsPossible(task, vm_el, architecture)
+								//custom conditions can be set here
+								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/10000
+
+						){
+							vm = vmList.indexOf(vm_el);
+							System.err.println("Offload su leader " + vm_el.getHost().getDatacenter().getName());
+						}
+					}
+				}
+				// If I don't find a suitable VM in the leader I search in every subordinate
+				// I assume to have an omniscent leader
+				if (vm < 0){
+					List<LeaderEdgeDevice>  subordinate = ((LeaderEdgeDevice) task.getOrchestrator()).subordinates;
+					if (!subordinate.isEmpty()){
+						for (LeaderEdgeDevice sub: subordinate) {
+							//Avoid checking again on the orchestrator
+							//	I can no longer do this check
+							//if (sub != task.getOrchestrator()) {
+								for (Host host_el : sub.getHostList()) {
+									for (Vm vm_el : host_el.getVmList()) {
+										if (offloadingIsPossible(task, vm_el, architecture)
+												//custom conditions can be set here
+												&& task.getLength() / vm_el.getMips() < task.getMaxLatency()/10000
+
+										) {
+											vm = vmList.indexOf(vm_el);
+											System.err.println("Offload su subordinates" + vm_el.getHost().getDatacenter().getName());
+										}
+									}
+								}
+							//}
+						}
+					}
+					if (vm < 0){
+						vm = -3;
+						//I assume that only one Cloud Data Center is orchestrator
+						for (DataCenter dc : this.simulationManager.getServersManager().getOrchestratorsList()) {
+							if (dc.getType().equals(SimulationParameters.TYPES.CLOUD) && dc.isOrchestrator()) {
+								task.setOrchestrator(dc);
+							}
+						}
+					}
+				}
+				break;
+
+			case 2:
+				String[] Architecture = { "Cloud" };
+				System.out.println("Offload su Cloud");
+				vm = increseLifetime(Architecture, task);
+		}
+
+		return vm;
+		/*
 		//Cycle through all the orchestrator hosts and VMs
 		for (Host host_el: task.getOrchestrator().getHostList()) {
 			for (Vm vm_el : host_el.getVmList()){
@@ -119,7 +216,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 						//custom conditions can be set here
 						&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/10000
 
-					){
+				){
 					vm = vmList.indexOf(vm_el);
 					System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
 				}
@@ -181,6 +278,8 @@ public class MyEdgeOrchestrator extends Orchestrator {
 
 		// assign the tasks to the found vm
 		return vm;
+
+		 */
 	}
 
 	protected int increseLifetime(String[] architecture, Task task) {
@@ -240,4 +339,106 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		//Do something when the execution results are returned
 	}
 
+	//I modified the original initialize method with the introduction of the "phase" argument in order to dinstinguish
+	//	between steps of the leader algorithm
+	public int my_initialize(Task task) {
+		int vmfound=-1;
+		if ("CLOUD_ONLY".equals(architecture)) {
+			vmfound=cloudOnly(task);
+		} else if ("MIST_ONLY".equals(architecture)) {
+			vmfound=mistOnly(task);
+		} else if ("EDGE_AND_CLOUD".equals(architecture)) {
+			vmfound=edgeAndCloud(task);
+		} else if ("ALL".equals(architecture)) {
+			vmfound=all(task);
+		} else if ("EDGE_ONLY".equals(architecture)) {
+			vmfound=edgeOnly(task);
+		} else if ("MIST_AND_CLOUD".equals(architecture)) {
+			vmfound=mistAndCloud(task);
+		}
+		else {
+			System.err.println("Architecture not recognized, please specify orchestration_architectures in simulation_parameters.properties");
+			System.exit(-1);
+		}
+
+		return vmfound;
+	}
+
+	// If the orchestration scenario is MIST_ONLY send Tasks only to edge devices
+	private int mistOnly(Task task) {
+		String[] Architecture = { "Mist" };
+		int vmfound=-1;
+		vmfound=findVM(Architecture, task);
+		if (vmfound<0){
+			return -1;
+		}
+		assignTaskToVm(vmfound, task);
+		return vmfound;
+	}
+
+	// If the orchestration scenario is ClOUD_ONLY send Tasks (cloudlets) only to
+	// cloud virtual machines (vms)
+	private int cloudOnly(Task task) {
+		String[] Architecture = { "Cloud" };
+		int vmfound;
+		vmfound=findVM(Architecture, task);
+		if (vmfound<0){
+			return -1;
+		}
+		assignTaskToVm(vmfound, task);
+		return vmfound;
+	}
+
+	// If the orchestration scenario is EDGE_AND_CLOUD send Tasks only to edge data
+	// centers or cloud virtual machines (vms)
+	private int edgeAndCloud(Task task) {
+		String[] Architecture = { "Cloud", "Edge" };
+		SimLog.println("Sto usando il mio");
+		int vmfound;
+		vmfound=my_findVM(Architecture, task);
+		if (vmfound>=0){
+			assignTaskToVm(vmfound, task);
+		}
+		return vmfound;
+
+	}
+
+	// If the orchestration scenario is MIST_AND_CLOUD send Tasks only to edge
+	// devices or cloud virtual machines (vms)
+	private int mistAndCloud(Task task) {
+		String[] Architecture = { "Cloud", "Mist" };
+		int vmfound;
+		vmfound=findVM(Architecture, task);
+		if (vmfound<0){
+			return -1;
+		}
+		assignTaskToVm(vmfound, task);
+		return vmfound;
+	}
+
+	// If the orchestration scenario is EDGE_ONLY send Tasks only to edge data
+	// centers
+	private int edgeOnly(Task task) {
+		String[] Architecture = { "Edge" };
+		int vmfound;
+		vmfound=findVM(Architecture, task);
+		if (vmfound<0){
+			return -1;
+		}
+		assignTaskToVm(vmfound, task);
+		return vmfound;
+	}
+
+	// If the orchestration scenario is ALL send Tasks to any virtual machine (vm)
+	// or device
+	private int all(Task task) {
+		String[] Architecture = { "Cloud", "Edge", "Mist" };
+		int vmfound;
+		vmfound=findVM(Architecture, task);
+		if (vmfound<0){
+			return -1;
+		}
+		assignTaskToVm(vmfound, task);
+		return vmfound;
+	}
 }
