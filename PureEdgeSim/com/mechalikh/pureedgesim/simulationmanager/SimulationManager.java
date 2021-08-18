@@ -241,8 +241,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 		//here Encode the result from the class MyEdgeOrchestrator in a number smaller than 0
 		//	-1	->	no VM found
 		//	-2	->	the task must be scheduled to the leader
-		//	-3	->	the task must be scheduled to a subjected
-		//	-4	-> 	the task must be scheduled to the cloud
+		//	-3	->	the task must be scheduled to the cloud
 
 		// Find the best VM for executing the task
 		int foundVM = ((MyEdgeOrchestrator)edgeOrchestrator).my_initialize(task);

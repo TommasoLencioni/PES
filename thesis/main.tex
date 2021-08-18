@@ -35,7 +35,7 @@ sorting=ynt
 Orchestration and collocation of application for autonomous drive}
 \author{Candidato: Tommaso Lencioni\\
 Relatori: Prof. Patrizio Dazzi, Prof. Antonio Brogi}
-\date{Anno Accademico: 2020/2021}
+\date{Anno Accademico: 2021/2022}
 
 
 \begin{document}
@@ -44,25 +44,86 @@ Relatori: Prof. Patrizio Dazzi, Prof. Antonio Brogi}
 
 \tableofcontents{}
 
-\chapter{Introduction to the problem}
-\section{Application allocation}
+\pagebreak
 
-\chapter{State of the art}
+\paragraph*{Abstract}
+This thesis tries to...
+
+
+\part*{Introduction}
+\chapter{Introduction to application allocation problem}
+The growing interest in the cloud computing paradigm and its application in the automotive led research community to invest in this area (also with european project like \href{https://www.teaching-h2020.eu}{H2020 TEACHING}).
+
+In this case particular attention is put on the creation of a distributed edge-oriented environment that integrates heterogeneous resources like edge devices, specialized on-site nodes and cloud.
+
 \section{Cloud Brokering}
+The cloud brokering
+\section{State of the art}
+The state of the art
+
+\chapter{Scenario}
+The scenario considered in this thesis is an intelligent vehicles environment. The way different components interact reflects and emulate a real world use.
+
+\section{Vehicles}
+The users (vehicles) are represented as edge devices with no computational power that generate tasks in an interval of time.\\
+They are mobile to simulate a realistic e behavior, this leads to strict delay and mobility requirements.
+
+\subsection{Applications}
+The proposed tasks are the following:
+\begin{enumerate}
+\item
+	\begin{verbatim}
+		SENSOR_DATA_COMMUNICATION
+	\end{verbatim}
+	Application that simulates the gathering and communication of data originated by vehicle's sensors.\\
+	We take for granted a preliminary elaboration and anonymization of the data collected by the car done in respect of the privacy limits established with the end user.
+	\item
+	\begin{verbatim}
+		ENTERTAINMENT
+	\end{verbatim}
+	Application that simulates the use of infotainment (music streaming, webradio, etc.)
+\end{enumerate}
+
+\section{Road site units}
+Road side unit are devices that lay on the border of the road (possibly integrated in traffic light/sign).
+
+Those data centers are simulated with edge data centers.
+
+They represent a first point of arrival of the task sent by the devices.
+
+The communication between the two happens through LAN and undergoes the limitation imposed by both edge devices's range and the edge data center's range.\\
+They have computational power and can act as orchestrator.
+
+This means that a device asks the data center to offload the task for it, extending in fact the range on which suitable computational power can be found at the expense of the introduction of some communication delay.\\
+They don't generate tasks and they are the core actor in my \nameref{leader algo}.
+
+\section{Cloud}
+The Cloud is present as last resort due to high delay introduced in the offload on it.
+It offer computational power and is reachable from every device through WAN without the physical limitation of the LAN.
 
 
-\chapter{Metodologies}
-\section{Application allocation}
-\section{Tools}
+\section{Thesis's goal}
+The goal of this thesis is to analyze how the previously described system can be simulated with a software and to propose an algorithm that makes the edge data centers follow a hierarchy model.
 
-\chapter{Thesis's goal}
-
+\part*{Metodology}
 \chapter{Pure Edge Sim}
+The tool used is \textbf{Pure Edge Simulator}.
+
+PES is a simulation framework for performance evaluation developed by a group of Tunisian researchers focused on cloud, fog, and pure edge computing environments.
+
+\section{Requirements}
+The project is in Java and I used an IDE for my whole work.
+
+This simplify the dependencies management but nullify the possibilities of scripting the tests.
+
 \section{Features and limitations}
-Pure Edge Sim (\textit{PES}) is a task oriented simulator. This trait is inherited from its parent tool (Cloud Sim).\\ Although this approach to simulations is suitable for testing task scheduling on Cloud and Edge, such decoupling represents a major barrier for the implementation of consequentials events involving more than one architecture layer.
+Pure Edge Sim (\textit{PES}) is a task oriented simulator.
+
+This trait is inherited from its parent tool (Cloud Sim).\\
+Although this approach to simulations is suitable for testing task scheduling on Cloud and Edge, such decoupling represents a major barrier for the implementation of consequentials events involving more than one architecture layer.
 An insight of the structure can be take in the paper proposed by the authors [LINK BIBLIOGRAFIA].
 
-\section{Start a simulation}
+\section{Starting a simulation}
 Starting from main in MainApplication the method launchSimulation is called.\\
 Configuration files are parsed.\\
 Scenarios (combinations of parameters) are loaded into Iterations.
@@ -188,4 +249,127 @@ The corresponding case is caught and the method sendResultFromOrchToDev is calle
 Upon finishing the transfer the last else is caught and the method \mbox{resultsReturnedToDevice} is called. This schedules immediately the task for the Simulation Model with tag RESULT\_RETURN\_FINISHED.
 \\
 In Simulation Model the corresponding case i caught. A failure check is done, then a customizable method of the simulation orchestrator is called (resultsReturned) and the number of task is increased.
+
+\section{Leader Algorithm}
+\label{leader algo}
+\subsection*{Idea}
+An edge data center should be able to elect a leader among the other edge data centers in reach (if they meet some arbitrary conditions).
+
+A leader (that can have a leader as well) can execute tasks on its VM or offload them to its subordinates.
+
+As last chance the task is offloaded on the Cloud.
+
+\subsection*{Implementation}
+In my implementation a leader can't be an orchestrator.
+
+This can be easily changed.
+\\
+The leader election is done once at the start of the simulation because the conditions on which a device is elected are statics.
+
+This can be changed rescheduling the election with a delay in case of non-static condition.
+
+\subsubsection*{LeaderEdgeDevice class}
+The custom class (\textit{LeaderEdgeDevice}) extends DefaultDataCenter.
+
+In \textit{startInternal} a task with tag LEADER\_ELECTION is scheduled with INITIALIZATION\_TIME + 1 delay.
+
+In \textit{processEvent} the custom tag is caught.
+
+There is a check for:
+ 	\begin{itemize}
+ 		\item the device being an edge data center,
+ 		\item the device being an orchestrator.
+ 		
+ 		This allows data centers not flagged as orchestrators to not have a leader (although possibly being elected as such by other data centers, even that case is easily fixable).
+ 		\item "LEADER" is the orchestration method,
+  	\end{itemize}
+
+If everything is true then the method \textbf{leader} is called.
+  	\begin{itemize}
+ 		\item in a loop every datacenter is taken into account and is checked whether it:
+ 		\begin{itemize}
+ 			\item is not the same data center as the one evaluating,
+ 			\item is an edge data center
+ 			\item the distance between the two data centers is smaller than the range of the edge data centers.
+ 		\end{itemize}
+ 		\item If it is the case then there is an evaluation about the MIPS (I used that criterion for electing a leader).
+ 		\begin{itemize}
+ 			\item If the MIPS of the candidate are greater than ones of the evaluator
+ 			\item and the max MIPS of the data center seen until that point is lower than the MIPS of the candidate
+ 		\end{itemize}
+
+then the candidate becomes the (potentially temporary) leader, the max MIPS seen is set to the new leader's MIPS.
+
+Upon ending the loop if a leader has been found the current datacenter is added to its subordinates list.
+ 		
+Otherwise the orchestrator flag is removed as well as the data center presence in Orchestrators List.
+  	\end{itemize}
+\subsubsection*{Leader algorithm}
+In order to find a suitable VM using this hierarchy I created a simulation algorithm called LEADER.
+
+I extended Orchestrator in order to implement a custom findVM method.
+
+If LEADER is used as simulation algorithm there is a check for the -presence of both Cloud and Edge in the simulation architecture. If it is not the case an error is displayed and the simulation stopped.
+
+Otherwise the architecture is restricted to "Edge" and the method leader is called.
+
+Here this order of seek for a suitable VM is followed:
+\begin{enumerate}
+	\item Among the hosts of the orchestrator.
+	\item Among the hosts of the leader of the orchestrator (there should not be a situation where the orchestrator has no leader and is chosen for the previous step so the presence of a leader should be certain at this phase).
+	\item Among the hosts of the leader's subordinates (excluding the original orchestrator).
+\end{enumerate}
+
+If the previous steps should result in no VM selected a try is done with the algorithm INCREASE\_LIFETIME (could have been anything else) on the Cloud.
+
+The condition based on which every level is scanned in search for a VM is completely arbitrary.
+
+\subsection*{Particular cases}
+
+\subsubsection*{Chaining}
+A case of chaining can occur when the data center A has B as leader but B in turn has C as leader.
+
+Both A and B are orchestrator so they can both receive tasks.
+
+During findVM, if a task has A as orchestrator, the task can only be offloaded to B, its subordinates (excluding A) and the Cloud.
+
+This doesn't allow B to offload the original task to C. In fact B act only as a leader in this scenario.
+\subsubsection*{Recursion}
+A particular case of the situation above is when A = C.
+
+This is not a problem and follow the limitation described above.
+
+
+\subsection*{Isolation}
+If an edge data center is isolated in such manner that it doesn't have both leader and subordinates it became useless.
+
+Not having a leader elect it as such but it has no subordinates so it won't receive tasks due to the fact that is removed from the orchestrators list.
+
+\subsection*{Parity}
+In case of condition parity between data centers every device will act as leader, thus not being an orchestrator neither having subordinates.
+
+This could lead to an empty orchestrators list.
+
+\subsection*{Rejection}
+A data center can't reject to be elected as leader. 
+
+This will force it to execute a task of its self proclaimed subordinates.
+
+This behavior is easily fixable by placing a check for the value of a custom setting flag "consent" before electing.
+
+\section*{Limitations}
+My actual implementation take as granted the omniscience of the edge data center in regards of its leader and its subordinates.
+
+This is not realistic because the method findVM could discover a VM not owned by the orchestrator.
+
+To simulate this behaviour a custom event could be scheduled to the leader/subordinates simulating the forward of the request.
+
+Due to PES managing orchestration in a stateless way this is possible but only at the cost of invalidating the results of the simulation.
+
+In fact findVM would result in a failure at the eyes of SimulationManager but, in reality, a new schedule for the task is yet to be done following the steps: leader, subordinates and cloud.
+
+\chapter{Simulations and results}
+
+\chapter{Conclusion}
+
 \end{document}

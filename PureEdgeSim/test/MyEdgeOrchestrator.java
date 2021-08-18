@@ -42,18 +42,6 @@ public class MyEdgeOrchestrator extends Orchestrator {
 	}
 
 	protected int my_findVM(String[] architecture, Task task) {
-		if ("MY_ALGORITHM".equals(algorithm)) {
-			if (!arrayContains(architecture, "Cloud") && arrayContains(architecture, "Edge")) {
-				SimLog.println("");
-				simLog.printSameLine("At least Cloud and Edge must me specified as architecture in order to use '" + algorithm
-						+ "', please check the simulation parameters file...", "red");
-				// Cancel the simulation
-				SimulationParameters.STOP = true;
-				simulationManager.getSimulation().terminate();
-			}
-			String[] edge_first = { "Edge" };
-			return myAlgorithm(edge_first, task);
-		}
 		if ("LEADER".equals(algorithm)) {
 			if (!arrayContains(architecture, "Cloud") && arrayContains(architecture, "Edge")) {
 				SimLog.println("");
@@ -79,32 +67,6 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		return -1;
 	}
 
-	private int myAlgorithm(String[] architecture, Task task) {
-		int vm = -1;
-		// get best vm for this task
-		//my questo algoritmo controlla se l'offload e' possibile su edge e se non riesce prova su cloud
-		// TODO da implementare lo scorre delle VM dei devices subordinates (vedere come si carica vmList e orcjestrationHistory)
-		for (int i = 0; i < orchestrationHistory.size(); i++) {
-			if (offloadingIsPossible(task, vmList.get(i), architecture)
-					&& task.getLength()/vmList.get(i).getMips()<task.getMaxLatency()
-					//&& (1 - vmList.get(i).getCpuPercentUtilization() * vmList.get(i).getMips()>vmList.get(i).getMips()/100)
-					){
-				vm = i;
-				//System.out.println(vmList.get(i).getCpuPercentUtilization() + " Ho fatto l'offload su Edge");
-			}
-		}
-
-		//Se non sono riuscito a trovare una VM su Edge allora la cerco su Cloud
-		if (vm<0) {
-			String[] Architecture = { "Cloud" };
-			//System.out.println("Ho fatto l'offload su Cloud");
-			return increseLifetime(Architecture, task);
-		}
-
-		// assign the tasks to the found vm
-		return vm;
-	}
-
 	/***
 		Get best vm for this task
 		This algorith checks whether offload is possible on the orchestrator
@@ -118,7 +80,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		int phase = -1;
 		System.out.println("Task : " + task.getId() + ", orchestratore e' " + task.getOrchestrator().getType());
 
-		//I cannot get information about the history of the task so I discern the phases according to the
+		//I cannot get information about the history of the task, so I discern the phases according to the
 		//	type of the orchestrator
 		if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)){
 			if (((LeaderEdgeDevice) task.getOrchestrator()).isLeader){
@@ -130,6 +92,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 
 		//According to the phase of leadering different host are evaluated
 		switch (phase){
+			//In phase 0 the orchestrator search the VM among its hosts
 			case 0:
 				//Cycle through all the orchestrator hosts and VMs
 				for (Host host_el: task.getOrchestrator().getHostList()) {
@@ -151,6 +114,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 				}
 				break;
 
+			//TODO IN CASE OF CHAINING LET B OFFLOAD TO ITS SUBORDINATES THEN C
 			case 1:
 				//Cycle through all the orchestrator's leader's hosts and VMs
 				for (Host host_el: task.getOrchestrator().getHostList()) {
@@ -367,7 +331,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 	// If the orchestration scenario is MIST_ONLY send Tasks only to edge devices
 	private int mistOnly(Task task) {
 		String[] Architecture = { "Mist" };
-		int vmfound=-1;
+		int vmfound;
 		vmfound=findVM(Architecture, task);
 		if (vmfound<0){
 			return -1;

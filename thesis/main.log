@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  28 JUL 2021 09:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  18 AUG 2021 16:04
 entering extended mode
 **./main.tex
 (main.tex
@@ -745,7 +745,7 @@ Package biblatex Info: ... file 'main.bbl' not found.
 No file main.bbl.
 Package biblatex Info: Reference section=0 on input line 41.
 Package biblatex Info: Reference segment=0 on input line 41.
-<logo.png, id=51, 1027.84pt x 1027.84pt>
+<logo.png, id=71, 1027.84pt x 1027.84pt>
 File: logo.png Graphic file (type png)
 <use logo.png>
 Package pdftex.def Info: logo.png  used on input line 43.
@@ -761,118 +761,122 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.47 \chapter
-             {Introduction to the problem} [1
+l.48 
+      [1
+
+] [2] [3
 
 ]
 Chapter 1.
-[2
-
-]
-Chapter 2.
-[3
-
-]
-Chapter 3.
 [4
 
 ]
-Chapter 4.
+Chapter 2.
 [5
 
-]
-Chapter 5.
+] [6] [7
 
-Overfull \hbox (4.9834pt too wide) in paragraph at lines 66--71
+]
+Chapter 3.
+
+Overfull \hbox (4.9834pt too wide) in paragraph at lines 127--132
 \OT1/cmr/m/n/12 Starting from main in MainAp-pli-ca-tion the method launch-Sim-
 u-la-tion is called. 
  []
 
-[6
+[8
 
 ]
-Overfull \hbox (6.86131pt too wide) in paragraph at lines 84--95
+Overfull \hbox (6.86131pt too wide) in paragraph at lines 145--156
 \OT1/cmr/m/n/12 Due to the SEND[]TO[]ORCH flag set be-fore the method \OT1/cmr/
 bx/n/12 send-Task-ToOrches-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 84--95
+Underfull \hbox (badness 10000) in paragraph at lines 145--156
 
  []
 
 
-Overfull \hbox (119.26419pt too wide) in paragraph at lines 84--95
+Overfull \hbox (119.26419pt too wide) in paragraph at lines 145--156
 \OT1/cmr/m/n/12 di-ately sched-uled to the Sim-u-la-tion Man-ager with SEND[]TA
 SK[]FROM[]ORCH[]TO[]DESTINATION
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 99--100
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 160--161
 
  []
 
-[7]
-Overfull \hbox (57.24806pt too wide) in paragraph at lines 106--107
+
+Overfull \hbox (57.24806pt too wide) in paragraph at lines 167--168
 \OT1/cmr/m/n/12 DATE[]PROGRESS is sched-uled and re-peated ev-ery NET-WORK[]UPD
 ATE[]INTERVAL
  []
 
 
-Overfull \hbox (21.30023pt too wide) in paragraph at lines 115--123
+Overfull \hbox (21.30023pt too wide) in paragraph at lines 176--184
 \OT1/cmr/m/n/12 In this part a cru-cial role is played by the flag RE-AL-IS-TIC
 []NETWORK[]MODEL.
  []
 
 
-Overfull \hbox (6.54344pt too wide) in paragraph at lines 115--123
+Overfull \hbox (6.54344pt too wide) in paragraph at lines 176--184
 \OT1/cmr/m/n/12 be-tween the old re-main-ing file size and the NET-WORK[]UPDATE
 []INTERVAL
  []
 
-
-Overfull \hbox (135.85194pt too wide) in paragraph at lines 126--127
+[10]
+Overfull \hbox (135.85194pt too wide) in paragraph at lines 187--188
 \OT1/cmr/m/n/12 lay of WAN[]PROPAGATION[]DELAY and tag SEND[]TASK[]FROM[]ORCH[]
 TO[]DESTINATION 
  []
 
-[8]
-Overfull \hbox (155.5181pt too wide) in paragraph at lines 146--147
+[11]
+Overfull \hbox (155.5181pt too wide) in paragraph at lines 207--208
 \OT1/cmr/m/n/12 con-tains the as-signed VM then a task with tag SEND[]REQUEST[]
 FROM[]ORCH[]TO[]DESTINATION
  []
 
-[9]
-Overfull \hbox (11.36487pt too wide) in paragraph at lines 181--183
+[12]
+Overfull \hbox (11.36487pt too wide) in paragraph at lines 242--244
 \OT1/cmr/m/n/12 Cloud. In that case the task with tag SEND[]RESULT[]FROM[]ORCH[
 ]TO[]DEV
  []
 
-[10]
-Overfull \hbox (8.55266pt too wide) in paragraph at lines 186--187
+
+Overfull \hbox (8.55266pt too wide) in paragraph at lines 247--248
 \OT1/cmr/m/n/12 ToDev is called. Here a new file trans-fer is added with tag RE
 -SULTS[]TO[]DEV. 
  []
 
 
-Overfull \hbox (84.03398pt too wide) in paragraph at lines 188--191
+Overfull \hbox (84.03398pt too wide) in paragraph at lines 249--252
 []\OT1/cmr/m/n/12 Upon fin-ish-ing the trans-fer the last else is caught and th
 e method []
  []
 
-[11] (main.aux)
+[13] [14] [15] [16] [17]
+Chapter 4.
+[18
+
+]
+Chapter 5.
+[19
+
+] (main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 51FCF6863A849058634B8067F6E82A58;698.
+(rerunfilecheck)             Checksum: 5A867BC5F70A56A99ACC43474B7E6E15;1010.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 16670 strings out of 479618
- 286897 string characters out of 2865026
- 1032081 words of memory out of 3000000
- 33579 multiletter control sequences out of 15000+200000
- 411314 words of font info for 54 fonts, out of 3000000 for 9000
+ 16711 strings out of 479618
+ 287298 string characters out of 2865026
+ 1032126 words of memory out of 3000000
+ 33587 multiletter control sequences out of 15000+200000
+ 411483 words of font info for 55 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  71i,6n,74p,739b,1731s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\lenci\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
@@ -881,10 +885,11 @@ ts/cm/cmbx12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/type1/publ
 ic/amsfonts/cm/cmcsc10.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTeX/fonts/
 type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/lenci/AppData/Local/Progra
-ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on main.pdf (12 pages, 255320 bytes).
+ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/lenci/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
+Output written on main.pdf (20 pages, 283036 bytes).
 PDF statistics:
- 153 PDF objects out of 1000 (max. 8388607)
- 27 named destinations out of 1000 (max. 500000)
- 102 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 245 PDF objects out of 1000 (max. 8388607)
+ 59 named destinations out of 1000 (max. 500000)
+ 142 words of extra memory for PDF output out of 10000 (max. 10000000)
 
