@@ -23,7 +23,6 @@ package com.mechalikh.pureedgesim.simulationmanager;
 import java.io.IOException;
 import java.util.List;
 
-import examples.CustomDataCenter;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -35,8 +34,7 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters.TYPES;
 import com.mechalikh.pureedgesim.simulationvisualizer.SimulationVisualizer;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
-import test.LeaderEdgeDevice;
-import test.MyEdgeOrchestrator;
+import test.LeaderEdgeOrchestrator;
 
 public class SimulationManager extends SimulationManagerAbstract {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
@@ -238,13 +236,13 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 
 
-		//here Encode the result from the class MyEdgeOrchestrator in a number smaller than 0
+		//here Encode the result from the class LeaderEdgeOrchestrator in a number smaller than 0
 		//	-1	->	no VM found
 		//	-2	->	the task must be scheduled to the leader
 		//	-3	->	the task must be scheduled to the cloud
 
 		// Find the best VM for executing the task
-		int foundVM = ((MyEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
+		int foundVM = ((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
 		switch (foundVM) {
 			case -1:
 				//System.out.println("Suitable VM not found");

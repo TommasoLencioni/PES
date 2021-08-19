@@ -53,7 +53,7 @@ public class Example5 extends MainApplication {
 		 * file (under the settings/ folder). To use the PureEdgeSim default edge
 		 * orchestrator class you can also uncomment this:
 		 */
-		// setCustomEdgeOrchestrator(MyEdgeOrchestrator.class);
+		// setCustomEdgeOrchestrator(LeaderEdgeOrchestrator.class);
 
 		// Start the simulation
 		launchSimulation();

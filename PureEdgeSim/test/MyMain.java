@@ -29,7 +29,7 @@ public class MyMain extends MainApplication {
         setCustomSettingsFolder(settingsPath);
 
         // tell PureEdgeSim to use this custom orchestrator and orchestration algorithm
-        setCustomEdgeOrchestrator(MyEdgeOrchestrator.class);
+        setCustomEdgeOrchestrator(LeaderEdgeOrchestrator.class);
 
         // Clustering
         setCustomEdgeDataCenters(LeaderEdgeDevice.class);

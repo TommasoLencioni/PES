@@ -31,9 +31,9 @@ import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.List;
 
-public class MyEdgeOrchestrator extends Orchestrator {
+public class LeaderEdgeOrchestrator extends Orchestrator {
 
-	public MyEdgeOrchestrator(SimulationManager simulationManager) {
+	public LeaderEdgeOrchestrator(SimulationManager simulationManager) {
 		super(simulationManager);
 	}
 

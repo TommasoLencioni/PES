@@ -29,6 +29,7 @@ sorting=ynt
 \graphicspath{ {images/Final results/Architectures/Delays},{images/Final results/Architectures/Energy},{images/Final results/Architectures/Tasks}, {images} }
 \usepackage{hyperref}
 \usepackage{filecontents}
+\usepackage{seqsplit}
 \title{\centerline{\includegraphics[width=8cm,height=8cm]{logo.png}}
 {\scshape Dipartimento di Informatica}\\
 \vspace{0.5cm}
@@ -151,7 +152,7 @@ Then the task is scheduled immediately with \textbf{scheduleNow} to the Network 
 \\
 As stated before the Network Model of the simulation receive the task and in its processEvent method the right case is caught, calling the method \textbf{sendRequestFromDeviceToOrch} right away.\\
 If the orchestrator of the task is the generating device itself 
-the task is immediately scheduled to the Simulation Manager with SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION tag.
+the task is immediately scheduled to the Simulation Manager with \seqsplit{SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION} tag.
 Otherwise a new transfer with
 \begin{itemize}
 	\item file size = the number of bits of the task's file
@@ -184,7 +185,7 @@ In our case (REQUEST as type) the method offloadingRequestRecievedByOrchestrator
 
 Here there is a check for the type of task's orchestrator:
 \begin{itemize}
-	\item If it's Cloud then the task is scheduled to Simulation Manager with a delay of WAN\_PROPAGATION\_DELAY and tag SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION
+	\item If it's Cloud then the task is scheduled to Simulation Manager with a delay of WAN\_PROPAGATION\_DELAY and tag \seqsplit{SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION}
 	\item otherwise same as above except the immediate schedule (no WAN propagation delay if the orchestrator is an Edge Device).
 \end{itemize}
 \vspace{0.5cm}
@@ -194,9 +195,10 @@ Here there is a check if the task is failed. After that the a suitable VM is sea
 \subsection*{VM Choice}
 The method initialize of the Simulation Manager's orchestrator is called. The architecture of the simulation is evaluated and the respective method is called. Whatever method is called the only difference is the array of strings Architecture (containing the names of the supported architectures in this simulation) passed to the method nesting of assignTaskToVM and findVM.
 
-The latter is up to implementation and utilizes the simulation algorithm to find the suitable VM.
+The latter is up to implementation and utilizes the simulation algorithm to find the suitable VM.\\
+In my case I customized it in order to implement the \nameref{leader algo}.
 
-[INSERIRE PERSONALIZZAZIONE DELL'ALGORITMO]
+I used negative integers returned from my\_initialize in order to distinguish the step of leader offload.
 
 assignTaskToVM evaluates the VM (-1 results in a failure for lack of resources) and assign it to the task. 
 
@@ -204,7 +206,7 @@ assignTaskToVM evaluates the VM (-1 results in a failure for lack of resources) 
 \vspace{0.5cm}
 There is a second evaluation for the VM=Null (this time in the Simulation Manager) then there is a check:
 \begin{itemize}
-	\item If the device that generated the task isn't the same that contains the assigned VM and the orchestrator of the task isn't the data center that contains the assigned VM then a task with tag SEND\_REQUEST\_FROM\_ORCH\_TO\_DESTINATION and destination the Network model is scheduled immediately.
+	\item If the device that generated the task isn't the same that contains the assigned VM and the orchestrator of the task isn't the data center that contains the assigned VM then a task with tag \seqsplit{SEND\_REQUEST\_FROM\_ORCH\_TO\_DESTINATION} and destination the Network model is scheduled immediately.
 	\item Otherwise the task is scheduled to this (Simulation Model) with tag EXECUTE\_TASK.
 \end{itemize}
 Let's consider the firts case.
@@ -252,21 +254,14 @@ In Simulation Model the corresponding case i caught. A failure check is done, th
 
 \section{Leader Algorithm}
 \label{leader algo}
-\subsection*{Idea}
-An edge data center should be able to elect a leader among the other edge data centers in reach (if they meet some arbitrary conditions).
+\paragraph*{Idea}
+An edge data center should be able to elect a leader among the other edge data centers in reach if they meet some arbitrary conditions.
 
 A leader (that can have a leader as well) can execute tasks on its VM or offload them to its subordinates.
 
 As last chance the task is offloaded on the Cloud.
 
 \subsection*{Implementation}
-In my implementation a leader can't be an orchestrator.
-
-This can be easily changed.
-\\
-The leader election is done once at the start of the simulation because the conditions on which a device is elected are statics.
-
-This can be changed rescheduling the election with a delay in case of non-static condition.
 
 \subsubsection*{LeaderEdgeDevice class}
 The custom class (\textit{LeaderEdgeDevice}) extends DefaultDataCenter.
@@ -300,73 +295,109 @@ If everything is true then the method \textbf{leader} is called.
 
 then the candidate becomes the (potentially temporary) leader, the max MIPS seen is set to the new leader's MIPS.
 
-Upon ending the loop if a leader has been found the current datacenter is added to its subordinates list.
+Upon ending the loop if a leader has been found the current datacenter is added to its subordinates list and the flag isLeader is set to true (in case it has a leader as well).
  		
 Otherwise the orchestrator flag is removed as well as the data center presence in Orchestrators List.
   	\end{itemize}
 \subsubsection*{Leader algorithm}
+\paragraph{Simulation Manager}
+
+In Simulation Manager I modified the default behavior of the method sendFromOrchToDestination, hence where is decided which VM will execute the task.
+
+I introduced 2 negative integer "error code" beside -1 (no VM found).
+\begin{itemize}
+	\item -2: the task must be sent to the leader
+	\item -3: the task must be sent to the cloud
+\end{itemize}
+
+Those codes are returned from the method my\_initialize.
+
+A switch catch the correct corresponding case scheduling \seqsplit{SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION} adding a delay in case of scheduling to cloud.\\
+Due to the low flexibility of the tool I had also to specify the reason of failure distinguishing from failing for lack of resources and simply rescheduling the task.
+
+\paragraph{LeaderEdgeOrchestrator} 
 In order to find a suitable VM using this hierarchy I created a simulation algorithm called LEADER.
 
 I extended Orchestrator in order to implement a custom findVM method.
 
-If LEADER is used as simulation algorithm there is a check for the -presence of both Cloud and Edge in the simulation architecture. If it is not the case an error is displayed and the simulation stopped.
+This implies to implement my\_initialize and the methods corresponding to the various architectures.
+
+my\_findVM is called only in edgeAndCloud method because in other architecture there are less or more devices involved.
+
+If LEADER is used as simulation algorithm there is a check for the presence of both Cloud and Edge in the simulation architecture. If it is not the case an error is displayed and the simulation stopped.
 
 Otherwise the architecture is restricted to "Edge" and the method leader is called.
 
 Here this order of seek for a suitable VM is followed:
 \begin{enumerate}
-	\item Among the hosts of the orchestrator.
-	\item Among the hosts of the leader of the orchestrator (there should not be a situation where the orchestrator has no leader and is chosen for the previous step so the presence of a leader should be certain at this phase).
-	\item Among the hosts of the leader's subordinates (excluding the original orchestrator).
+	\item phase 0: among the hosts of the orchestrator.
+	\item phase 1: among the hosts of the leader of the original orchestrator and its subordinates
+	
+	There should not be a situation where the orchestrator has no leader and is chosen for the previous step so the presence of a leader should be certain at this phase.
 \end{enumerate}
 
-If the previous steps should result in no VM selected a try is done with the algorithm INCREASE\_LIFETIME (could have been anything else) on the Cloud.
+If the previous steps should result in no VM selected a try is done in phase 2 with the algorithm INCREASE\_LIFETIME (could have been anything else) on the Cloud.
 
 The condition based on which every level is scanned in search for a VM is completely arbitrary.
 
-\subsection*{Particular cases}
+\paragraph{Phases}
+Are determined by the type of the orchestrator.
+Due to the fact that it changes in every step it's easy to tell in which phase the algorithm is in.
+This is an escamotage used to bypass PES limitation in flow control of the tasks.\\
 
-\subsubsection*{Chaining}
+The algorithm simply iterates through hosts and VMs of the phase's devices in search for a VM that meet the condition imposed by the code.
+
+\subsection{Notes}
+
+\paragraph{Static election condition} The leader election is done once at the start of the simulation because the conditions on which a device is elected are statics.
+
+This can be changed rescheduling the election with a delay in case of dynamics conditions.
+
+\paragraph{Leader's omniscience}
+In phase 1 there is a check for every host of every subordinate of the leader.
+
+This implies an omniscience by the latter.
+
+This is not realistic because the method findVM could discover a VM not owned by the orchestrator neither reliable to do in PES due to the continuous allocation of VM for tasks so this implementation is purely theoretical.
+
+\paragraph{Chaining}
 A case of chaining can occur when the data center A has B as leader but B in turn has C as leader.
 
 Both A and B are orchestrator so they can both receive tasks.
 
-During findVM, if a task has A as orchestrator, the task can only be offloaded to B, its subordinates (excluding A) and the Cloud.
+During findVM, if a task has A as orchestrator and it doesn't meet the conditions, the task is initially offloaded to B and its subordinates.
 
-This doesn't allow B to offload the original task to C. In fact B act only as a leader in this scenario.
-\subsubsection*{Recursion}
+If, again, no VM are found the task goes to C and its subordinates.
+
+The cloud, as always, is the last resort.
+
+
+\paragraph{Recursion}
 A particular case of the situation above is when A = C.
 
-This is not a problem and follow the limitation described above.
+This is a problem because there is no way to keep track of the devices that already checked for condition on a task.
+
+This could results in a endless loop. (TODO)
 
 
-\subsection*{Isolation}
-If an edge data center is isolated in such manner that it doesn't have both leader and subordinates it became useless.
+\paragraph{Isolation}
+If an edge data center orchestrator is isolated in such manner that it doesn't have both leader and subordinates it became useless.
 
 Not having a leader elect it as such but it has no subordinates so it won't receive tasks due to the fact that is removed from the orchestrators list.
 
-\subsection*{Parity}
+\paragraph{Parity}
 In case of condition parity between data centers every device will act as leader, thus not being an orchestrator neither having subordinates.
 
 This could lead to an empty orchestrators list.
 
-\subsection*{Rejection}
-A data center can't reject to be elected as leader. 
+\paragraph{Rejection}
+In this implementation data center can't reject to be elected as leader. 
 
-This will force it to execute a task of its self proclaimed subordinates.
+This will force it to execute tasks of its self proclaimed subordinates.
 
-This behavior is easily fixable by placing a check for the value of a custom setting flag "consent" before electing.
+This behavior is easily fixable by placing a check for the value of a custom setting flag ("consent") before electing.
 
-\section*{Limitations}
 My actual implementation take as granted the omniscience of the edge data center in regards of its leader and its subordinates.
-
-This is not realistic because the method findVM could discover a VM not owned by the orchestrator.
-
-To simulate this behaviour a custom event could be scheduled to the leader/subordinates simulating the forward of the request.
-
-Due to PES managing orchestration in a stateless way this is possible but only at the cost of invalidating the results of the simulation.
-
-In fact findVM would result in a failure at the eyes of SimulationManager but, in reality, a new schedule for the task is yet to be done following the steps: leader, subordinates and cloud.
 
 \chapter{Simulations and results}
 

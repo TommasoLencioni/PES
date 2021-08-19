@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  18 AUG 2021 16:04
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  19 AUG 2021 16:42
 entering extended mode
 **./main.tex
 (main.tex
@@ -632,6 +632,9 @@ Package filecontents Warning: This package is obsolete. Disabling it and
 (filecontents)                passing control to the filecontents environment
 (filecontents)                defined by the LaTeX kernel.
 
+) (C:\Users\lenci\AppData\Local\Programs\MiKTeX\tex/latex/seqsplit\seqsplit.sty
+Package: seqsplit 2006/08/07 v0.1 Splitting long sequences (DNA, RNA, proteins,
+ etc.) 
 )
 
 Package biblatex Warning: 'babel/polyglossia' detected but 'csquotes' missing.
@@ -648,22 +651,22 @@ File: l3backend-pdftex.def 2021-01-09 L3 backend support: PDF output (pdfTeX)
 ) (main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 41.
-LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 42.
+LaTeX Font Info:    ... okay on input line 42.
 
 (C:\Users\lenci\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
 ii
@@ -687,7 +690,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
 )
 \c@lstlisting=\count431
-Package hyperref Info: Link coloring OFF on input line 41.
+Package hyperref Info: Link coloring OFF on input line 42.
 
 (C:\Users\lenci\AppData\Local\Programs\MiKTeX\tex/latex/hyperref\nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -701,9 +704,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count432
 )
-LaTeX Info: Redefining \ref on input line 41.
-LaTeX Info: Redefining \pageref on input line 41.
-LaTeX Info: Redefining \nameref on input line 41.
+LaTeX Info: Redefining \ref on input line 42.
+LaTeX Info: Redefining \pageref on input line 42.
+LaTeX Info: Redefining \nameref on input line 42.
  (main.out) (main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
@@ -743,12 +746,12 @@ Package biblatex Info: Trying to load bibliographic data...
 Package biblatex Info: ... file 'main.bbl' not found.
 
 No file main.bbl.
-Package biblatex Info: Reference section=0 on input line 41.
-Package biblatex Info: Reference segment=0 on input line 41.
-<logo.png, id=71, 1027.84pt x 1027.84pt>
+Package biblatex Info: Reference section=0 on input line 42.
+Package biblatex Info: Reference segment=0 on input line 42.
+<logo.png, id=75, 1027.84pt x 1027.84pt>
 File: logo.png Graphic file (type png)
 <use logo.png>
-Package pdftex.def Info: logo.png  used on input line 43.
+Package pdftex.def Info: logo.png  used on input line 44.
 (pdftex.def)             Requested size: 227.61543pt x 227.61543pt.
 [1
 
@@ -761,7 +764,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.48 
+l.49 
       [1
 
 ] [2] [3
@@ -779,7 +782,7 @@ Chapter 2.
 ]
 Chapter 3.
 
-Overfull \hbox (4.9834pt too wide) in paragraph at lines 127--132
+Overfull \hbox (4.9834pt too wide) in paragraph at lines 128--133
 \OT1/cmr/m/n/12 Starting from main in MainAp-pli-ca-tion the method launch-Sim-
 u-la-tion is called. 
  []
@@ -787,76 +790,63 @@ u-la-tion is called.
 [8
 
 ]
-Overfull \hbox (6.86131pt too wide) in paragraph at lines 145--156
+Overfull \hbox (6.86131pt too wide) in paragraph at lines 146--157
 \OT1/cmr/m/n/12 Due to the SEND[]TO[]ORCH flag set be-fore the method \OT1/cmr/
 bx/n/12 send-Task-ToOrches-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 145--156
+Underfull \hbox (badness 10000) in paragraph at lines 146--157
 
- []
-
-
-Overfull \hbox (119.26419pt too wide) in paragraph at lines 145--156
-\OT1/cmr/m/n/12 di-ately sched-uled to the Sim-u-la-tion Man-ager with SEND[]TA
-SK[]FROM[]ORCH[]TO[]DESTINATION
  []
 
 [9]
-Underfull \hbox (badness 10000) in paragraph at lines 160--161
+Underfull \hbox (badness 10000) in paragraph at lines 161--162
 
  []
 
 
-Overfull \hbox (57.24806pt too wide) in paragraph at lines 167--168
+Overfull \hbox (57.24806pt too wide) in paragraph at lines 168--169
 \OT1/cmr/m/n/12 DATE[]PROGRESS is sched-uled and re-peated ev-ery NET-WORK[]UPD
 ATE[]INTERVAL
  []
 
 
-Overfull \hbox (21.30023pt too wide) in paragraph at lines 176--184
+Overfull \hbox (21.30023pt too wide) in paragraph at lines 177--185
 \OT1/cmr/m/n/12 In this part a cru-cial role is played by the flag RE-AL-IS-TIC
 []NETWORK[]MODEL.
  []
 
 
-Overfull \hbox (6.54344pt too wide) in paragraph at lines 176--184
+Overfull \hbox (6.54344pt too wide) in paragraph at lines 177--185
 \OT1/cmr/m/n/12 be-tween the old re-main-ing file size and the NET-WORK[]UPDATE
 []INTERVAL
  []
 
-[10]
-Overfull \hbox (135.85194pt too wide) in paragraph at lines 187--188
-\OT1/cmr/m/n/12 lay of WAN[]PROPAGATION[]DELAY and tag SEND[]TASK[]FROM[]ORCH[]
-TO[]DESTINATION 
- []
-
-[11]
-Overfull \hbox (155.5181pt too wide) in paragraph at lines 207--208
-\OT1/cmr/m/n/12 con-tains the as-signed VM then a task with tag SEND[]REQUEST[]
-FROM[]ORCH[]TO[]DESTINATION
- []
-
-[12]
-Overfull \hbox (11.36487pt too wide) in paragraph at lines 242--244
+[10] [11] [12]
+Overfull \hbox (11.36487pt too wide) in paragraph at lines 244--246
 \OT1/cmr/m/n/12 Cloud. In that case the task with tag SEND[]RESULT[]FROM[]ORCH[
 ]TO[]DEV
  []
 
 
-Overfull \hbox (8.55266pt too wide) in paragraph at lines 247--248
+Overfull \hbox (8.55266pt too wide) in paragraph at lines 249--250
 \OT1/cmr/m/n/12 ToDev is called. Here a new file trans-fer is added with tag RE
 -SULTS[]TO[]DEV. 
  []
 
 
-Overfull \hbox (84.03398pt too wide) in paragraph at lines 249--252
+Overfull \hbox (84.03398pt too wide) in paragraph at lines 251--254
 []\OT1/cmr/m/n/12 Upon fin-ish-ing the trans-fer the last else is caught and th
 e method []
  []
 
-[13] [14] [15] [16] [17]
+[13] [14] [15]
+Underfull \hbox (badness 10000) in paragraph at lines 344--347
+
+ []
+
+[16] [17]
 Chapter 4.
 [18
 
@@ -866,16 +856,16 @@ Chapter 5.
 
 ] (main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 5A867BC5F70A56A99ACC43474B7E6E15;1010.
+(rerunfilecheck)             Checksum: 2A222D4C2085E78740FED653006070AD;1069.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 16711 strings out of 479618
- 287298 string characters out of 2865026
- 1032126 words of memory out of 3000000
- 33587 multiletter control sequences out of 15000+200000
+ 16735 strings out of 479618
+ 287801 string characters out of 2865026
+ 1033291 words of memory out of 3000000
+ 33604 multiletter control sequences out of 15000+200000
  411483 words of font info for 55 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  71i,6n,74p,739b,1731s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -887,9 +877,9 @@ type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/lenci/AppData/Local/Progra
 ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/lenci/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on main.pdf (20 pages, 283036 bytes).
+Output written on main.pdf (20 pages, 285638 bytes).
 PDF statistics:
- 245 PDF objects out of 1000 (max. 8388607)
- 59 named destinations out of 1000 (max. 500000)
- 142 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 254 PDF objects out of 1000 (max. 8388607)
+ 62 named destinations out of 1000 (max. 500000)
+ 150 words of extra memory for PDF output out of 10000 (max. 10000000)
 
