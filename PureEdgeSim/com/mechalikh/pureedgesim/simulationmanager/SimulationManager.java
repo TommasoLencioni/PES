@@ -247,19 +247,19 @@ public class SimulationManager extends SimulationManagerAbstract {
 		int foundVM = ((MyEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
 		switch (foundVM) {
 			case -1:
-				System.out.println("Non ho trovato una VM");
+				//System.out.println("Suitable VM not found");
 				break;
 
 			case -2:
-				System.out.println("Schedulo il task al leader");
+				//System.out.println("Schedule the task to the leader");
 				scheduleNow(this, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 				break;
 
 			case -3:
-				System.out.println("Schedulo il task al cloud con delay");
+				//System.out.println("Schedule the task to the cloud with delay");
 				schedule(this, SimulationParameters.WAN_PROPAGATION_DELAY,
 						SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
-
+				return;
 		}
 
 		//here END of my custom section

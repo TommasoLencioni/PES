@@ -167,7 +167,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			//this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
 			//this.setAsOrchestrator(true);
 			leader.subordinates.add(this);
-			///
+			leader.isLeader=true;
 		}
 		//If I'm the leader
 		else if (this.getType()==SimulationParameters.TYPES.EDGE_DATACENTER){

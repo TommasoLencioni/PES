@@ -163,21 +163,21 @@ public class MainApplication extends MainApplicationAbstract{
 				SimLog.println(
 						"######################################################################################################################################################################");
 				//my
-				/*
+
 				System.out.println(simulationManager.getServersManager().getDatacenterList().size());
 				for (DataCenter el: simulationManager.getServersManager().getDatacenterList()){
 					System.out.println("Sono " + el.getName());
 					System.out.println(el.getType());
-					if (((LeaderEdgeDevice) el).getLeader()==null){
+					if(!((LeaderEdgeDevice) el).subordinates.isEmpty()) {
 						System.out.println("Leader di:");
-						for (DataCenter sub: ((LeaderEdgeDevice) el).subordinates){
+						for (DataCenter sub : ((LeaderEdgeDevice) el).subordinates) {
 							System.out.println(sub.getName());
 						}
 					}
 				}
 				System.out.println("Qui si controllano gli orchestratori che sono " +
 						simulationManager.getServersManager().getOrchestratorsList().size());
-				 */
+
 			}
 			SimLog.println("MyMain- Simulation Finished!");
 			// Generate and save charts

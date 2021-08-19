@@ -78,7 +78,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 	private int leader(String[] architecture, Task task) {
 		int vm = -1;
 		int phase = -1;
-		System.out.println("Task : " + task.getId() + ", orchestratore e' " + task.getOrchestrator().getType());
+
 
 		//I cannot get information about the history of the task, so I discern the phases according to the
 		//	type of the orchestrator
@@ -90,6 +90,8 @@ public class MyEdgeOrchestrator extends Orchestrator {
 		}
 		else if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) phase=2;
 
+		System.out.println("Task : " + task.getId() + ", orchestratore e' " + task.getOrchestrator().getName() + " e siamo alla phase " + phase);
+
 		//According to the phase of leadering different host are evaluated
 		switch (phase){
 			//In phase 0 the orchestrator search the VM among its hosts
@@ -99,11 +101,11 @@ public class MyEdgeOrchestrator extends Orchestrator {
 					for (Vm vm_el : host_el.getVmList()){
 						if (offloadingIsPossible(task, vm_el, architecture)
 								//custom conditions can be set here
-								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/10000
+								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100000
 
 						){
 							vm = vmList.indexOf(vm_el);
-							System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
+							//System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
 						}
 					}
 				}
@@ -114,7 +116,6 @@ public class MyEdgeOrchestrator extends Orchestrator {
 				}
 				break;
 
-			//TODO IN CASE OF CHAINING LET B OFFLOAD TO ITS SUBORDINATES THEN C
 			case 1:
 				//Cycle through all the orchestrator's leader's hosts and VMs
 				for (Host host_el: task.getOrchestrator().getHostList()) {
@@ -125,7 +126,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 
 						){
 							vm = vmList.indexOf(vm_el);
-							System.err.println("Offload su leader " + vm_el.getHost().getDatacenter().getName());
+							//System.err.println("Offload su leader " + vm_el.getHost().getDatacenter().getName());
 						}
 					}
 				}
@@ -146,7 +147,7 @@ public class MyEdgeOrchestrator extends Orchestrator {
 
 										) {
 											vm = vmList.indexOf(vm_el);
-											System.err.println("Offload su subordinates" + vm_el.getHost().getDatacenter().getName());
+											//System.err.println("Offload su subordinates" + vm_el.getHost().getDatacenter().getName());
 										}
 									}
 								}
@@ -154,20 +155,32 @@ public class MyEdgeOrchestrator extends Orchestrator {
 						}
 					}
 					if (vm < 0){
-						vm = -3;
-						//I assume that only one Cloud Data Center is orchestrator
-						for (DataCenter dc : this.simulationManager.getServersManager().getOrchestratorsList()) {
-							if (dc.getType().equals(SimulationParameters.TYPES.CLOUD) && dc.isOrchestrator()) {
-								task.setOrchestrator(dc);
+						//In case of leader chaining -2 is returned so the task will be rescheduled to the leader of
+						//	the current leader
+						if (((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null){
+							task.setOrchestrator(((LeaderEdgeDevice) task.getOrchestrator()).getLeader());
+							simLog.print("Leader Chaining");
+							vm=-2;
+						}
+						else{
+							vm = -3;
+							//I assume that only one Cloud Data Center is orchestrator
+							for (DataCenter dc : this.simulationManager.getServersManager().getOrchestratorsList()) {
+								if (dc.getType().equals(SimulationParameters.TYPES.CLOUD) && dc.isOrchestrator()) {
+									task.setOrchestrator(dc);
+								}
 							}
 						}
 					}
+				}
+				if (((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null){
+					simLog.print("Leader Chaining");
 				}
 				break;
 
 			case 2:
 				String[] Architecture = { "Cloud" };
-				System.out.println("Offload su Cloud");
+				//System.out.println("Offload su Cloud");
 				vm = increseLifetime(Architecture, task);
 		}
 
@@ -357,7 +370,6 @@ public class MyEdgeOrchestrator extends Orchestrator {
 	// centers or cloud virtual machines (vms)
 	private int edgeAndCloud(Task task) {
 		String[] Architecture = { "Cloud", "Edge" };
-		SimLog.println("Sto usando il mio");
 		int vmfound;
 		vmfound=my_findVM(Architecture, task);
 		if (vmfound>=0){

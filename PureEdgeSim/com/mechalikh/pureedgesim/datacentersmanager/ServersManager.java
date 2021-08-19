@@ -89,7 +89,7 @@ public class ServersManager {
 	private void selectOrchestrators() {
 		//my
 		i=0;
-		System.out.println("Qui si aggiungono gli orchestratori dalla lista dei data center (che sono "+ datacentersList.size());
+		//System.out.println("Qui si aggiungono gli orchestratori dalla lista dei data center (che sono "+ datacentersList.size());
 		for (DataCenter edgeDataCenter : datacentersList) {
 			//my
 			if ((SimulationParameters.ORCH_SCALING && (i<(Math.sqrt(datacentersList.size()))))
@@ -137,7 +137,7 @@ public class ServersManager {
 				}
 			}
 		}
-		System.out.println("Qui si controllano gli orchestratori che sono "+ orchestratorsList.size());
+		//System.out.println("Qui si controllano gli orchestratori che sono "+ orchestratorsList.size());
 	}
 
 	public void generateEdgeDevices() throws Exception {
