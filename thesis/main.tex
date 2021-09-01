@@ -1,6 +1,7 @@
 \documentclass[12pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage{csquotes}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{graphics}
@@ -21,11 +22,11 @@
     breakatwhitespace=false,
 }
 
-\usepackage[
-backend=biber,
-style=alphabetic,
-sorting=ynt
-]{biblatex}
+%Bibliography
+\usepackage[style=numeric-comp,useprefix,hyperref,backend=bibtex]{biblatex}
+\addbibresource{refs.bib}
+
+
 \graphicspath{ {images/Final results/Architectures/Delays},{images/Final results/Architectures/Energy},{images/Final results/Architectures/Tasks}, {images} }
 \usepackage{hyperref}
 \usepackage{filecontents}
@@ -37,7 +38,6 @@ Orchestration and collocation of application for autonomous drive}
 \author{Candidato: Tommaso Lencioni\\
 Relatori: Prof. Patrizio Dazzi, Prof. Antonio Brogi}
 \date{Anno Accademico: 2021/2022}
-
 
 \begin{document}
 \maketitle
@@ -108,9 +108,9 @@ The goal of this thesis is to analyze how the previously described system can be
 
 \part*{Metodology}
 \chapter{Pure Edge Sim}
-The tool used is \textbf{Pure Edge Simulator}.
+The tool used is \textbf{Pure Edge Simulator}(from here after \textit{PES}).
 
-PES is a simulation framework for performance evaluation developed by a group of Tunisian researchers focused on cloud, fog, and pure edge computing environments.
+\textit{PES} is a simulation framework for performance evaluation developed by a group of Tunisian researchers focused on cloud, fog, and pure edge computing environments.
 
 \section{Requirements}
 The project is in Java and I used an IDE for my whole work.
@@ -118,11 +118,11 @@ The project is in Java and I used an IDE for my whole work.
 This simplify the dependencies management but nullify the possibilities of scripting the tests.
 
 \section{Features and limitations}
-Pure Edge Sim (\textit{PES}) is a task oriented simulator.
+\textit{PES} is a task oriented simulator.
 
-This trait is inherited from its parent tool (Cloud Sim).\\
+This trait is inherited from its parent tool Cloud Sim.\\
 Although this approach to simulations is suitable for testing task scheduling on Cloud and Edge, such decoupling represents a major barrier for the implementation of consequentials events involving more than one architecture layer.
-An insight of the structure can be take in the paper proposed by the authors [LINK BIBLIOGRAFIA].
+An insight of the structure can be take in the paper proposed by the authors \cite{MechalikhTM21}.
 
 \section{Starting a simulation}
 Starting from main in MainApplication the method launchSimulation is called.\\
@@ -403,4 +403,5 @@ My actual implementation take as granted the omniscience of the edge data center
 
 \chapter{Conclusion}
 
+\printbibliography
 \end{document}
