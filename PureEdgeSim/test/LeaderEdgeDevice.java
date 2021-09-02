@@ -162,10 +162,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		if (leader!= null) {
 			//debug
 			System.out.println("Il mio leader e' " + leader.getId());
-			//necessary
-			//this.setAsOrchestrator(false);
-			//this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
-			//this.setAsOrchestrator(true);
+
 			leader.subordinates.add(this);
 			leader.isLeader=true;
 		}

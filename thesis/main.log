@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  1 SEP 2021 16:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  2 SEP 2021 12:34
 entering extended mode
 **./main.tex
 (main.tex
@@ -817,11 +817,7 @@ Chapter 1.
 Chapter 2.
 [5
 
-]
-
-LaTeX Warning: Reference `leader algo' on page 6 undefined on input line 99.
-
-[6] [7
+] [6] [7
 
 ]
 Chapter 3.
@@ -867,11 +863,7 @@ Overfull \hbox (6.54344pt too wide) in paragraph at lines 177--185
 []INTERVAL
  []
 
-[10]
-
-LaTeX Warning: Reference `leader algo' on page 11 undefined on input line 199.
-
-[11] [12]
+[10] [11] [12]
 Overfull \hbox (11.36487pt too wide) in paragraph at lines 244--246
 \OT1/cmr/m/n/12 Cloud. In that case the task with tag SEND[]RESULT[]FROM[]ORCH[
 ]TO[]DEV
@@ -889,8 +881,23 @@ Overfull \hbox (84.03398pt too wide) in paragraph at lines 251--254
 e method []
  []
 
-[13] [14] [15]
-Underfull \hbox (badness 10000) in paragraph at lines 344--347
+[13] [14]
+Underfull \hbox (badness 10000) in paragraph at lines 331--332
+
+ []
+
+[15]
+Underfull \hbox (badness 10000) in paragraph at lines 337--338
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 347--348
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 350--353
 
  []
 
@@ -905,12 +912,6 @@ Chapter 5.
 ] [20
 
 ] (main.aux)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 2A222D4C2085E78740FED653006070AD;1069.
 Package logreq Info: Writing requests to 'main.run.xml'.
@@ -918,10 +919,10 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 17619 strings out of 479618
- 304003 string characters out of 2865026
- 1011565 words of memory out of 3000000
- 34467 multiletter control sequences out of 15000+200000
+ 17615 strings out of 479618
+ 303865 string characters out of 2865026
+ 1011580 words of memory out of 3000000
+ 34464 multiletter control sequences out of 15000+200000
  411784 words of font info for 56 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  71i,6n,74p,1845b,1731s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -933,9 +934,9 @@ type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/lenci/AppData/Local/Progra
 ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/lenci/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on main.pdf (21 pages, 293963 bytes).
+Output written on main.pdf (21 pages, 292593 bytes).
 PDF statistics:
  264 PDF objects out of 1000 (max. 8388607)
- 66 named destinations out of 1000 (max. 500000)
+ 65 named destinations out of 1000 (max. 500000)
  150 words of extra memory for PDF output out of 10000 (max. 10000000)
 

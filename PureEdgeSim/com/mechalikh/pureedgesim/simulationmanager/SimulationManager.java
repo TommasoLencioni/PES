@@ -260,7 +260,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 				return;
 		}
 
-		//here END of my custom section
+
 
 		// Stop in case no resource was available for this task, the offloading is
 		// failed
@@ -273,6 +273,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 		} else {
 			simLog.taskSentFromOrchToDest(task);
 		}
+
+		//here END of my custom section
 
 		// If the task is offloaded
 		// and the orchestrator is not the offloading destination

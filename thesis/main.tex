@@ -264,27 +264,27 @@ As last chance the task is offloaded on the Cloud.
 \subsection*{Implementation}
 
 \subsubsection*{LeaderEdgeDevice class}
-The custom class (\textit{LeaderEdgeDevice}) extends DefaultDataCenter.
+The custom class \textit{LeaderEdgeDevice} extends DefaultDataCenter.
 
-In \textit{startInternal} a task with tag LEADER\_ELECTION is scheduled with INITIALIZATION\_TIME + 1 delay.
+In \textit{startInternal} a task with custom tag LEADER\_ELECTION is scheduled with INITIALIZATION\_TIME + 1 delay.
 
-In \textit{processEvent} the custom tag is caught.
+In \textit{processEvent} the tag is caught.
 
 There is a check for:
  	\begin{itemize}
  		\item the device being an edge data center,
  		\item the device being an orchestrator.
  		
- 		This allows data centers not flagged as orchestrators to not have a leader (although possibly being elected as such by other data centers, even that case is easily fixable).
+ 		This allows data centers not flagged as orchestrators to not have a leader (although possibly being elected as such by other data centers, even that case is easily adjustable).
  		\item "LEADER" is the orchestration method,
   	\end{itemize}
 
 If everything is true then the method \textbf{leader} is called.
   	\begin{itemize}
- 		\item in a loop every datacenter is taken into account and is checked whether it:
+ 		\item in a loop every datacenter is taken into account and is checked whether:
  		\begin{itemize}
- 			\item is not the same data center as the one evaluating,
- 			\item is an edge data center
+ 			\item it is not the same data center as the one evaluating,
+ 			\item it is an edge data center
  			\item the distance between the two data centers is smaller than the range of the edge data centers.
  		\end{itemize}
  		\item If it is the case then there is an evaluation about the MIPS (I used that criterion for electing a leader).
@@ -293,7 +293,7 @@ If everything is true then the method \textbf{leader} is called.
  			\item and the max MIPS of the data center seen until that point is lower than the MIPS of the candidate
  		\end{itemize}
 
-then the candidate becomes the (potentially temporary) leader, the max MIPS seen is set to the new leader's MIPS.
+then the candidate becomes the (potentially temporary) leader, the max MIPS seen until that point is set to the new leader's MIPS.
 
 Upon ending the loop if a leader has been found the current datacenter is added to its subordinates list and the flag isLeader is set to true (in case it has a leader as well).
  		
@@ -304,7 +304,7 @@ Otherwise the orchestrator flag is removed as well as the data center presence i
 
 In Simulation Manager I modified the default behavior of the method sendFromOrchToDestination, hence where is decided which VM will execute the task.
 
-I introduced 2 negative integer "error code" beside -1 (no VM found).
+I introduced 2 negative integer "error code" beside -1 ("no VM found").
 \begin{itemize}
 	\item -2: the task must be sent to the leader
 	\item -3: the task must be sent to the cloud
@@ -312,23 +312,31 @@ I introduced 2 negative integer "error code" beside -1 (no VM found).
 
 Those codes are returned from the method my\_initialize.
 
-A switch catch the correct corresponding case scheduling \seqsplit{SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION} adding a delay in case of scheduling to cloud.\\
+A switch catch the correct corresponding case scheduling \seqsplit{SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION} adding a delay in case of scheduling to Cloud.\\
 Due to the low flexibility of the tool I had also to specify the reason of failure distinguishing from failing for lack of resources and simply rescheduling the task.
 
-\paragraph{LeaderEdgeOrchestrator} 
+
+\paragraph{LeaderEdgeOrchestrator}
+
 In order to find a suitable VM using this hierarchy I created a simulation algorithm called LEADER.
 
 I extended Orchestrator in order to implement a custom findVM method.
 
 This implies to implement my\_initialize and the methods corresponding to the various architectures.
 
-my\_findVM is called only in edgeAndCloud method because in other architecture there are less or more devices involved.
+my\_findVM is called only in edgeAndCloud method because in other architecture there are less or more devices than expected.
 
-If LEADER is used as simulation algorithm there is a check for the presence of both Cloud and Edge in the simulation architecture. If it is not the case an error is displayed and the simulation stopped.
+If LEADER is used as simulation algorithm there is a check for the presence of both Cloud and Edge in the simulation architecture. If it is not the case an error is displayed and the simulation stops.
 
-Otherwise the architecture is restricted to "Edge" and the method leader is called.
+Otherwise the architecture is restricted to "Edge" and the method leader is called.\\
 
-Here this order of seek for a suitable VM is followed:
+The algorithm simply iterates through hosts and VMs of the phase's devices in search for a VM that meet the condition imposed by the code.
+
+The condition based on which a VM is selected is completely arbitrary.
+
+I used one based on task's length, MIBS and latency.\\
+
+This is the order of seek for a suitable VM is followed:
 \begin{enumerate}
 	\item phase 0: among the hosts of the orchestrator.
 	\item phase 1: among the hosts of the leader of the original orchestrator and its subordinates
@@ -336,20 +344,16 @@ Here this order of seek for a suitable VM is followed:
 	There should not be a situation where the orchestrator has no leader and is chosen for the previous step so the presence of a leader should be certain at this phase.
 \end{enumerate}
 
-If the previous steps should result in no VM selected a try is done in phase 2 with the algorithm INCREASE\_LIFETIME (could have been anything else) on the Cloud.
-
-The condition based on which every level is scanned in search for a VM is completely arbitrary.
+If the previous steps should result in no VM selected a try is done in phase 2 with the algorithm INCREASE\_LIFETIME (could have been any other algorithm) on the Cloud.\\
 
 \paragraph{Phases}
 Are determined by the type of the orchestrator.
 Due to the fact that it changes in every step it's easy to tell in which phase the algorithm is in.
 This is an escamotage used to bypass PES limitation in flow control of the tasks.\\
 
-The algorithm simply iterates through hosts and VMs of the phase's devices in search for a VM that meet the condition imposed by the code.
-
 \subsection{Notes}
 
-\paragraph{Static election condition} The leader election is done once at the start of the simulation because the conditions on which a device is elected are statics.
+\paragraph{Static election condition} The leader election is done once at the start of the simulation because the conditions on which a device is elected as leader are statics.
 
 This can be changed rescheduling the election with a delay in case of dynamics conditions.
 
@@ -377,7 +381,7 @@ A particular case of the situation above is when A = C.
 
 This is a problem because there is no way to keep track of the devices that already checked for condition on a task.
 
-This could results in a endless loop. (TODO)
+This could results in a endless loop. (TOFIX)
 
 
 \paragraph{Isolation}
@@ -397,7 +401,6 @@ This will force it to execute tasks of its self proclaimed subordinates.
 
 This behavior is easily fixable by placing a check for the value of a custom setting flag ("consent") before electing.
 
-My actual implementation take as granted the omniscience of the edge data center in regards of its leader and its subordinates.
 
 \chapter{Simulations and results}
 
