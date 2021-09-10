@@ -57,13 +57,19 @@ The growing interest in the cloud computing paradigm and its application in the 
 
 In this case particular attention is put on the creation of a distributed edge-oriented environment that integrates heterogeneous resources like edge devices, specialized on-site nodes and cloud.
 
-\section{Cloud Brokering}
-The cloud brokering
+\section{Application Placement}
+The application placement problem is a concern for every large scale Fog infrastructure.
+
+When the number of task generated and computational device rise the nearest/strongest offload location is not always the best.
+
+This leads to the need of a methodology to find a suitable device for the task.
+
+
 \section{State of the art}
 The state of the art
 
 \chapter{Scenario}
-The scenario considered in this thesis is an intelligent vehicles environment. The way different components interact reflects and emulate a real world use.
+The scenario considered in this thesis is an intelligent vehicles environment. The way different components interact emulate a real world use although the application of some of the solutions described in the following sections are just for research purposes.
 
 \section{Vehicles}
 The users (vehicles) are represented as edge devices with no computational power that generate tasks in an interval of time.\\
@@ -104,11 +110,12 @@ It offer computational power and is reachable from every device through WAN with
 
 
 \section{Thesis's goal}
-The goal of this thesis is to analyze how the previously described system can be simulated with a software and to propose an algorithm that makes the edge data centers follow a hierarchy model.
+The goal of this thesis is to analyze how the previously described system can be simulated with a simulation software (\ref{PES}) and to propose an algorithm that makes the edge data centers follow a hierarchy model.
 
 \part*{Metodology}
 \chapter{Pure Edge Sim}
-The tool used is \textbf{Pure Edge Simulator}(from here after \textit{PES}).
+\label{PES}
+The tool used is \textbf{Pure Edge Simulator} (from here after \textit{PES}).
 
 \textit{PES} is a simulation framework for performance evaluation developed by a group of Tunisian researchers focused on cloud, fog, and pure edge computing environments.
 

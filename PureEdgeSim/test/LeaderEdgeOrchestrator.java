@@ -43,7 +43,7 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 
 	protected int my_findVM(String[] architecture, Task task) {
 		if ("LEADER".equals(algorithm)) {
-			if (!arrayContains(architecture, "Cloud") && arrayContains(architecture, "Edge")) {
+			if (!arrayContains(architecture, "Cloud") || !arrayContains(architecture, "Edge")) {
 				SimLog.println("");
 				simLog.printSameLine("At least Cloud and Edge must me specified as architecture in order to use '" + algorithm
 						+ "', please check the simulation parameters file...", "red");
