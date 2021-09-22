@@ -33,13 +33,13 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Simulation Manager}{15}{section*.11}%
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{LeaderEdgeOrchestrator}{15}{section*.12}%
+\contentsline {paragraph}{LeaderEdgeOrchestrator}{16}{section*.12}%
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Phases}{16}{section*.13}%
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.5.1}Notes}{16}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.1}Notes and assumptions}{17}{subsection.3.5.1}%
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Static election condition}{16}{section*.14}%
+\contentsline {paragraph}{Static election condition}{17}{section*.14}%
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Leader's omniscience}{17}{section*.15}%
 \defcounter {refsection}{0}\relax 
@@ -51,8 +51,8 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {paragraph}{Parity}{17}{section*.19}%
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{Rejection}{17}{section*.20}%
+\contentsline {paragraph}{Rejection}{18}{section*.20}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {4}Simulations and results}{18}{chapter.4}%
+\contentsline {chapter}{\numberline {4}Simulations and results}{19}{chapter.4}%
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {5}Conclusion}{19}{chapter.5}%
+\contentsline {chapter}{\numberline {5}Conclusion}{20}{chapter.5}%

@@ -264,9 +264,11 @@ In Simulation Model the corresponding case i caught. A failure check is done, th
 \paragraph*{Idea}
 An edge data center should be able to elect a leader among the other edge data centers in reach if they meet some arbitrary conditions.
 
-A leader (that can have a leader as well) can execute tasks on its VM or offload them to its subordinates.
+A leader (that can have a leader as well) can execute tasks on its VM or offload them to its subordinates.\\
 
-As last chance the task is offloaded on the Cloud.
+As last chance, hence when the hierarchy is fully resolved and no VM is found, the task is offloaded on the Cloud.
+
+This implies that both Edge and Cloud must be present in computation paradigm in order to accomplish this.
 
 \subsection*{Implementation}
 
@@ -311,7 +313,8 @@ Otherwise the orchestrator flag is removed as well as the data center presence i
 
 In Simulation Manager I modified the default behavior of the method sendFromOrchToDestination, hence where is decided which VM will execute the task.
 
-I introduced 2 negative integer "error code" beside -1 ("no VM found").
+This class isn't extendable so I had to modify it directly.\\
+I introduced 2 negative integer "error code" beside -1 (the default error integer returned when no VM has been found).
 \begin{itemize}
 	\item -2: the task must be sent to the leader
 	\item -3: the task must be sent to the cloud
@@ -319,7 +322,9 @@ I introduced 2 negative integer "error code" beside -1 ("no VM found").
 
 Those codes are returned from the method my\_initialize.
 
-A switch catch the correct corresponding case scheduling \seqsplit{SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION} adding a delay in case of scheduling to Cloud.\\
+A switch catch the correct corresponding case scheduling \seqsplit{SEND\_TASK\_FROM\_ORCH\_TO\_DESTINATION} adding a delay in case of scheduling to Cloud.
+
+This works by changing the orchestrator of the task in \textbf{my\_initialize}. Although not correct by a practical point of view this is the only way I came up for including the information about the next datacenter to offload on without modifying the task.\\
 Due to the low flexibility of the tool I had also to specify the reason of failure distinguishing from failing for lack of resources and simply rescheduling the task.
 
 
@@ -331,11 +336,10 @@ I extended Orchestrator in order to implement a custom findVM method.
 
 This implies to implement my\_initialize and the methods corresponding to the various architectures.
 
-my\_findVM is called only in edgeAndCloud method because in other architecture there are less or more devices than expected.
-
+my\_findVM is called only in edgeAndCloud method because in other architecture there are less or more devices than needed to work.\\\\
 If LEADER is used as simulation algorithm there is a check for the presence of both Cloud and Edge in the simulation architecture. If it is not the case an error is displayed and the simulation stops.
 
-Otherwise the architecture is restricted to "Edge" and the method leader is called.\\
+Otherwise the architecture is restricted to "Edge" and the method \textbf{leader is called}.\\
 
 The algorithm simply iterates through hosts and VMs of the phase's devices in search for a VM that meet the condition imposed by the code.
 
@@ -343,10 +347,10 @@ The condition based on which a VM is selected is completely arbitrary.
 
 I used one based on task's length, MIBS and latency.\\
 
-This is the order of seek for a suitable VM is followed:
+This is the order of seek for a suitable VM:
 \begin{enumerate}
-	\item phase 0: among the hosts of the orchestrator.
-	\item phase 1: among the hosts of the leader of the original orchestrator and its subordinates
+	\item Phase 0: among the hosts of the orchestrator.
+	\item Phase 1: among the hosts of the leader of the original orchestrator and its subordinates.
 	
 	There should not be a situation where the orchestrator has no leader and is chosen for the previous step so the presence of a leader should be certain at this phase.
 \end{enumerate}
@@ -358,7 +362,7 @@ Are determined by the type of the orchestrator.
 Due to the fact that it changes in every step it's easy to tell in which phase the algorithm is in.
 This is an escamotage used to bypass PES limitation in flow control of the tasks.\\
 
-\subsection{Notes}
+\subsection{Notes and assumptions}
 
 \paragraph{Static election condition} The leader election is done once at the start of the simulation because the conditions on which a device is elected as leader are statics.
 

@@ -161,7 +161,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		//If I'm not the leader
 		if (leader!= null) {
 			//debug
-			System.out.println("Il mio leader e' " + leader.getId());
+			//System.out.println("Il mio leader e' " + leader.getId());
 
 			leader.subordinates.add(this);
 			leader.isLeader=true;
@@ -171,10 +171,13 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			isLeader=true;
 			this.setAsOrchestrator(false);
 			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
+			//debug
+			/*
 			System.out.println("I miei sottoposti (per ora) sono:"+ subordinates.size());
 			for (DataCenter el: subordinates){
 				System.out.println(el.getName());
 			}
+			 */
 		}
 	}
 

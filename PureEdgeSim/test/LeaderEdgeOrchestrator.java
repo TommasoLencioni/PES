@@ -90,7 +90,7 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		}
 		else if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) phase=2;
 
-		System.out.println("Task : " + task.getId() + ", orchestratore e' " + task.getOrchestrator().getName() + " e siamo alla phase " + phase);
+		//System.out.println("Task : " + task.getId() + ", orchestratore e' " + task.getOrchestrator().getName() + " e siamo alla phase " + phase);
 
 		//According to the phase of leadering different host are evaluated
 		switch (phase){

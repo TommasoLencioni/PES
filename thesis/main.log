@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  10 SEP 2021 12:37
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  22 SEP 2021 12:41
 entering extended mode
 **./main.tex
 (main.tex
@@ -881,46 +881,62 @@ Overfull \hbox (84.03398pt too wide) in paragraph at lines 258--261
 e method []
  []
 
-[13] [14]
-Underfull \hbox (badness 10000) in paragraph at lines 338--339
+[13]
+Underfull \hbox (badness 10000) in paragraph at lines 267--268
 
  []
 
-[15]
-Underfull \hbox (badness 10000) in paragraph at lines 344--345
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 354--355
+[14] [15]
+Underfull \hbox (badness 10000) in paragraph at lines 339--341
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 357--360
+Underfull \hbox (badness 10000) in paragraph at lines 342--343
 
  []
 
-[16] [17]
+
+Underfull \hbox (badness 10000) in paragraph at lines 348--349
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 358--359
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 361--364
+
+ []
+
+[16] [17] [18]
 Chapter 4.
-[18
+[19
 
 ]
 Chapter 5.
-[19
+[20
 
-] [20
+] [21
 
 ] (main.aux)
-Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: B082F162E1B9CE97015B4EFFB5F8D094;1075.
+
+Package rerunfilecheck Warning: File `main.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `main.out':
+(rerunfilecheck)             Before: B082F162E1B9CE97015B4EFFB5F8D094;1075
+(rerunfilecheck)             After:  E9BA9B7CF91AAF0D0C383636665E47B8;1091.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 17616 strings out of 479618
- 303870 string characters out of 2865026
+ 17617 strings out of 479618
+ 303877 string characters out of 2865026
  1011616 words of memory out of 3000000
  34465 multiletter control sequences out of 15000+200000
  411784 words of font info for 56 fonts, out of 3000000 for 9000
@@ -934,9 +950,9 @@ type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/lenci/AppData/Local/Progra
 ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/lenci/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on main.pdf (21 pages, 293119 bytes).
+Output written on main.pdf (22 pages, 294373 bytes).
 PDF statistics:
- 265 PDF objects out of 1000 (max. 8388607)
- 65 named destinations out of 1000 (max. 500000)
+ 269 PDF objects out of 1000 (max. 8388607)
+ 66 named destinations out of 1000 (max. 500000)
  150 words of extra memory for PDF output out of 10000 (max. 10000000)
 
