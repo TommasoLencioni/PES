@@ -41,7 +41,7 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		return 0;
 	}
 
-	protected int my_findVM(String[] architecture, Task task) {
+	protected Vm my_findVM(String[] architecture, Task task) {
 		if ("LEADER".equals(algorithm)) {
 			if (!arrayContains(architecture, "Cloud") || !arrayContains(architecture, "Edge")) {
 				SimLog.println("");
@@ -55,7 +55,8 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			return leader(edge_first, task);
 		}
 		else if ("INCREASE_LIFETIME".equals(algorithm)) {
-			return increseLifetime(architecture, task);
+			//return increseLifetime(architecture, task);
+			return null;
 		} else {
 			SimLog.println("");
 			SimLog.println("Default Orchestrator- Unknown orchestration algorithm '" + algorithm
@@ -64,7 +65,8 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			SimulationParameters.STOP = true;
 			simulationManager.getSimulation().terminate();
 		}
-		return -1;
+		//return -1;
+		return null;
 	}
 
 	/***
@@ -75,11 +77,24 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 	 		else tries on the Cloud with the increseLifetime
 	 		else it fails
 	 */
-	private int leader(String[] architecture, Task task) {
-		int vm = -1;
+	private Vm leader(String[] architecture, Task task) {
+		Vm vm = null;
 		int phase = -1;
 
+		for (Host host_el: task.getOrchestrator().getHostList()) {
+			for (Vm vm_el : host_el.getVmList()){
+				if (offloadingIsPossible(task, vm_el, architecture)
+					//custom conditions can be set here
+					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
 
+				){
+					vm = vm_el;
+					//System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
+				}
+			}
+		}
+		return vm;
+		/*
 		//I cannot get information about the history of the task, so I discern the phases according to the
 		//	type of the orchestrator
 		if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)){
@@ -101,7 +116,7 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 					for (Vm vm_el : host_el.getVmList()){
 						if (offloadingIsPossible(task, vm_el, architecture)
 								//custom conditions can be set here
-								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100000
+								//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
 
 						){
 							vm = vmList.indexOf(vm_el);
@@ -159,7 +174,7 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 						//	the current leader
 						if (((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null){
 							task.setOrchestrator(((LeaderEdgeDevice) task.getOrchestrator()).getLeader());
-							simLog.print("Leader Chaining");
+							//simLog.print("Leader Chaining");
 							vm=-2;
 						}
 						else{
@@ -185,6 +200,7 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		}
 
 		return vm;
+		*/
 		/*
 		//Cycle through all the orchestrator hosts and VMs
 		for (Host host_el: task.getOrchestrator().getHostList()) {
@@ -318,20 +334,20 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 
 	//I modified the original initialize method with the introduction of the "phase" argument in order to dinstinguish
 	//	between steps of the leader algorithm
-	public int my_initialize(Task task) {
-		int vmfound=-1;
+	public Vm my_initialize(Task task) {
+		Vm vmfound=null;
 		if ("CLOUD_ONLY".equals(architecture)) {
-			vmfound=cloudOnly(task);
+			//vmfound=cloudOnly(task);
 		} else if ("MIST_ONLY".equals(architecture)) {
-			vmfound=mistOnly(task);
+			//vmfound=mistOnly(task);
 		} else if ("EDGE_AND_CLOUD".equals(architecture)) {
 			vmfound=edgeAndCloud(task);
 		} else if ("ALL".equals(architecture)) {
-			vmfound=all(task);
+			//vmfound=all(task);
 		} else if ("EDGE_ONLY".equals(architecture)) {
-			vmfound=edgeOnly(task);
+			//vmfound=edgeOnly(task);
 		} else if ("MIST_AND_CLOUD".equals(architecture)) {
-			vmfound=mistAndCloud(task);
+			//vmfound=mistAndCloud(task);
 		}
 		else {
 			System.err.println("Architecture not recognized, please specify orchestration_architectures in simulation_parameters.properties");
@@ -368,12 +384,12 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 
 	// If the orchestration scenario is EDGE_AND_CLOUD send Tasks only to edge data
 	// centers or cloud virtual machines (vms)
-	private int edgeAndCloud(Task task) {
+	private Vm edgeAndCloud(Task task) {
 		String[] Architecture = { "Cloud", "Edge" };
-		int vmfound;
+		Vm vmfound;
 		vmfound=my_findVM(Architecture, task);
-		if (vmfound>=0){
-			assignTaskToVm(vmfound, task);
+		if (vmfound!=null){
+			assignTaskToVm(vmList.indexOf(vmfound), task);
 		}
 		return vmfound;
 

@@ -24,20 +24,27 @@ import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
+import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class LeaderEdgeDevice extends DefaultDataCenter {
 	private static final int LEADER_ELECTION = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
+	private static final int TASK_CHECK = 12000; // Avoid conflicting with CloudSim Plus Tags, custom tag for task_check election
+	private static final int TASK_REMOVAL = 13000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
+	private static final int TASK_ADDITION = 14000;
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
 	protected boolean isLeader;
 	public List<LeaderEdgeDevice> subordinates;
 	public List<LeaderEdgeDevice> cluster;
+	public HashMap<String, Task> current_tasks;
+	public HashMap<String, Task> dev_in_range;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
@@ -45,6 +52,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		subordinates = new ArrayList<LeaderEdgeDevice>();
 		leader=null;
 		isLeader=false;
+		current_tasks=new HashMap<>();
+		dev_in_range=new HashMap<>();
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
@@ -52,6 +61,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	@Override
 	public void startInternal() {
 		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, LEADER_ELECTION);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, TASK_CHECK);
 		super.startInternal();
 	}
 
@@ -69,9 +79,34 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				leader();
 			}
 			break;
+		case TASK_CHECK:
+			if (isLeader){
+				synchronized (current_tasks){
+					System.out.println("Sono il leader "+ this.getName() + " e ho i seguenti tasks");
+					for (Task t: current_tasks.values()){
+						System.out.println(t.getId());
+					}
+					System.out.println("---");
+				}
+				schedule(this, 20, TASK_CHECK);
+			}
+		case TASK_REMOVAL:
+			System.out.println("Rimuovo");
+			break;
+			/*
+		case TASK_ADDITION:
+			if(ev!=null){
+				Task task = (Task) ev.getData();
+				if (task!=null && leader!=null && !isLeader){
+					System.out.println("Inserisco");
+					synchronized (current_tasks) {
+						this.leader.current_tasks.put(task.getUid(), task);
+					}
+				}
+			}
+
+			 */
 		default:
-			//Task task = (Task) ev.getData();
-			//if task.getMaxLatency()
 			super.processEvent(ev);
 			break;
 		}

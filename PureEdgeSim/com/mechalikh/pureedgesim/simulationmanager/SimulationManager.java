@@ -34,6 +34,7 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters.TYPES;
 import com.mechalikh.pureedgesim.simulationvisualizer.SimulationVisualizer;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
+import test.LeaderEdgeDevice;
 import test.LeaderEdgeOrchestrator;
 
 public class SimulationManager extends SimulationManagerAbstract {
@@ -235,14 +236,14 @@ public class SimulationManager extends SimulationManagerAbstract {
 		//HERE This is the custom section
 
 
-
 		//here Encode the result from the class LeaderEdgeOrchestrator in a number smaller than 0
 		//	-1	->	no VM found
 		//	-2	->	the task must be scheduled to the leader
 		//	-3	->	the task must be scheduled to the cloud
 
 		// Find the best VM for executing the task
-		int foundVM = ((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
+		Vm foundVM = ((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
+		/*
 		switch (foundVM) {
 			case -1:
 				//System.out.println("Suitable VM not found");
@@ -259,13 +260,14 @@ public class SimulationManager extends SimulationManagerAbstract {
 						SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 				return;
 		}
-
+		*/
+		scheduleNow(foundVM.getHost().getDatacenter(), 14000, task);
 
 
 		// Stop in case no resource was available for this task, the offloading is
 		// failed
 		if (task.getVm() == Vm.NULL) {
-			if(foundVM == -1) {
+			if(foundVM != null) {
 				simLog.incrementTasksFailedLackOfRessources(task);
 				tasksCount++;
 			}
@@ -305,6 +307,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 				System.out.println(orc.getName());
 			}
 			 */
+			//Select as orchestrator the one closer
 			for (int i = 0; i < orchestratorsList.size(); i++) {
 				if (orchestratorsList.get(i).getType() != SimulationParameters.TYPES.CLOUD) {
 					distance = orchestratorsList.get(i).getMobilityManager().distanceTo(task.getEdgeDevice());
