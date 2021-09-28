@@ -313,7 +313,7 @@ Otherwise the orchestrator flag is removed as well as the data center presence i
 
 In Simulation Manager I modified the default behavior of the method sendFromOrchToDestination, hence where is decided which VM will execute the task.
 
-This class isn't extendable so I had to modify it directly.\\
+This class isn't customizable according to the simulator so I had to modify it directly.\\
 I introduced 2 negative integer "error code" beside -1 (the default error integer returned when no VM has been found).
 \begin{itemize}
 	\item -2: the task must be sent to the leader
@@ -336,10 +336,10 @@ I extended Orchestrator in order to implement a custom findVM method.
 
 This implies to implement my\_initialize and the methods corresponding to the various architectures.
 
-my\_findVM is called only in edgeAndCloud method because in other architecture there are less or more devices than needed to work.\\\\
+my\_findVM is called only in edgeAndCloud method because in other architectures there are less or more devices than needed to work.\\\\
 If LEADER is used as simulation algorithm there is a check for the presence of both Cloud and Edge in the simulation architecture. If it is not the case an error is displayed and the simulation stops.
 
-Otherwise the architecture is restricted to "Edge" and the method \textbf{leader is called}.\\
+Otherwise the architecture is restricted to "Edge" and the method \textbf{leader} is called.\\
 
 The algorithm simply iterates through hosts and VMs of the phase's devices in search for a VM that meet the condition imposed by the code.
 

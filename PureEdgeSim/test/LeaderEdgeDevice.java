@@ -22,6 +22,7 @@ package test;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
+import com.mechalikh.pureedgesim.datacentersmanager.ServersManager;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
@@ -37,7 +38,9 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	private static final int LEADER_ELECTION = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
 	private static final int TASK_CHECK = 12000; // Avoid conflicting with CloudSim Plus Tags, custom tag for task_check election
 	private static final int TASK_REMOVAL = 13000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
-	private static final int TASK_ADDITION = 14000;
+	public static final int TASK_ADDITION = 14000;
+	public static final int TASK_EXECUTION = 15000;
+	public static final int EDGE_PROXIMITY = 16000;
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
 	protected boolean isLeader;
@@ -72,42 +75,61 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public void processEvent(SimEvent ev) {
 		//System.out.println("--- " + this.getType() + " --- " + this.Orchestrator);
 		switch (ev.getTag()) {
-		case LEADER_ELECTION:
-			if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
-					&& this.isOrchestrator
-					&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
-				leader();
-			}
-			break;
-		case TASK_CHECK:
-			if (isLeader){
-				synchronized (current_tasks){
-					System.out.println("Sono il leader "+ this.getName() + " e ho i seguenti tasks");
-					for (Task t: current_tasks.values()){
-						System.out.println(t.getId());
-					}
-					System.out.println("---");
+			case LEADER_ELECTION:
+				if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+						&& this.isOrchestrator
+						&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
+					leader();
 				}
-				schedule(this, 20, TASK_CHECK);
-			}
-		case TASK_REMOVAL:
-			System.out.println("Rimuovo");
-			break;
-			/*
-		case TASK_ADDITION:
-			if(ev!=null){
+				break;
+			case TASK_CHECK:
+				if (isLeader){
+					synchronized (current_tasks){
+						System.out.println("Sono il leader "+ this.getName() + " e ho "+ current_tasks.size() +"  tasks");
+						/*
+						for (Task t: current_tasks.values()){
+							System.out.println(t.getId());
+						}
+
+						 */
+						System.out.println("---");
+						for (Task t: current_tasks.values()){
+							scheduleNow(subordinates.get(0), TASK_EXECUTION, t);
+						}
+					}
+					schedule(this, 20, TASK_CHECK);
+				}
+				break;
+			case TASK_ADDITION:
+				//Add the task to the current task hash map of my leader if i'm not able to execute it
 				Task task = (Task) ev.getData();
 				if (task!=null && leader!=null && !isLeader){
-					System.out.println("Inserisco");
+					System.out.println("Inserisco perche' non lo posso eseguire");
 					synchronized (current_tasks) {
 						this.leader.current_tasks.put(task.getUid(), task);
 					}
 				}
-			}
+				break;
+			case TASK_EXECUTION:
+				//Here the edge datacenter should consider executing the task
+				try {
+					Task task1 = (Task) ev.getData();
+					if (task1 != null && !isLeader) {
+						task1.setOrchestrator(this);
 
-			 */
-		default:
-			super.processEvent(ev);
+						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task1);
+						System.out.println("Provo ad eseguire il task assegnatomi dal leader");
+					}
+				}
+				catch (ClassCastException e){
+					super.processEvent(ev);
+				}
+				break;
+			case EDGE_PROXIMITY:
+				//Non posso ottentere il ServerManager per scandire gli edge devices che sono in prossimita'
+			break;
+			default:
+				super.processEvent(ev);
 			break;
 		}
 	}

@@ -26,6 +26,7 @@ import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
+import org.cloudbus.cloudsim.core.CloudSimEntity;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
@@ -51,8 +52,8 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 				SimulationParameters.STOP = true;
 				simulationManager.getSimulation().terminate();
 			}
-			String[] edge_first = { "Edge" };
-			return leader(edge_first, task);
+			//String[] edge_first = { "Edge" };
+			return leader(architecture, task);
 		}
 		else if ("INCREASE_LIFETIME".equals(algorithm)) {
 			//return increseLifetime(architecture, task);
@@ -85,7 +86,7 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			for (Vm vm_el : host_el.getVmList()){
 				if (offloadingIsPossible(task, vm_el, architecture)
 					//custom conditions can be set here
-					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
+					&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
 
 				){
 					vm = vm_el;
@@ -432,5 +433,9 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		}
 		assignTaskToVm(vmfound, task);
 		return vmfound;
+	}
+
+	public boolean offloadingispossible(Task task, Vm vm, String[] architecture) {
+		return offloadingIsPossible(task, vm, architecture);
 	}
 }

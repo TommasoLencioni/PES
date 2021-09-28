@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  22 SEP 2021 12:41
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  27 SEP 2021 17:24
 entering extended mode
 **./main.tex
 (main.tex
@@ -922,23 +922,17 @@ Chapter 5.
 ] [21
 
 ] (main.aux)
-
-Package rerunfilecheck Warning: File `main.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `main.out':
-(rerunfilecheck)             Before: B082F162E1B9CE97015B4EFFB5F8D094;1075
-(rerunfilecheck)             After:  E9BA9B7CF91AAF0D0C383636665E47B8;1091.
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: E9BA9B7CF91AAF0D0C383636665E47B8;1091.
 Package logreq Info: Writing requests to 'main.run.xml'.
 \openout1 = `main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 17617 strings out of 479618
- 303877 string characters out of 2865026
+ 17618 strings out of 479618
+ 303887 string characters out of 2865026
  1011616 words of memory out of 3000000
- 34465 multiletter control sequences out of 15000+200000
+ 34466 multiletter control sequences out of 15000+200000
  411784 words of font info for 56 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  71i,6n,74p,1845b,1731s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -950,7 +944,7 @@ type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/lenci/AppData/Local/Progra
 ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/lenci/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on main.pdf (22 pages, 294373 bytes).
+Output written on main.pdf (22 pages, 294561 bytes).
 PDF statistics:
  269 PDF objects out of 1000 (max. 8388607)
  66 named destinations out of 1000 (max. 500000)

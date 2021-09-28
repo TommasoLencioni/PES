@@ -23,8 +23,11 @@ package com.mechalikh.pureedgesim.simulationmanager;
 import java.io.IOException;
 import java.util.List;
 
+import com.mechalikh.pureedgesim.datacentersmanager.ServersManager;
+import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.events.SimEvent;
+import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
@@ -243,6 +246,22 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 		// Find the best VM for executing the task
 		Vm foundVM = ((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
+		//Vm foundVM = null;
+		/*
+		for (Host host_el: task.getOrchestrator().getHostList()) {
+			for (Vm vm_el : host_el.getVmList()){
+				if (((LeaderEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
+					//custom conditions can be set here
+					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
+
+				){
+					foundVM = vm_el;
+					//System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
+				}
+			}
+		}
+
+		 */
 		/*
 		switch (foundVM) {
 			case -1:
@@ -261,13 +280,16 @@ public class SimulationManager extends SimulationManagerAbstract {
 				return;
 		}
 		*/
-		scheduleNow(foundVM.getHost().getDatacenter(), 14000, task);
+
 
 
 		// Stop in case no resource was available for this task, the offloading is
 		// failed
 		if (task.getVm() == Vm.NULL) {
-			if(foundVM != null) {
+			if(((LeaderEdgeDevice) task.getOrchestrator()).getLeader()!=null) {
+				scheduleNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_ADDITION, task);
+			}
+			else {
 				simLog.incrementTasksFailedLackOfRessources(task);
 				tasksCount++;
 			}
