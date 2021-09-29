@@ -22,7 +22,6 @@ package test;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
-import com.mechalikh.pureedgesim.datacentersmanager.ServersManager;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
@@ -30,24 +29,26 @@ import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import javax.management.ObjectName;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LeaderEdgeDevice extends DefaultDataCenter {
 	private static final int LEADER_ELECTION = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
-	private static final int TASK_CHECK = 12000; // Avoid conflicting with CloudSim Plus Tags, custom tag for task_check election
+	private static final int TASK_SPOOL = 12000; // Avoid conflicting with CloudSim Plus Tags, custom tag for task_check election
 	private static final int TASK_REMOVAL = 13000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
 	public static final int TASK_ADDITION = 14000;
 	public static final int TASK_EXECUTION = 15000;
-	public static final int EDGE_PROXIMITY = 16000;
+	public static final int TASK_REJECTION = 16000;
+	public static final int EDGE_PROXIMITY = 17000;
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
 	protected boolean isLeader;
 	public List<LeaderEdgeDevice> subordinates;
 	public List<LeaderEdgeDevice> cluster;
-	public HashMap<String, Task> current_tasks;
-	public HashMap<String, Task> dev_in_range;
+	//public PriorityQueue <Map.Entry<Task, Integer>> current_tasks;
+	public ArrayList <Map.Entry<Task, Integer>> current_tasks;
+	public PriorityQueue <Map.Entry<Task, Integer>> dev_in_range;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
@@ -55,8 +56,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		subordinates = new ArrayList<LeaderEdgeDevice>();
 		leader=null;
 		isLeader=false;
-		current_tasks=new HashMap<>();
-		dev_in_range=new HashMap<>();
+		current_tasks=new ArrayList<>();
+		dev_in_range=new PriorityQueue<Map.Entry<Task, Integer>>();
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
@@ -64,13 +65,10 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	@Override
 	public void startInternal() {
 		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, LEADER_ELECTION);
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, TASK_CHECK);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, TASK_SPOOL);
 		super.startInternal();
 	}
 
-	// The scheduled event will be processed in processEvent(). To update the
-	// clusters continuously (a loop) another event has to be scheduled right after
-	// processing the previous one:
 	@Override
 	public void processEvent(SimEvent ev) {
 		//System.out.println("--- " + this.getType() + " --- " + this.Orchestrator);
@@ -82,7 +80,18 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 					leader();
 				}
 				break;
-			case TASK_CHECK:
+			case TASK_ADDITION:
+				//Add the task to the current task hash map of my leader if i'm not able to execute it
+				Task task = (Task) ev.getData();
+				if (task!=null && leader!=null && !isLeader){
+					System.out.println("Inserisco perche' non lo posso eseguire");
+					synchronized (current_tasks) {
+						java.util.Map.Entry<Task,Integer> t =new java.util.AbstractMap.SimpleEntry<Task,Integer>(task,1);
+						this.leader.current_tasks.add(t);
+					}
+				}
+				break;
+			case TASK_SPOOL:
 				if (isLeader){
 					synchronized (current_tasks){
 						System.out.println("Sono il leader "+ this.getName() + " e ho "+ current_tasks.size() +"  tasks");
@@ -92,34 +101,40 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						}
 
 						 */
-						System.out.println("---");
-						for (Task t: current_tasks.values()){
-							scheduleNow(subordinates.get(0), TASK_EXECUTION, t);
+
+						for(int i=0; i<current_tasks.size(); i++){
+							scheduleNow(subordinates.get(ThreadLocalRandom.current().nextInt(0, subordinates.size())), TASK_EXECUTION, current_tasks.remove(i).getKey());
 						}
+						System.out.println("---");
 					}
-					schedule(this, 20, TASK_CHECK);
+					schedule(this, 20, TASK_SPOOL);
 				}
 				break;
-			case TASK_ADDITION:
-				//Add the task to the current task hash map of my leader if i'm not able to execute it
-				Task task = (Task) ev.getData();
-				if (task!=null && leader!=null && !isLeader){
-					System.out.println("Inserisco perche' non lo posso eseguire");
-					synchronized (current_tasks) {
-						this.leader.current_tasks.put(task.getUid(), task);
-					}
-				}
-				break;
+
 			case TASK_EXECUTION:
 				//Here the edge datacenter should consider executing the task
 				try {
 					Task task1 = (Task) ev.getData();
 					if (task1 != null && !isLeader) {
 						task1.setOrchestrator(this);
-
-						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task1);
+						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_LEADER_TO_SUBORDINATE, task1);
 						System.out.println("Provo ad eseguire il task assegnatomi dal leader");
 					}
+				}
+				catch (ClassCastException e){
+					super.processEvent(ev);
+				}
+				break;
+			case TASK_REJECTION:
+				//Here the edge datacenter should consider executing the task
+				try {
+					Task task2 = (Task) ev.getData();
+					for (DataCenter dc: simulationManager.getServersManager().getDatacenterList())
+						if (dc.getType().equals(SimulationParameters.TYPES.CLOUD)) {
+							task2.setOrchestrator(dc);
+							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task2);
+							System.out.println("Provo ad eseguire il task assegnatomi dal leader");
+						}
 				}
 				catch (ClassCastException e){
 					super.processEvent(ev);

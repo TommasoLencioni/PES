@@ -358,6 +358,29 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		return vmfound;
 	}
 
+	public Vm my_initialize2(Task task) {
+		Vm vmfound=null;
+		if ("CLOUD_ONLY".equals(architecture)) {
+			//vmfound=cloudOnly(task);
+		} else if ("MIST_ONLY".equals(architecture)) {
+			//vmfound=mistOnly(task);
+		} else if ("EDGE_AND_CLOUD".equals(architecture)) {
+			vmfound=edgeAndCloud(task);
+		} else if ("ALL".equals(architecture)) {
+			//vmfound=all(task);
+		} else if ("EDGE_ONLY".equals(architecture)) {
+			//vmfound=edgeOnly(task);
+		} else if ("MIST_AND_CLOUD".equals(architecture)) {
+			//vmfound=mistAndCloud(task);
+		}
+		else {
+			System.err.println("Architecture not recognized, please specify orchestration_architectures in simulation_parameters.properties");
+			System.exit(-1);
+		}
+
+		return vmfound;
+	}
+
 	// If the orchestration scenario is MIST_ONLY send Tasks only to edge devices
 	private int mistOnly(Task task) {
 		String[] Architecture = { "Mist" };

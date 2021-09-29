@@ -42,7 +42,6 @@ import test.LeaderEdgeOrchestrator;
 
 public class SimulationManager extends SimulationManagerAbstract {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
-	public static final int SEND_TASK_FROM_ORCH_TO_DESTINATION = Base + 8;
 	private static final int PRINT_LOG = Base + 1;
 	private static final int SHOW_PROGRESS = Base + 2;
 	public static final int EXECUTE_TASK = Base + 3;
@@ -50,6 +49,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 	public static final int RESULT_RETURN_FINISHED = Base + 5;
 	public static final int SEND_TO_ORCH = Base + 6;
 	public static final int UPDATE_REAL_TIME_CHARTS = Base + 7;
+	public static final int SEND_TASK_FROM_ORCH_TO_DESTINATION = Base + 8;
+	public static final int SEND_TASK_FROM_LEADER_TO_SUBORDINATE = Base + 9;
 	private int lastWrittenNumber = 0;
 	private int oldProgress = -1;
 	private double failedTasksCount = 0;
@@ -112,6 +113,11 @@ public class SimulationManager extends SimulationManagerAbstract {
 		case SEND_TASK_FROM_ORCH_TO_DESTINATION:
 			// Send the request from the orchestrator to the offloading destination
 			sendFromOrchToDestination(task);
+			break;
+
+		case SEND_TASK_FROM_LEADER_TO_SUBORDINATE:
+			// Send the request from the orchestrator to the offloading destination
+			sendFromLeaderToSubordinate(task);
 			break;
 
 		case EXECUTE_TASK:
@@ -310,6 +316,54 @@ public class SimulationManager extends SimulationManagerAbstract {
 					// the orchestrator is deployed (no network usage)
 			scheduleNow(this, EXECUTE_TASK, task);
 		}
+	}
+
+	private void sendFromLeaderToSubordinate(Task task) {
+		if (taskFailed(task, 1))
+			return;
+
+		for (Host host_el: task.getOrchestrator().getHostList()) {
+			for (Vm vm_el : host_el.getVmList()){
+				//if (((LeaderEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
+					//custom conditions can be set here
+					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
+
+				//if (task.getLength()/vm_el.getMips()<task.getMaxLatency()/100){
+				task.setVm(vm_el);
+				//}
+			}
+		}
+		// Stop in case no resource was available for this task, the offloading is
+		// failed
+		if (task.getVm() == Vm.NULL) {
+			if(((LeaderEdgeDevice) task.getOrchestrator()).getLeader()!=null) {
+				System.out.println("Lo rimando al leader");
+				scheduleNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_REJECTION, task);
+			}
+			else {
+				simLog.incrementTasksFailedLackOfRessources(task);
+				tasksCount++;
+			}
+			return;
+		} else {
+			simLog.taskSentFromOrchToDest(task);
+		}
+		System.out.println("Lo eseguo");
+		scheduleNow(this, EXECUTE_TASK, task);
+		//here END of my custom section
+/*
+		// If the task is offloaded
+		// and the orchestrator is not the offloading destination
+		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()
+				&& task.getOrchestrator() != ((DataCenter) task.getVm().getHost().getDatacenter())) {
+			scheduleNow(getNetworkModel(), NetworkModelAbstract.SEND_REQUEST_FROM_ORCH_TO_DESTINATION, task);
+
+		} else { // The task will be executed locally / no offloading or will be executed where
+			// the orchestrator is deployed (no network usage)
+			scheduleNow(this, EXECUTE_TASK, task);
+		}
+
+ */
 	}
 
 	private void sendTaskToOrchestrator(Task task) {
