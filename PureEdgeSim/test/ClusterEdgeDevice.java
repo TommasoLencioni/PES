@@ -18,45 +18,45 @@
  *     
  *     @author Mechalikh
  **/
-package examples;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.cloudbus.cloudsim.core.events.SimEvent;
-import org.cloudbus.cloudsim.hosts.Host;
-import org.cloudbus.cloudsim.vms.Vm;
+package test;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
+import org.cloudbus.cloudsim.core.events.SimEvent;
+import org.cloudbus.cloudsim.hosts.Host;
+import org.cloudbus.cloudsim.vms.Vm;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class ClusterEdgeDevice extends DefaultDataCenter {
-	private static final int UPDATE_CLUSTERS = 11000; // Avoid conflicting with CloudSim Plus Tags
+	private static final int NEIGHBORHOOD = 11000; // Avoid conflicting with CloudSim Plus Tags
+	private static final int NEIGHBORHOOD_TASK = 13000; // Avoid conflicting with CloudSim Plus Tags
+	public static final int TASK_REJECTION = 14000; // Avoid conflicting with CloudSim Plus Tags
+	private static final int CHECK = 12000; // Avoid conflicting with CloudSim Plus Tags
 	private double weight = 0;
 	private ClusterEdgeDevice parent;
 	protected ClusterEdgeDevice Orchestrator;
 	private double originalWeight = 0;
 	private double weightDrop = 0.1;
 	private int time = 0;
-	public List<Task> cache = new ArrayList<Task>();
-	public List<ClusterEdgeDevice> cluster;
-	public List<double[]> Remotecache = new ArrayList<double[]>();
-	public List<double[]> probability = new ArrayList<double[]>();
+	public LinkedList<ClusterEdgeDevice> neighborhood;
 
 	public ClusterEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
-			List<? extends Vm> vmList) {
+                             List<? extends Vm> vmList) {
 		super(simulationManager, hostList, vmList);
-		cluster = new ArrayList<ClusterEdgeDevice>();
+		neighborhood = new LinkedList<ClusterEdgeDevice>();
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
 	// be scheduled within the startInternal() method:
 	@Override
 	public void startInternal() {
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, UPDATE_CLUSTERS); 
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, NEIGHBORHOOD);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, CHECK);
 		super.startInternal();
 	}
 
@@ -66,19 +66,40 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 	@Override
 	public void processEvent(SimEvent ev) {
 		switch (ev.getTag()) {
-		case UPDATE_CLUSTERS:
-			if (this.getType() == SimulationParameters.TYPES.EDGE_DEVICE
-					&& "CLUSTER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
-					&& (getSimulation().clock() - time > 30)) {
-				//fix non ho capito sopra perché fa il check col time con 30 hard coded
-				// a quanto ho capito comincia a chiamare neighborhood dopo che sono passati 30 minuti e poi non lo chiama
-				// più perché time diventa getSimulation().clock() e sarà sempre < 30 nelle iterazioni successive
-				// Nel tutorial non c'è questa "limitazione" nell'update
-				time = (int) getSimulation().clock();
+		case NEIGHBORHOOD:
+			if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+					&& "CLUSTER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
 				cluster();
 				// schedule the next update
-				schedule(this, 1, UPDATE_CLUSTERS);
+				//schedule(this, 1, NEIGHBORHOOD);
 			}
+
+			break;
+		case NEIGHBORHOOD_TASK:
+			for (Host host_el: this.getHostList()) {
+				for (Vm vm_el : host_el.getVmList()){
+
+					if (((ClusterEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
+					//custom conditions can be set here
+					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
+					{
+						task.setVm(vm_el);
+						//TODO SCHEDULE TO NEIGHBOR
+					}
+				}
+			}
+			//if(neighborhood.size()> neighborhood.get(neighborhood.indexOf(ev)+1))
+			break;
+		case TASK_REJECTION:
+			Task task = (Task) ev.getData();
+			if(neighborhood.size() > neighborhood.indexOf(ev)+1){
+				//TODO SCHEDULE TO CLOUD
+			}
+
+			break;
+		case CHECK:
+			if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER) System.err.println(this.getName() + " ho "+ neighborhood.size());
+			schedule(this, 1, CHECK);
 			break;
 		default:
 			super.processEvent(ev);
@@ -148,16 +169,16 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 	public void setOrchestrator(ClusterEdgeDevice newOrchestrator) {
 		//this device has changed its neighborhood, so it should be removed from the previous one
 		if (Orchestrator != null)
-			Orchestrator.cluster.remove(this);
+			Orchestrator.neighborhood.remove(this);
 		
 		// If the new orchestrator is another device (not this one)
 		if (this != newOrchestrator) {
 			//if this device is no more an orchestrator, its neighborhood will be joined with the neighborhood of the new orchestrator
 			if (isOrchestrator()) {
-				newOrchestrator.cluster.addAll(this.cluster);
+				newOrchestrator.neighborhood.addAll(this.neighborhood);
 			}
 			// now remove it neighborhood after
-			cluster.clear();
+			neighborhood.clear();
 			//remove this device from orchestrators list
 			simulationManager.getServersManager().getOrchestratorsList().remove(this);
 			System.err.println(simulationManager.getServersManager().getOrchestratorsList().size());
@@ -167,16 +188,16 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 			this.setAsOrchestrator(false);
 			
 			//in case the neighborhood doesn't has this device as member
-			if (!newOrchestrator.cluster.contains(this))
-				newOrchestrator.cluster.add(this);
+			if (!newOrchestrator.neighborhood.contains(this))
+				newOrchestrator.neighborhood.add(this);
 		}
         // configure the new orchestrator (it can be another device, or this device)
 		newOrchestrator.setAsOrchestrator(true);
 		newOrchestrator.Orchestrator = newOrchestrator;
 		newOrchestrator.parent = null;
 		//in case the neighborhood doesn't has the orchestrator as member
-		if (!newOrchestrator.cluster.contains(newOrchestrator))
-			newOrchestrator.cluster.add(newOrchestrator);
+		if (!newOrchestrator.neighborhood.contains(newOrchestrator))
+			newOrchestrator.neighborhood.add(newOrchestrator);
 		//add the new orchestrator to the list
 		if (!simulationManager.getServersManager().getOrchestratorsList().contains(newOrchestrator))
 			simulationManager.getServersManager().getOrchestratorsList().add(newOrchestrator);
@@ -196,7 +217,8 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 	 *
 	 * Poi comparo il mio peso con quello dei vicini con compareWeightWithNeighbors
 	 */
-	private void cluster() {
+	/*
+	private void neighborhood() {
 		originalWeight = getOriginalWeight();
 		System.out.println(originalWeight);
 		if ((getOrchestratorWeight() < originalWeight) || ((parent != null) && (getDistance(this, parent) > SimulationParameters.EDGE_DEVICES_RANGE))) {
@@ -206,6 +228,19 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 
 		compareWeightWithNeighbors();
 
+	}
+	*/
+
+	public void cluster () {
+		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
+			DataCenter candidate = simulationManager.getServersManager().getDatacenterList().get(i);
+			//Condition for evaluating a datacenter
+			if ((this!=candidate)
+					&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+					&& (getDistance(this, candidate)<= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
+					neighborhood.add((ClusterEdgeDevice)candidate);
+				}
+		}
 	}
 
 	/**

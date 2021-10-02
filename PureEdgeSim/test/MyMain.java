@@ -20,8 +20,6 @@ public class MyMain extends MainApplication {
     }
 
     public static void main(String[] args) {
-        // Load the custom devices class
-        //MyMain.setCustomEdgeDataCenters(LeaderEdgeDevice.class);
 
         //From example 6
         setCustomOutputFolder(outputPath);
@@ -29,10 +27,13 @@ public class MyMain extends MainApplication {
         setCustomSettingsFolder(settingsPath);
 
         // tell PureEdgeSim to use this custom orchestrator and orchestration algorithm
-        setCustomEdgeOrchestrator(LeaderEdgeOrchestrator.class);
+        //setCustomEdgeOrchestrator(LeaderEdgeOrchestrator.class);
 
-        // Clustering
-        setCustomEdgeDataCenters(LeaderEdgeDevice.class);
+        // Leadering
+        //setCustomEdgeDataCenters(LeaderEdgeDevice.class);
+
+        //Clustering
+        setCustomEdgeDataCenters(ClusterEdgeDevice.class);
 
         // Launch the simulation
         MyMain.launchSimulation();

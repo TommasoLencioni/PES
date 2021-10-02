@@ -52,7 +52,7 @@ public class Example7 extends MainApplication {
 	 * downloaded from the cloud everytime and registry_mode=CACHE in which the
 	 * frequently needed containers are cached in edge devices. Same for
 	 * deploy_orchestrator=CLUSTER and deploy_orchestrator=CLOUD. where the
-	 * orchestrators are deployed on the cluster heads or on the cloud
+	 * orchestrators are deployed on the neighborhood heads or on the cloud
 	 * 
 	 * Try to use the MIST_ONLY architecture, in order to see clearly the difference
 	 * in WAN usage (no tasks offloading to the cloud, so the wan will only be used

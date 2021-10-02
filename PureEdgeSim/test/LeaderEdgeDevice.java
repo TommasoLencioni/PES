@@ -85,13 +85,14 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				Task task = (Task) ev.getData();
 				if (task!=null && leader!=null && !isLeader){
 					System.out.println("Inserisco perche' non lo posso eseguire");
-					synchronized (current_tasks) {
+					synchronized (leader.current_tasks) {
 						java.util.Map.Entry<Task,Integer> t =new java.util.AbstractMap.SimpleEntry<Task,Integer>(task,1);
 						this.leader.current_tasks.add(t);
 					}
 				}
 				break;
 			case TASK_SPOOL:
+				//todo tofix
 				if (isLeader){
 					synchronized (current_tasks){
 						System.out.println("Sono il leader "+ this.getName() + " e ho "+ current_tasks.size() +"  tasks");
@@ -103,6 +104,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						 */
 
 						for(int i=0; i<current_tasks.size(); i++){
+							//Map.Entry<Task, Integer> tmp_task = current_tasks.remove(i);
 							scheduleNow(subordinates.get(ThreadLocalRandom.current().nextInt(0, subordinates.size())), TASK_EXECUTION, current_tasks.remove(i).getKey());
 						}
 						System.out.println("---");
@@ -165,17 +167,17 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 
 
 	public void setOrchestrator(LeaderEdgeDevice newOrchestrator) {
-		//this device has changed its cluster, so it should be removed from the previous one
+		//this device has changed its neighborhood, so it should be removed from the previous one
 		if (Orchestrator != null)
 			Orchestrator.cluster.remove(this);
 		
 		// If the new orchestrator is another device (not this one)
 		if (this != newOrchestrator) {
-			//if this device is no more an orchestrator, its cluster will be joined with the cluster of the new orchestrator
+			//if this device is no more an orchestrator, its neighborhood will be joined with the neighborhood of the new orchestrator
 			if (isOrchestrator()) {
 				newOrchestrator.cluster.addAll(this.cluster);
 			}
-			// now remove it cluster after
+			// now remove it neighborhood after
 			cluster.clear();
 			//remove this device from orchestrators list
 			simulationManager.getServersManager().getOrchestratorsList().remove(this);
@@ -185,7 +187,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			// this device is no more an orchestrator so set it to false
 			this.setAsOrchestrator(false);
 			
-			//in case the cluster doesn't has this device as member
+			//in case the neighborhood doesn't has this device as member
 			if (!newOrchestrator.cluster.contains(this))
 				newOrchestrator.cluster.add(this);
 		}
@@ -193,7 +195,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		newOrchestrator.setAsOrchestrator(true);
 		newOrchestrator.Orchestrator = newOrchestrator;
 		//newOrchestrator.parent = null;
-		//in case the cluster doesn't has the orchestrator as member
+		//in case the neighborhood doesn't has the orchestrator as member
 		if (!newOrchestrator.cluster.contains(newOrchestrator))
 			newOrchestrator.cluster.add(newOrchestrator);
 		//add the new orchestrator to the list
@@ -257,4 +259,10 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		return leader;
 	}
 
+	/*
+	public synchronized ArrayList <Map.Entry<Task, Integer>> getCurrentTasks(){
+
+	}
+
+	 */
 }
