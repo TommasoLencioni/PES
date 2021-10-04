@@ -111,7 +111,7 @@ public class Task extends CloudletSimple {
 		this.applicationID = applicationID;
 	}
 
-	public test.Task.Status getFailureReason() {
+	public Status getFailureReason() {
 		return failureReason;
 	}
 
@@ -127,4 +127,12 @@ public class Task extends CloudletSimple {
 		this.metaData = metaData;
 	}
 
+	private DataCenter current_executor;
+
+	public void setExecutor(DataCenter exe) {
+		this.current_executor = exe;
+	}
+	public DataCenter getExecutor() {
+		return current_executor;
+	}
 }

@@ -20,9 +20,6 @@
  **/
 package com.mechalikh.pureedgesim.simulationmanager;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.network.NetworkModelAbstract;
 import com.mechalikh.pureedgesim.scenariomanager.Scenario;
@@ -30,7 +27,6 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters.TYPES;
 import com.mechalikh.pureedgesim.simulationvisualizer.SimulationVisualizer;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
-//import test.Task;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
@@ -38,9 +34,11 @@ import org.cloudbus.cloudsim.vms.Vm;
 import test.ClusterEdgeDevice;
 import test.ClusterEdgeOrchestrator;
 import test.LeaderEdgeDevice;
-import test.LeaderEdgeOrchestrator;
 
-public class SimulationManager extends SimulationManagerAbstract {
+import java.io.IOException;
+import java.util.List;
+
+public class SimulationManager_old extends SimulationManagerAbstract {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
 	private static final int PRINT_LOG = Base + 1;
 	private static final int SHOW_PROGRESS = Base + 2;
@@ -51,13 +49,12 @@ public class SimulationManager extends SimulationManagerAbstract {
 	public static final int UPDATE_REAL_TIME_CHARTS = Base + 7;
 	public static final int SEND_TASK_FROM_ORCH_TO_DESTINATION = Base + 8;
 	public static final int SEND_TASK_FROM_LEADER_TO_SUBORDINATE = Base + 9;
-	public static final int TASK_SENT_FROM_NEIGHBOR = Base + 10;
 	private int lastWrittenNumber = 0;
 	private int oldProgress = -1;
 	private double failedTasksCount = 0;
 	private int tasksCount = 0;
 
-	public SimulationManager(SimLog simLog, CloudSim simulation, int simulationId, int iteration, Scenario scenario) {
+	public SimulationManager_old(SimLog simLog, CloudSim simulation, int simulationId, int iteration, Scenario scenario) {
 		super(simLog, simulation, simulationId, iteration, scenario);
 
 		// Show real time results during the simulation
@@ -116,19 +113,12 @@ public class SimulationManager extends SimulationManagerAbstract {
 			sendFromOrchToDestination(task);
 			break;
 
-
+		/*LEADER
 		case SEND_TASK_FROM_LEADER_TO_SUBORDINATE:
 			// Send the request from the orchestrator to the offloading destination
 			sendFromLeaderToSubordinate(task);
 			break;
-
-
-		/*Neighbor
-		case TASK_SENT_FROM_NEIGHBOR:
-			// Send the request from the orchestrator to the offloading destination
-			sendFromNeighToDestination(task);
-			break;
-			*/
+		*/
 
 		case EXECUTE_TASK:
 			//System.out.println("Eseguo il task");
@@ -272,7 +262,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 	}
 	*/
 
-	//LEADER
+	/*LEADER
 	private void sendFromOrchToDestination(Task task) {
 		if (taskFailed(task, 1))
 			return;
@@ -340,7 +330,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 			scheduleNow(this, EXECUTE_TASK, task);
 		}
 	}
-
+	*/
+	/*
 	private void sendFromLeaderToSubordinate(Task task) {
 		if (taskFailed(task, 1))
 			return;
@@ -385,42 +376,34 @@ public class SimulationManager extends SimulationManagerAbstract {
 			scheduleNow(this, EXECUTE_TASK, task);
 		}
 	}
+	*/
 
-
-	/*NEIGHBOR
+	//CLUSTER
 	private void sendFromOrchToDestination(Task task) {
 		if (taskFailed(task, 1))
 			return;
 
-		task.setExecutor(task.getOrchestrator());
-
-		edgeOrchestrator.initialize(task);
-
 		// Find the best VM for executing the task
 		for (Host host_el: task.getOrchestrator().getHostList()) {
 			for (Vm vm_el : host_el.getVmList()){
-				if (((ClusterEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
+				if (((ClusterEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES))
 				//custom conditions can be set here
 				//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-				){
+				{
 					task.setVm(vm_el);
 				}
 			}
 		}
 
-
-
 		// Stop in case no resource was available for this task, the offloading is
 		// failed
-		if (task.getVm() == Vm.NULL){
-			if(!((ClusterEdgeDevice) task.getOrchestrator()).neighborhood.isEmpty()) {
+		if (task.getVm() == Vm.NULL) {
+			if(((ClusterEdgeDevice) task.getOrchestrator()).neighborhood.isEmpty()) {
 				System.out.println("Chiedo ai vicini");
-				scheduleFirstNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_REJECTION, task);
+				scheduleNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_REJECTION, task);
 			}
-			else{
-				simLog.incrementTasksFailedLackOfRessources(task);
-				tasksCount++;
-			}
+			simLog.incrementTasksFailedLackOfRessources(task);
+			tasksCount++;
 			return;
 		} else {
 			simLog.taskSentFromOrchToDest(task);
@@ -438,47 +421,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 		}
 	}
 
-
-	private void sendFromNeighToDestination(Task task) {
-		if (taskFailed(task, 1))
-			return;
-
-		// Find the best VM for executing the task
-		for (Host host_el: task.getExecutor().getHostList()) {
-			for (Vm vm_el : host_el.getVmList()){
-				if (
-					((ClusterEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
-					//custom conditions can be set here
-					//task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-				){
-					task.setVm(vm_el);
-				}
-			}
-		}
-
-		// Stop in case no resource was available for this task, the offloading is
-		// failed
-		if (task.getVm() == Vm.NULL) {
-			scheduleNow(task.getOrchestrator(), ClusterEdgeDevice.TASK_TO_NEIGHBOR, task);
-			return;
-		}
-		//TODO the orchestrator could be the executor
-		//task.setOrchestrator(task.getExecutor());
-
-		// If the task is offloaded
-		// and the orchestrator is not the offloading destination
-		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()
-				&& task.getOrchestrator() != ((DataCenter) task.getVm().getHost().getDatacenter())) {
-			scheduleNow(getNetworkModel(), NetworkModelAbstract.SEND_REQUEST_FROM_ORCH_TO_DESTINATION, task);
-
-		} else { // The task will be executed locally / no offloading or will be executed where
-			// the orchestrator is deployed (no network usage)
-			System.err.println("Non dovrebbe arrivare a questo punto");
-			scheduleNow(this, EXECUTE_TASK, task);
-		}
-	}
-*/
-
 	private void sendTaskToOrchestrator(Task task) {
 		if (taskFailed(task, 0))
 			return;
@@ -492,7 +434,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 			double distance;
 			//Select as orchestrator the one closer
 			for (int i = 0; i < orchestratorsList.size(); i++) {
-				if (orchestratorsList.get(i).getType() != SimulationParameters.TYPES.CLOUD) {
+				if (orchestratorsList.get(i).getType() != TYPES.CLOUD) {
 					distance = orchestratorsList.get(i).getMobilityManager().distanceTo(task.getEdgeDevice());
 					if (min == -1 || min > distance) {
 						min = distance;
@@ -553,14 +495,14 @@ public class SimulationManager extends SimulationManagerAbstract {
 		// device mobility, if the vm location doesn't match
 		// the edge device location (that generated this task)
 		if (phase == 1 && task.getOrchestrator() != null
-				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+				&& task.getOrchestrator().getType() != TYPES.CLOUD
 				&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
 			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
 			simLog.incrementTasksFailedMobility(task);
 			return setFailed(task);
 		}
 		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
-				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != TYPES.CLOUD
 				&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
 			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
 			simLog.incrementTasksFailedMobility(task);

@@ -24,7 +24,7 @@ import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
-import com.mechalikh.pureedgesim.tasksgenerator.Task;
+//import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
@@ -34,8 +34,9 @@ import java.util.List;
 
 public class ClusterEdgeDevice extends DefaultDataCenter {
 	private static final int NEIGHBORHOOD = 11000; // Avoid conflicting with CloudSim Plus Tags
-	private static final int NEIGHBORHOOD_TASK = 13000; // Avoid conflicting with CloudSim Plus Tags
-	public static final int TASK_REJECTION = 14000; // Avoid conflicting with CloudSim Plus Tags
+	public static final int TASK_TO_NEIGHBOR = 13000; // Avoid conflicting with CloudSim Plus Tags
+	private static final int TASK_FROM_NEIGHBOR = 14000; // Avoid conflicting with CloudSim Plus Tags
+	public static final int TASK_REJECTION = 15000; // Avoid conflicting with CloudSim Plus Tags
 	private static final int CHECK = 12000; // Avoid conflicting with CloudSim Plus Tags
 	private double weight = 0;
 	private ClusterEdgeDevice parent;
@@ -44,6 +45,7 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 	private double weightDrop = 0.1;
 	private int time = 0;
 	public LinkedList<ClusterEdgeDevice> neighborhood;
+	//TODO FAi una lista di entry indicizzate con task e come valore il numero del vicino che hanno appena visto
 
 	public ClusterEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
                              List<? extends Vm> vmList) {
@@ -75,27 +77,27 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 			}
 
 			break;
-		case NEIGHBORHOOD_TASK:
-			for (Host host_el: this.getHostList()) {
-				for (Vm vm_el : host_el.getVmList()){
-
-					if (((ClusterEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
-					//custom conditions can be set here
-					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-					{
-						task.setVm(vm_el);
-						//TODO SCHEDULE TO NEIGHBOR
-					}
-				}
+		case TASK_TO_NEIGHBOR:
+			Task task = (Task) ev.getData();
+			ClusterEdgeDevice next = neighborhood.get(neighborhood.indexOf(task.getExecutor())+1);
+			if(neighborhood.size()> neighborhood.indexOf(task.getExecutor())+1){
+				task.setExecutor(next);
+				scheduleNow(next, TASK_FROM_NEIGHBOR, task);
 			}
-			//if(neighborhood.size()> neighborhood.get(neighborhood.indexOf(ev)+1))
+			else scheduleFirstNow(this, TASK_REJECTION, task);
+			break;
+		case TASK_FROM_NEIGHBOR:
+			Task task1 = (Task) ev.getData();
+			scheduleNow(this.simulationManager, SimulationManager.TASK_SENT_FROM_NEIGHBOR, task1);
 			break;
 		case TASK_REJECTION:
-			Task task = (Task) ev.getData();
-			if(neighborhood.size() > neighborhood.indexOf(ev)+1){
-				//TODO SCHEDULE TO CLOUD
+			Task task2 = (Task) ev.getData();
+			for(DataCenter dc: this.simulationManager.getServersManager().getDatacenterList()){
+				if (dc.getType()==SimulationParameters.TYPES.CLOUD){
+					task2.setOrchestrator(dc);
+					scheduleNow(this.simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task2);
+				}
 			}
-
 			break;
 		case CHECK:
 			if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER) System.err.println(this.getName() + " ho "+ neighborhood.size());

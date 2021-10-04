@@ -25,11 +25,12 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
+import com.mechalikh.pureedgesim.tasksorchestration.DefaultEdgeOrchestrator;
 import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
-public class ClusterEdgeOrchestrator extends Orchestrator {
+public class ClusterEdgeOrchestrator extends DefaultEdgeOrchestrator {
 
 	public ClusterEdgeOrchestrator(SimulationManager simulationManager) {
 		super(simulationManager);
