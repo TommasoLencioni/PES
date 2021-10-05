@@ -27,13 +27,13 @@ public class MyMain extends MainApplication {
         setCustomSettingsFolder(settingsPath);
 
         // tell PureEdgeSim to use this custom orchestrator and orchestration algorithm
-        //setCustomEdgeOrchestrator(LeaderEdgeOrchestrator.class);
+        setCustomEdgeOrchestrator(LeaderEdgeOrchestrator.class);
 
         // Leadering
-        //setCustomEdgeDataCenters(LeaderEdgeDevice.class);
+        setCustomEdgeDataCenters(LeaderEdgeDevice.class);
 
         //Clustering
-        setCustomEdgeDataCenters(ClusterEdgeDevice.class);
+        //setCustomEdgeDataCenters(ClusterEdgeDevice.class);
 
         // Launch the simulation
         MyMain.launchSimulation();

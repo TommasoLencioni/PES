@@ -297,6 +297,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 		Vm foundVM = ((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
 		//Vm foundVM = null;
 
+		/*
 		for (Host host_el: task.getOrchestrator().getHostList()) {
 			for (Vm vm_el : host_el.getVmList()){
 				if (((LeaderEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
@@ -309,6 +310,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 				}
 			}
 		}
+
+		 */
 
 
 		// Stop in case no resource was available for this task, the offloading is

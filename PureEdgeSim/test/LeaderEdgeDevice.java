@@ -29,23 +29,25 @@ import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
-import javax.management.ObjectName;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class LeaderEdgeDevice extends DefaultDataCenter {
-	private static final int LEADER_ELECTION = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
+	private static final int COMMUNITY_DISCOVERY = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for discover election
 	private static final int TASK_SPOOL = 12000; // Avoid conflicting with CloudSim Plus Tags, custom tag for task_check election
-	private static final int TASK_REMOVAL = 13000; // Avoid conflicting with CloudSim Plus Tags, custom tag for leader election
+	private static final int TASK_REMOVAL = 13000; // Avoid conflicting with CloudSim Plus Tags, custom tag for discover election
 	public static final int TASK_ADDITION = 14000;
 	public static final int TASK_EXECUTION = 15000;
 	public static final int TASK_REJECTION = 16000;
-	public static final int EDGE_PROXIMITY = 17000;
+	public static final int LEADER_SETTLE = 17000;
+	public static final int LEADER_CONFERMATION = 18000;
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
 	protected boolean isLeader;
 	public List<LeaderEdgeDevice> subordinates;
 	public List<LeaderEdgeDevice> cluster;
+	public ArrayList<LeaderEdgeDevice> community;
 	//public PriorityQueue <Map.Entry<Task, Integer>> current_tasks;
 	public ArrayList <Map.Entry<Task, Integer>> current_tasks;
 	public PriorityQueue <Map.Entry<Task, Integer>> dev_in_range;
@@ -58,30 +60,37 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		isLeader=false;
 		current_tasks=new ArrayList<>();
 		dev_in_range=new PriorityQueue<Map.Entry<Task, Integer>>();
+		community= new ArrayList<>();
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
 	// be scheduled within the startInternal() method:
 	@Override
 	public void startInternal() {
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, LEADER_ELECTION);
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, TASK_SPOOL);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, COMMUNITY_DISCOVERY);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, LEADER_SETTLE);
 		super.startInternal();
 	}
 
 	@Override
 	public void processEvent(SimEvent ev) {
-		//System.out.println("--- " + this.getType() + " --- " + this.Orchestrator);
 		switch (ev.getTag()) {
-			case LEADER_ELECTION:
+			case COMMUNITY_DISCOVERY:
 				if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
 						&& this.isOrchestrator
 						&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
-					leader();
+					discover();
+				}
+				break;
+			case LEADER_SETTLE:
+				if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+						&& this.isOrchestrator
+						&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
+					settle();
 				}
 				break;
 			case TASK_ADDITION:
-				//Add the task to the current task hash map of my leader if i'm not able to execute it
+				//Add the task to the current task hash map of my discover if i'm not able to execute it
 				Task task = (Task) ev.getData();
 				if (task!=null && leader!=null && !isLeader){
 					System.out.println("Inserisco perche' non lo posso eseguire");
@@ -95,7 +104,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				//todo tofix
 				if (isLeader){
 					synchronized (current_tasks){
-						System.out.println("Sono il leader "+ this.getName() + " e ho "+ current_tasks.size() +"  tasks");
+						System.out.println("Sono il discover "+ this.getName() + " e ho "+ current_tasks.size() +"  tasks");
 						/*
 						for (Task t: current_tasks.values()){
 							System.out.println(t.getId());
@@ -120,7 +129,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 					if (task1 != null && !isLeader) {
 						task1.setOrchestrator(this);
 						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_LEADER_TO_SUBORDINATE, task1);
-						System.out.println("Provo ad eseguire il task assegnatomi dal leader");
+						System.out.println("Provo ad eseguire il task assegnatomi dal discover");
 					}
 				}
 				catch (ClassCastException e){
@@ -135,16 +144,13 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						if (dc.getType().equals(SimulationParameters.TYPES.CLOUD)) {
 							task2.setOrchestrator(dc);
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task2);
-							System.out.println("Provo ad eseguire il task assegnatomi dal leader");
+							System.out.println("Provo ad eseguire il task assegnatomi dal discover");
 						}
 				}
 				catch (ClassCastException e){
 					super.processEvent(ev);
 				}
 				break;
-			case EDGE_PROXIMITY:
-				//Non posso ottentere il ServerManager per scandire gli edge devices che sono in prossimita'
-			break;
 			default:
 				super.processEvent(ev);
 			break;
@@ -208,9 +214,9 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public LeaderEdgeDevice getOrchestrator() {
 		return Orchestrator;
 	}
- 
-	//my
-	private void leader(){
+
+	/*Old discover
+	private void discover(){
 		//Gauge for max number of MIPS
 		double max_MIPS =0;
 		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
@@ -222,47 +228,115 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				//here debug
 				//System.out.println(this.getName() + " " + this.getResources().getTotalMips() +
 				//		" " + candidate.getName() + " " + candidate.getResources().getTotalMips());
-				//Condition for choosing a leader
+				//Condition for choosing a discover
 
 				//The election's criterion can be customized
+
 				if (this.getResources().getTotalMips()<candidate.getResources().getTotalMips()
 					&& max_MIPS <candidate.getResources().getTotalMips()){
 					max_MIPS =candidate.getResources().getTotalMips();
-					leader = (LeaderEdgeDevice) candidate;
+					discover = (LeaderEdgeDevice) candidate;
 				}
 			}
 		}
-		//If I'm not the leader
-		if (leader!= null) {
+		//If I'm not the discover
+		if (discover!= null) {
 			//debug
-			//System.out.println("Il mio leader e' " + leader.getId());
+			//System.out.println("Il mio discover e' " + discover.getId());
 
-			leader.subordinates.add(this);
-			leader.isLeader=true;
+			discover.subordinates.add(this);
+			discover.isLeader=true;
 		}
-		//If I'm the leader
+		//If I'm the discover
 		else if (this.getType()==SimulationParameters.TYPES.EDGE_DATACENTER){
 			isLeader=true;
 			this.setAsOrchestrator(false);
 			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
-			//debug
-			/*
-			System.out.println("I miei sottoposti (per ora) sono:"+ subordinates.size());
-			for (DataCenter el: subordinates){
-				System.out.println(el.getName());
-			}
-			 */
+
 		}
+	}
+	*/
+
+	private void discover(){
+		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
+			DataCenter candidate = simulationManager.getServersManager().getDatacenterList().get(i);
+			//Condition for evaluating a datacenter
+			if ((this != candidate)
+					&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+					&& (getDistance(this, candidate) <= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
+				community.add((LeaderEdgeDevice) candidate);
+			}
+		}
+		community.sort(((o1, o2) -> (int) ((o2.getResources().getTotalMips()) - o1.getResources().getTotalMips())));
+		System.out.println(this.getName() +" i miei vicini  sono:");
+		for (DataCenter dc: community){
+			System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
+		}
+		System.out.println("+++++");
+
+
+	}
+
+	private void settle(){
+		boolean should_lead=false;
+		if (community.isEmpty() || this.getResources().getTotalMips()>community.get(0).getResources().getTotalMips()){
+			System.out.println(this.getName() +" sono subito leader ma avrei comm "+ community.size());
+			this.isLeader=true;
+			this.setAsOrchestrator(false);
+			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
+			return;
+		}
+		for (int i = 0; i < community.size(); i++) {
+			LeaderEdgeDevice candidate = community.get(i);
+			//Todo test with equals mips
+			if(!candidate.getCommunity().isEmpty() && candidate.getCommunity().get(0).equals(this) && candidate.getResources().getTotalMips()<this.getResources().getTotalMips()){
+				System.out.println(this.getName() +" dovrei essere leader");
+				should_lead=true;
+			}
+		}
+		if(should_lead) {
+			for (int i = 0; i < community.size(); i++) {
+				LeaderEdgeDevice candidate = community.get(i);
+				//Todo test with equals mips
+				//If I should be a leader and either the candidate doesn't have me as first in community or the candidate have more mips
+				if (!candidate.getCommunity().isEmpty() && !candidate.getCommunity().get(0).equals(this) || candidate.getResources().getTotalMips() > this.getResources().getTotalMips()) {
+					candidate.getCommunity().remove(this);
+				}
+			}
+		}
+
+		if(should_lead) {
+			ArrayList<LeaderEdgeDevice> newcommunity= new ArrayList<LeaderEdgeDevice>();
+			for (Iterator<LeaderEdgeDevice> it = community.iterator(); it.hasNext(); ) {
+				LeaderEdgeDevice dc = it.next();
+				/*
+				if (dc.getResources().getTotalMips() > this.getResources().getTotalMips() || (!dc.getCommunity().isEmpty() && !dc.getCommunity().get(0).equals(this))) {
+					community.remove(dc);
+				}
+
+				 */
+				if (dc.getResources().getTotalMips() < this.getResources().getTotalMips() && (dc.getCommunity().isEmpty() || dc.getCommunity().get(0).equals(this))) {
+					newcommunity.add(dc);
+				}
+			}
+			newcommunity.sort(((o1, o2) -> (int) ((o2.getResources().getTotalMips()) - o1.getResources().getTotalMips())));
+			community=newcommunity;
+		}
+		System.out.println(this.getName() +" nella community ho:");
+		for (DataCenter dc: community){
+			System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
+		}
+		System.out.println("---");
+
 	}
 
 	public LeaderEdgeDevice getLeader() {
 		return leader;
 	}
 
-	/*
-	public synchronized ArrayList <Map.Entry<Task, Integer>> getCurrentTasks(){
-
+	public ArrayList<LeaderEdgeDevice> getCommunity() {
+		return community;
 	}
 
-	 */
+
 }
