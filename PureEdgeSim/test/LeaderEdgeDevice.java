@@ -30,7 +30,6 @@ import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class LeaderEdgeDevice extends DefaultDataCenter {
@@ -69,6 +68,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public void startInternal() {
 		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, COMMUNITY_DISCOVERY);
 		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, LEADER_SETTLE);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 20, LEADER_CONFERMATION);
 		super.startInternal();
 	}
 
@@ -87,6 +87,12 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						&& this.isOrchestrator
 						&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
 					settle();
+				}
+				break;
+			case LEADER_CONFERMATION:
+				if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+						&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
+					confirmation();
 				}
 				break;
 			case TASK_ADDITION:
@@ -280,41 +286,28 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	private void settle(){
 		boolean should_lead=false;
 		if (community.isEmpty() || this.getResources().getTotalMips()>community.get(0).getResources().getTotalMips()){
-			System.out.println(this.getName() +" sono subito leader ma avrei comm "+ community.size());
-			this.isLeader=true;
-			this.setAsOrchestrator(false);
-			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
-			return;
+			should_lead=true;
 		}
-		for (int i = 0; i < community.size(); i++) {
-			LeaderEdgeDevice candidate = community.get(i);
-			//Todo test with equals mips
-			if(!candidate.getCommunity().isEmpty() && candidate.getCommunity().get(0).equals(this) && candidate.getResources().getTotalMips()<this.getResources().getTotalMips()){
-				System.out.println(this.getName() +" dovrei essere leader");
-				should_lead=true;
+		else{
+			for (LeaderEdgeDevice dc : community) {
+				if (!dc.getCommunity().isEmpty() && dc.getCommunity().get(0).equals(this) && dc.getResources().getTotalMips() <= this.getResources().getTotalMips()) {
+					System.out.println(this.getName() + " dovrei essere leader");
+					should_lead = true;
+				}
 			}
 		}
 		if(should_lead) {
-			for (int i = 0; i < community.size(); i++) {
-				LeaderEdgeDevice candidate = community.get(i);
-				//Todo test with equals mips
-				//If I should be a leader and either the candidate doesn't have me as first in community or the candidate have more mips
-				if (!candidate.getCommunity().isEmpty() && !candidate.getCommunity().get(0).equals(this) || candidate.getResources().getTotalMips() > this.getResources().getTotalMips()) {
-					candidate.getCommunity().remove(this);
+			for (LeaderEdgeDevice dc : community) {
+				//If I should be a leader and either the dc doesn't have me as first in community or the dc have more mips
+				if ((!dc.getCommunity().isEmpty() && !dc.getCommunity().get(0).equals(this)) || dc.getResources().getTotalMips() >= this.getResources().getTotalMips()) {
+					dc.getCommunity().remove(this);
 				}
 			}
 		}
 
 		if(should_lead) {
 			ArrayList<LeaderEdgeDevice> newcommunity= new ArrayList<LeaderEdgeDevice>();
-			for (Iterator<LeaderEdgeDevice> it = community.iterator(); it.hasNext(); ) {
-				LeaderEdgeDevice dc = it.next();
-				/*
-				if (dc.getResources().getTotalMips() > this.getResources().getTotalMips() || (!dc.getCommunity().isEmpty() && !dc.getCommunity().get(0).equals(this))) {
-					community.remove(dc);
-				}
-
-				 */
+			for (LeaderEdgeDevice dc : community) {
 				if (dc.getResources().getTotalMips() < this.getResources().getTotalMips() && (dc.getCommunity().isEmpty() || dc.getCommunity().get(0).equals(this))) {
 					newcommunity.add(dc);
 				}
@@ -322,11 +315,36 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			newcommunity.sort(((o1, o2) -> (int) ((o2.getResources().getTotalMips()) - o1.getResources().getTotalMips())));
 			community=newcommunity;
 		}
+
+		//Debug
 		System.out.println(this.getName() +" nella community ho:");
 		for (DataCenter dc: community){
 			System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
 		}
 		System.out.println("---");
+	}
+
+	private void confirmation(){
+		if (community.isEmpty() || this.getResources().getTotalMips()>community.get(0).getResources().getTotalMips()){
+			this.isLeader=true;
+			this.setAsOrchestrator(true);
+			this.simulationManager.getServersManager().getOrchestratorsList().add(this);
+			//Debug
+			System.out.println(this.getName() +" sono il leader di");
+			for (DataCenter dc: community){
+				System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
+			}
+			System.out.println("######");
+			return;
+		}
+		//Debug
+		if(!isLeader){
+			this.leader=community.get(0);
+			System.out.println(this.getName() +" con "+ this.getResources().getTotalMips() +" il mio leader e' "+ leader.getName() +" con "+ leader.getResources().getTotalMips());
+		}
+
+		System.out.println("######");
+
 
 	}
 
