@@ -50,6 +50,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 	public static final int SEND_TO_ORCH = Base + 6;
 	public static final int UPDATE_REAL_TIME_CHARTS = Base + 7;
 	public static final int SEND_TASK_FROM_ORCH_TO_DESTINATION = Base + 8;
+	//Custom
 	public static final int SEND_TASK_FROM_LEADER_TO_SUBORDINATE = Base + 9;
 	public static final int TASK_SENT_FROM_NEIGHBOR = Base + 10;
 	private int lastWrittenNumber = 0;
@@ -116,19 +117,10 @@ public class SimulationManager extends SimulationManagerAbstract {
 			sendFromOrchToDestination(task);
 			break;
 
-
 		case SEND_TASK_FROM_LEADER_TO_SUBORDINATE:
 			// Send the request from the orchestrator to the offloading destination
 			sendFromLeaderToSubordinate(task);
 			break;
-
-
-		/*Neighbor
-		case TASK_SENT_FROM_NEIGHBOR:
-			// Send the request from the orchestrator to the offloading destination
-			sendFromNeighToDestination(task);
-			break;
-			*/
 
 		case EXECUTE_TASK:
 			//System.out.println("Eseguo il task");

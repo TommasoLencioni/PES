@@ -40,7 +40,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public static final int TASK_EXECUTION = 15000;
 	public static final int TASK_REJECTION = 16000;
 	public static final int LEADER_SETTLE = 17000;
-	public static final int LEADER_CONFERMATION = 18000;
+	public static final int LEADER_CONFIRMATION = 18000;
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
 	protected boolean isLeader;
@@ -68,7 +68,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public void startInternal() {
 		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, COMMUNITY_DISCOVERY);
 		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, LEADER_SETTLE);
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 20, LEADER_CONFERMATION);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 20, LEADER_CONFIRMATION);
 		super.startInternal();
 	}
 
@@ -89,7 +89,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 					settle();
 				}
 				break;
-			case LEADER_CONFERMATION:
+			case LEADER_CONFIRMATION:
 				if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
 						&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
 					confirmation();
@@ -221,48 +221,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		return Orchestrator;
 	}
 
-	/*Old discover
-	private void discover(){
-		//Gauge for max number of MIPS
-		double max_MIPS =0;
-		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
-			DataCenter candidate = simulationManager.getServersManager().getDatacenterList().get(i);
-			//Condition for evaluating a datacenter
-			if ((this!=candidate)
-				&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
-				&& (getDistance(this, candidate)<= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
-				//here debug
-				//System.out.println(this.getName() + " " + this.getResources().getTotalMips() +
-				//		" " + candidate.getName() + " " + candidate.getResources().getTotalMips());
-				//Condition for choosing a discover
-
-				//The election's criterion can be customized
-
-				if (this.getResources().getTotalMips()<candidate.getResources().getTotalMips()
-					&& max_MIPS <candidate.getResources().getTotalMips()){
-					max_MIPS =candidate.getResources().getTotalMips();
-					discover = (LeaderEdgeDevice) candidate;
-				}
-			}
-		}
-		//If I'm not the discover
-		if (discover!= null) {
-			//debug
-			//System.out.println("Il mio discover e' " + discover.getId());
-
-			discover.subordinates.add(this);
-			discover.isLeader=true;
-		}
-		//If I'm the discover
-		else if (this.getType()==SimulationParameters.TYPES.EDGE_DATACENTER){
-			isLeader=true;
-			this.setAsOrchestrator(false);
-			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
-
-		}
-	}
-	*/
-
 	private void discover(){
 		for (int i = 0; i < simulationManager.getServersManager().getDatacenterList().size(); i++) {
 			DataCenter candidate = simulationManager.getServersManager().getDatacenterList().get(i);
@@ -325,10 +283,18 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	}
 
 	private void confirmation(){
-		if (community.isEmpty() || this.getResources().getTotalMips()>community.get(0).getResources().getTotalMips()){
+		if (community.isEmpty()){
 			this.isLeader=true;
 			this.setAsOrchestrator(true);
 			this.simulationManager.getServersManager().getOrchestratorsList().add(this);
+			//Debug
+			System.out.println(this.getName() +" sono leader ma sono solo");
+			return;
+		}
+		if (this.getResources().getTotalMips()>community.get(0).getResources().getTotalMips()){
+			this.isLeader=true;
+			this.setAsOrchestrator(false);
+			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
 			//Debug
 			System.out.println(this.getName() +" sono il leader di");
 			for (DataCenter dc: community){
