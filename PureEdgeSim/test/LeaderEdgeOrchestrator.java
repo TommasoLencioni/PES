@@ -31,6 +31,7 @@ import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.List;
+import java.util.Random;
 
 public class LeaderEdgeOrchestrator extends Orchestrator {
 
@@ -52,7 +53,6 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 				SimulationParameters.STOP = true;
 				simulationManager.getSimulation().terminate();
 			}
-			//String[] edge_first = { "Edge" };
 			return leader(architecture, task);
 		}
 		else if ("INCREASE_LIFETIME".equals(algorithm)) {
@@ -66,7 +66,6 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			SimulationParameters.STOP = true;
 			simulationManager.getSimulation().terminate();
 		}
-		//return -1;
 		return null;
 	}
 
@@ -80,17 +79,17 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 	 */
 	private Vm leader(String[] architecture, Task task) {
 		Vm vm = null;
-		int phase = -1;
-
+		out:
 		for (Host host_el: task.getOrchestrator().getHostList()) {
 			for (Vm vm_el : host_el.getVmList()){
 				if (offloadingIsPossible(task, vm_el, architecture)
-					//custom conditions can be set here
-					&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-					//
+					//Custom conditions can be set here
+					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
+					//tofix change this, just for testing
+					&& (new Random()).nextBoolean()
 				){
 					vm = vm_el;
-					//eventualmente break
+					break out;
 					//System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
 				}
 			}
@@ -339,17 +338,38 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 	public Vm my_initialize(Task task) {
 		Vm vmfound=null;
 		if ("CLOUD_ONLY".equals(architecture)) {
-			//vmfound=cloudOnly(task);
+			SimLog.println("");
+			simLog.printSameLine("Cloud and Edge must me specified as architecture in order to use LEADER algorithm, please check the simulation parameters file...", "red");
+			// Cancel the simulation
+			SimulationParameters.STOP = true;
+			simulationManager.getSimulation().terminate();
 		} else if ("MIST_ONLY".equals(architecture)) {
-			//vmfound=mistOnly(task);
+			SimLog.println("");
+			simLog.printSameLine("Cloud and Edge must me specified as architecture in order to use LEADER algorithm, please check the simulation parameters file...", "red");
+			// Cancel the simulation
+			SimulationParameters.STOP = true;
+			simulationManager.getSimulation().terminate();
 		} else if ("EDGE_AND_CLOUD".equals(architecture)) {
+			//Only good architecture
 			vmfound=edgeAndCloud(task);
 		} else if ("ALL".equals(architecture)) {
-			//vmfound=all(task);
+			SimLog.println("");
+			simLog.printSameLine("Cloud and Edge must me specified as architecture in order to use LEADER algorithm, please check the simulation parameters file...", "red");
+			// Cancel the simulation
+			SimulationParameters.STOP = true;
+			simulationManager.getSimulation().terminate();
 		} else if ("EDGE_ONLY".equals(architecture)) {
-			//vmfound=edgeOnly(task);
+			SimLog.println("");
+			simLog.printSameLine("Cloud and Edge must me specified as architecture in order to use LEADER algorithm, please check the simulation parameters file...", "red");
+			// Cancel the simulation
+			SimulationParameters.STOP = true;
+			simulationManager.getSimulation().terminate();
 		} else if ("MIST_AND_CLOUD".equals(architecture)) {
-			//vmfound=mistAndCloud(task);
+			SimLog.println("");
+			simLog.printSameLine("Cloud and Edge must me specified as architecture in order to use LEADER algorithm, please check the simulation parameters file...", "red");
+			// Cancel the simulation
+			SimulationParameters.STOP = true;
+			simulationManager.getSimulation().terminate();
 		}
 		else {
 			System.err.println("Architecture not recognized, please specify orchestration_architectures in simulation_parameters.properties");

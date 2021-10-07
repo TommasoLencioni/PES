@@ -35,8 +35,6 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
-import test.ClusterEdgeDevice;
-import test.ClusterEdgeOrchestrator;
 import test.LeaderEdgeDevice;
 import test.LeaderEdgeOrchestrator;
 
@@ -106,6 +104,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 	@Override
 	public void processEvent(SimEvent ev) {
 		Task task = (Task) ev.getData();
+
 		switch (ev.getTag()) {
 		case SEND_TO_ORCH:
 			// Send the offloading request to the closest orchestrator
@@ -279,38 +278,14 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 		//HERE This is the custom section
 
-
-		//here Encode the result from the class LeaderEdgeOrchestrator in a number smaller than 0
-		//	-1	->	no VM found
-		//	-2	->	the task must be scheduled to the leader
-		//	-3	->	the task must be scheduled to the cloud
-
 		// Find the best VM for executing the task
-		Vm foundVM = ((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
-		//Vm foundVM = null;
-
-		/*
-		for (Host host_el: task.getOrchestrator().getHostList()) {
-			for (Vm vm_el : host_el.getVmList()){
-				if (((LeaderEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
-					//custom conditions can be set here
-					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-
-				){
-					foundVM = vm_el;
-					//System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
-				}
-			}
-		}
-
-		 */
-
+		((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
 
 		// Stop in case no resource was available for this task, the offloading is
 		// failed
 		if (task.getVm() == Vm.NULL) {
 			if(((LeaderEdgeDevice) task.getOrchestrator()).getLeader()!=null) {
-				scheduleNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_ADDITION, task);
+				scheduleNow(((LeaderEdgeDevice) task.getOrchestrator()).getLeader(), LeaderEdgeDevice.TASK_OFFLOAD, task);
 				//scheduleFirst();
 			}
 			else {
@@ -321,9 +296,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 		} else {
 			simLog.taskSentFromOrchToDest(task);
 		}
-
-		//here END of my custom section
-
+		SimLog.println(task.getOrchestrator().getName() + " eseguo un task");
 		// If the task is offloaded
 		// and the orchestrator is not the offloading destination
 		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()

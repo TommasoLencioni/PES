@@ -23,6 +23,7 @@ package test;
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
+import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import org.cloudbus.cloudsim.core.events.SimEvent;
@@ -30,13 +31,13 @@ import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LeaderEdgeDevice extends DefaultDataCenter {
 	private static final int COMMUNITY_DISCOVERY = 11000; // Avoid conflicting with CloudSim Plus Tags, custom tag for discover election
 	private static final int TASK_SPOOL = 12000; // Avoid conflicting with CloudSim Plus Tags, custom tag for task_check election
 	private static final int TASK_REMOVAL = 13000; // Avoid conflicting with CloudSim Plus Tags, custom tag for discover election
-	public static final int TASK_ADDITION = 14000;
+	public static final int TASK_OFFLOAD = 14000;
 	public static final int TASK_EXECUTION = 15000;
 	public static final int TASK_REJECTION = 16000;
 	public static final int LEADER_SETTLE = 17000;
@@ -48,7 +49,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public List<LeaderEdgeDevice> cluster;
 	public ArrayList<LeaderEdgeDevice> community;
 	//public PriorityQueue <Map.Entry<Task, Integer>> current_tasks;
-	public ArrayList <Map.Entry<Task, Integer>> current_tasks;
+	//public ArrayList <Map.Entry<Task, Integer>> current_tasks;
+	public ConcurrentHashMap<Task, LeaderEdgeDevice> current_tasks;
 	public PriorityQueue <Map.Entry<Task, Integer>> dev_in_range;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
@@ -57,7 +59,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		subordinates = new ArrayList<LeaderEdgeDevice>();
 		leader=null;
 		isLeader=false;
-		current_tasks=new ArrayList<>();
+		current_tasks=new ConcurrentHashMap<>();
 		dev_in_range=new PriorityQueue<Map.Entry<Task, Integer>>();
 		community= new ArrayList<>();
 	}
@@ -95,28 +97,65 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 					confirmation();
 				}
 				break;
-			case TASK_ADDITION:
+			case TASK_OFFLOAD:
 				//Add the task to the current task hash map of my discover if i'm not able to execute it
 				Task task = (Task) ev.getData();
-				if (task!=null && leader!=null && !isLeader){
-					System.out.println("Inserisco perche' non lo posso eseguire");
-					synchronized (leader.current_tasks) {
-						java.util.Map.Entry<Task,Integer> t =new java.util.AbstractMap.SimpleEntry<Task,Integer>(task,1);
-						this.leader.current_tasks.add(t);
+				if (task!=null){
+					LeaderEdgeDevice sub = (LeaderEdgeDevice) task.getOrchestrator();
+					if (sub!=null){
+						System.out.println(this.getName() + " ricevo un task da "+ sub.getName());
+						if(this.equals(sub)){
+							//Schedule al Cloud
+							//tofix
+							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
+								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
+									task.setVm(dc.getHost(0).getVmList().get(0));
+									break;
+								}
+							}
+							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+							SimLog.println("Mi e' arrivato da me perche' ho la community vuota");
+							return;
+						}
+						if(!community.contains(sub)) {
+							SimLog.println("");
+							SimLog.println("A task arrived to a stranger leader");
+							// Cancel the simulation
+							SimulationParameters.STOP = true;
+							simulationManager.getSimulation().terminate();
+						}
+						int next = community.indexOf(sub)+1;
+						if(next==community.size()){
+							//Schedule al Cloud
+							SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
+							//Schedule al Cloud
+							//tofix
+							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
+								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
+									task.setVm(dc.getHost(0).getVmList().get(0));
+									break;
+								}
+							}
+							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+							return;
+						}
+						LeaderEdgeDevice next_orch=community.get(next);
+						task.setOrchestrator(next_orch);
+						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 					}
 				}
 				break;
+				/*
 			case TASK_SPOOL:
 				//todo tofix
 				if (isLeader){
 					synchronized (current_tasks){
 						System.out.println("Sono il discover "+ this.getName() + " e ho "+ current_tasks.size() +"  tasks");
-						/*
+
 						for (Task t: current_tasks.values()){
 							System.out.println(t.getId());
 						}
 
-						 */
 
 						for(int i=0; i<current_tasks.size(); i++){
 							//Map.Entry<Task, Integer> tmp_task = current_tasks.remove(i);
@@ -128,6 +167,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				}
 				break;
 
+				 */
 			case TASK_EXECUTION:
 				//Here the edge datacenter should consider executing the task
 				try {
@@ -177,46 +217,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						- device2.getMobilityManager().getCurrentLocation().getYPos()), 2)));
 	}
 
-
-	public void setOrchestrator(LeaderEdgeDevice newOrchestrator) {
-		//this device has changed its neighborhood, so it should be removed from the previous one
-		if (Orchestrator != null)
-			Orchestrator.cluster.remove(this);
-		
-		// If the new orchestrator is another device (not this one)
-		if (this != newOrchestrator) {
-			//if this device is no more an orchestrator, its neighborhood will be joined with the neighborhood of the new orchestrator
-			if (isOrchestrator()) {
-				newOrchestrator.cluster.addAll(this.cluster);
-			}
-			// now remove it neighborhood after
-			cluster.clear();
-			//remove this device from orchestrators list
-			simulationManager.getServersManager().getOrchestratorsList().remove(this);
-			//System.err.println(simulationManager.getServersManager().getOrchestratorsList().size());
-			//set the new orchestrator as the parent node ( a tree-like topology)
-			//parent = newOrchestrator;
-			// this device is no more an orchestrator so set it to false
-			this.setAsOrchestrator(false);
-			
-			//in case the neighborhood doesn't has this device as member
-			if (!newOrchestrator.cluster.contains(this))
-				newOrchestrator.cluster.add(this);
-		}
-        // configure the new orchestrator (it can be another device, or this device)
-		newOrchestrator.setAsOrchestrator(true);
-		newOrchestrator.Orchestrator = newOrchestrator;
-		//newOrchestrator.parent = null;
-		//in case the neighborhood doesn't has the orchestrator as member
-		if (!newOrchestrator.cluster.contains(newOrchestrator))
-			newOrchestrator.cluster.add(newOrchestrator);
-		//add the new orchestrator to the list
-		if (!simulationManager.getServersManager().getOrchestratorsList().contains(newOrchestrator))
-			simulationManager.getServersManager().getOrchestratorsList().add(newOrchestrator);
-
-	}
-
-
 	public LeaderEdgeDevice getOrchestrator() {
 		return Orchestrator;
 	}
@@ -237,8 +237,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
 		}
 		System.out.println("+++++");
-
-
 	}
 
 	private void settle(){
