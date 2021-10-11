@@ -35,6 +35,8 @@ public class MyMain extends MainApplication {
         //Clustering
         //setCustomEdgeDataCenters(ClusterEdgeDevice.class);
 
+        //Network Model
+        setCustomNetworkModel(LeaderNetworkModel.class);
         // Launch the simulation
         MyMain.launchSimulation();
     }

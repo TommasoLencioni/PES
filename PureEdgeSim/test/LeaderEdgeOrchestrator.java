@@ -80,17 +80,18 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 	private Vm leader(String[] architecture, Task task) {
 		Vm vm = null;
 		out:
-		for (Host host_el: task.getOrchestrator().getHostList()) {
-			for (Vm vm_el : host_el.getVmList()){
-				if (offloadingIsPossible(task, vm_el, architecture)
-					//Custom conditions can be set here
-					//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-					//tofix change this, just for testing
-					&& (new Random()).nextBoolean()
-				){
-					vm = vm_el;
-					break out;
-					//System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
+		//todo remove randomness
+		if ((new Random()).nextBoolean()) {
+			for (Host host_el : task.getOrchestrator().getHostList()) {
+				for (Vm vm_el : host_el.getVmList()) {
+					if (offloadingIsPossible(task, vm_el, architecture)
+						//Custom conditions can be set here
+						//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
+
+					) {
+						vm = vm_el;
+						break out;
+					}
 				}
 			}
 		}

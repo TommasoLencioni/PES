@@ -44,13 +44,10 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public static final int LEADER_CONFIRMATION = 18000;
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
-	protected boolean isLeader;
+	public boolean isLeader;
 	public List<LeaderEdgeDevice> subordinates;
 	public List<LeaderEdgeDevice> cluster;
 	public ArrayList<LeaderEdgeDevice> community;
-	//public PriorityQueue <Map.Entry<Task, Integer>> current_tasks;
-	//public ArrayList <Map.Entry<Task, Integer>> current_tasks;
-	public ConcurrentHashMap<Task, LeaderEdgeDevice> current_tasks;
 	public PriorityQueue <Map.Entry<Task, Integer>> dev_in_range;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
@@ -59,7 +56,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		subordinates = new ArrayList<LeaderEdgeDevice>();
 		leader=null;
 		isLeader=false;
-		current_tasks=new ConcurrentHashMap<>();
 		dev_in_range=new PriorityQueue<Map.Entry<Task, Integer>>();
 		community= new ArrayList<>();
 	}
@@ -98,7 +94,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				}
 				break;
 			case TASK_OFFLOAD:
-				//Add the task to the current task hash map of my discover if i'm not able to execute it
 				Task task = (Task) ev.getData();
 				if (task!=null){
 					LeaderEdgeDevice sub = (LeaderEdgeDevice) task.getOrchestrator();
@@ -106,10 +101,10 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						System.out.println(this.getName() + " ricevo un task da "+ sub.getName());
 						if(this.equals(sub)){
 							//Schedule al Cloud
-							//tofix
+							//tofix limited to one cloud
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
-									task.setVm(dc.getHost(0).getVmList().get(0));
+									task.setOrchestrator(dc);
 									break;
 								}
 							}
@@ -129,7 +124,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							//Schedule al Cloud
 							SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
 							//Schedule al Cloud
-							//tofix
+							//tofix make a non trivial cloud VM assignment
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 									task.setVm(dc.getHost(0).getVmList().get(0));
@@ -143,43 +138,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						task.setOrchestrator(next_orch);
 						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 					}
-				}
-				break;
-				/*
-			case TASK_SPOOL:
-				//todo tofix
-				if (isLeader){
-					synchronized (current_tasks){
-						System.out.println("Sono il discover "+ this.getName() + " e ho "+ current_tasks.size() +"  tasks");
-
-						for (Task t: current_tasks.values()){
-							System.out.println(t.getId());
-						}
-
-
-						for(int i=0; i<current_tasks.size(); i++){
-							//Map.Entry<Task, Integer> tmp_task = current_tasks.remove(i);
-							scheduleNow(subordinates.get(ThreadLocalRandom.current().nextInt(0, subordinates.size())), TASK_EXECUTION, current_tasks.remove(i).getKey());
-						}
-						System.out.println("---");
-					}
-					schedule(this, 20, TASK_SPOOL);
-				}
-				break;
-
-				 */
-			case TASK_EXECUTION:
-				//Here the edge datacenter should consider executing the task
-				try {
-					Task task1 = (Task) ev.getData();
-					if (task1 != null && !isLeader) {
-						task1.setOrchestrator(this);
-						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_LEADER_TO_SUBORDINATE, task1);
-						System.out.println("Provo ad eseguire il task assegnatomi dal discover");
-					}
-				}
-				catch (ClassCastException e){
-					super.processEvent(ev);
 				}
 				break;
 			case TASK_REJECTION:
