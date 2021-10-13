@@ -45,19 +45,16 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	protected LeaderEdgeDevice Orchestrator;
 	protected LeaderEdgeDevice leader;
 	public boolean isLeader;
-	public List<LeaderEdgeDevice> subordinates;
-	public List<LeaderEdgeDevice> cluster;
 	public ArrayList<LeaderEdgeDevice> community;
-	public PriorityQueue <Map.Entry<Task, Integer>> dev_in_range;
+	public HashMap<Task, LeaderEdgeDevice> current_tasks;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
 		super(simulationManager, hostList, vmList);
-		subordinates = new ArrayList<LeaderEdgeDevice>();
 		leader=null;
 		isLeader=false;
-		dev_in_range=new PriorityQueue<Map.Entry<Task, Integer>>();
 		community= new ArrayList<>();
+		current_tasks=new HashMap<>();
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
@@ -98,9 +95,10 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				if (task!=null){
 					LeaderEdgeDevice sub = (LeaderEdgeDevice) task.getOrchestrator();
 					if (sub!=null){
-						System.out.println(this.getName() + " ricevo un task da "+ sub.getName());
-						if(this.equals(sub)){
-							//Schedule al Cloud
+						//System.out.println(this.getName() + " ricevo un task da "+ sub.getName());
+						//The second condition should be redundant but avoid bugs
+						if(this.equals(sub) || community.isEmpty()){
+							//I have empty community and I cannot make the offload to my VMs, schedule to Cloud
 							//tofix limited to one cloud
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
@@ -109,7 +107,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 								}
 							}
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
-							SimLog.println("Mi e' arrivato da me perche' ho la community vuota");
+							//SimLog.println("Mi e' arrivato da me perche' ho la community vuota");
 							return;
 						}
 						if(!community.contains(sub)) {
@@ -119,8 +117,21 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							SimulationParameters.STOP = true;
 							simulationManager.getSimulation().terminate();
 						}
-						int next = community.indexOf(sub)+1;
-						if(next==community.size()){
+						int next;
+						//If it's the first time that I see the task I save the orignal orch in an HashMap
+						//	and set the next executor to the first dc in the community
+						if(!current_tasks.containsKey(task)){
+							current_tasks.put(task, sub);
+							next=0;
+						}
+						//Otherwise I go to the next dc in the community
+						else next = community.indexOf(sub)+1;
+						//If the first dc is also the original orch I further increment by 1 the position of the next executor
+						if (sub.equals(current_tasks.get(task))){
+							SimLog.println("Salto l'orch originale");
+							next = community.indexOf(sub)+1;
+						}
+						if(next>=community.size()){
 							//Schedule al Cloud
 							SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
 							//Schedule al Cloud
@@ -132,6 +143,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 								}
 							}
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
+							current_tasks.remove(task);
 							return;
 						}
 						LeaderEdgeDevice next_orch=community.get(next);

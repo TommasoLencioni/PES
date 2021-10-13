@@ -34,7 +34,7 @@ public class LeaderNetworkModel extends NetworkModel{
             if (((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null) {
                 for (LeaderEdgeDevice dc : ((LeaderEdgeDevice) task.getOrchestrator()).getLeader().community) {
                     tmpDist = (int) task.getEdgeDevice().getMobilityManager().distanceTo(dc);
-                    System.out.println(dc.getName() + " " + tmpDist + " rispetto agli attuali " + task.getOrchestrator().getName() + " " + actualDistante);
+                    //System.out.println(dc.getName() + " " + tmpDist + " rispetto agli attuali " + task.getOrchestrator().getName() + " " + actualDistante);
                     if (tmpDist < minDist) {
                         minDist = tmpDist;
                         closerNode = dc;

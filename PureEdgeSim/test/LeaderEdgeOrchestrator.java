@@ -26,11 +26,9 @@ import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
 import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
-import org.cloudbus.cloudsim.core.CloudSimEntity;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
-import java.util.List;
 import java.util.Random;
 
 public class LeaderEdgeOrchestrator extends Orchestrator {
@@ -81,7 +79,8 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		Vm vm = null;
 		out:
 		//todo remove randomness
-		if ((new Random()).nextBoolean()) {
+		if ((new Random()).nextBoolean() || (new Random()).nextBoolean()) {
+		//if ((new Random()).nextBoolean()) {
 			for (Host host_el : task.getOrchestrator().getHostList()) {
 				for (Vm vm_el : host_el.getVmList()) {
 					if (offloadingIsPossible(task, vm_el, architecture)

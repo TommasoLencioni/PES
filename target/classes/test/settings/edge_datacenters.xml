@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <edge_datacenters>
+    <!--high dx-->
     <datacenter arch="x86" os="Linux" >
         <idleConsumption>0.00015</idleConsumption>
         <maxConsumption>0.016</maxConsumption>
         <isOrchestrator>true</isOrchestrator>
         <location>
-            <x_pos>32</x_pos>
-            <y_pos>125</y_pos>
+            <x_pos>159</x_pos>
+            <y_pos>159</y_pos>
         </location>
         <hosts>
             <host>
@@ -51,13 +52,14 @@
             </host>
         </hosts>
     </datacenter>
+    <!--low dx-->
     <datacenter arch="x86" os="Linux" >
         <idleConsumption>0.00015</idleConsumption>
         <maxConsumption>0.016</maxConsumption>
         <isOrchestrator>true</isOrchestrator>
         <location>
-            <x_pos>125</x_pos>
-            <y_pos>249</y_pos>
+            <x_pos>159</x_pos>
+            <y_pos>91</y_pos>
         </location>
         <hosts>
             <host>
@@ -102,13 +104,14 @@
             </host>
         </hosts>
     </datacenter>
+    <!--high sx-->
     <datacenter arch="x86" os="Linux" >
         <idleConsumption>0.00015</idleConsumption>
         <maxConsumption>0.016</maxConsumption>
         <isOrchestrator>true</isOrchestrator>
         <location>
-            <x_pos>125</x_pos>
-            <y_pos>150</y_pos>
+            <x_pos>91</x_pos>
+            <y_pos>159</y_pos>
         </location>
         <hosts>
             <host>
@@ -153,13 +156,14 @@
             </host>
         </hosts>
     </datacenter>
+    <!--low sx-->
     <datacenter arch="x86" os="Linux" >
         <idleConsumption>0.00015</idleConsumption>
         <maxConsumption>0.016</maxConsumption>
         <isOrchestrator>true</isOrchestrator>
         <location>
-            <x_pos>224</x_pos>
-            <y_pos>140</y_pos>
+            <x_pos>91</x_pos>
+            <y_pos>91</y_pos>
         </location>
         <hosts>
             <host>
@@ -204,12 +208,13 @@
             </host>
         </hosts>
     </datacenter>
+    <!--LEADER-->
     <datacenter arch="x86" os="Linux" >
         <idleConsumption>0.00015</idleConsumption>
         <maxConsumption>0.016</maxConsumption>
         <isOrchestrator>true</isOrchestrator>
         <location>
-            <x_pos>64</x_pos>
+            <x_pos>125</x_pos>
             <y_pos>125</y_pos>
         </location>
         <hosts>
