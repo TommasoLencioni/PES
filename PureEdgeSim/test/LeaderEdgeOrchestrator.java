@@ -76,12 +76,43 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 	 		else it fails
 	 */
 	private Vm leader(String[] architecture, Task task) {
+		int host=-1;
+		int vm = -1;
+		int minTasksCount = -1; // vm with minimum assigned tasks;
+		// get best vm for this task
+		for (int i=0; i< task.getOrchestrator().getHostList().size(); i++) {
+			for (int j = 0; j < task.getOrchestrator().getHost(i).getVmList().size(); j++) {
+				if (offloadingIsPossible(task, task.getOrchestrator().getHost(i).getVmList().get(i), architecture) && (minTasksCount == -1
+						|| minTasksCount > orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(i).getVmList().get(j))).size())) {
+					minTasksCount = orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(i).getVmList().get(j))).size();
+					// if this is the first time,
+					// or new min found, so we choose it as the best VM
+					// set the first vm as the best one
+					host=i;
+					vm = j;
+				}
+			}
+		}
+		if(minTasksCount>250){
+			return null;
+		}
+		// assign the tasks to the found vm
+		try{
+			System.out.println("Il minimo aveva "+ orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).size() + " tasks");
+			return task.getOrchestrator().getHost(host).getVmList().get(vm);
+		}
+		catch (Exception e){
+			return null;
+		}
+		/*
 		Vm vm = null;
 		out:
 		//todo remove randomness
 		if ((new Random()).nextBoolean() || (new Random()).nextBoolean()) {
 		//if ((new Random()).nextBoolean()) {
 			for (Host host_el : task.getOrchestrator().getHostList()) {
+				//Use this to choose a VM randomly
+				//Vm vm_el = host_el.getVmList().get((new Random()).nextInt(host_el.getVmList().size()));
 				for (Vm vm_el : host_el.getVmList()) {
 					if (offloadingIsPossible(task, vm_el, architecture)
 						//Custom conditions can be set here
@@ -95,184 +126,6 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			}
 		}
 		return vm;
-		/*
-		//I cannot get information about the history of the task, so I discern the phases according to the
-		//	type of the orchestrator
-		if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)){
-			if (((LeaderEdgeDevice) task.getOrchestrator()).isLeader){
-				phase=1;
-			}
-			else phase=0;
-		}
-		else if (task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) phase=2;
-
-		//System.out.println("Task : " + task.getId() + ", orchestratore e' " + task.getOrchestrator().getName() + " e siamo alla phase " + phase);
-
-		//According to the phase of leadering different host are evaluated
-		switch (phase){
-			//In phase 0 the orchestrator search the VM among its hosts
-			case 0:
-				//Cycle through all the orchestrator hosts and VMs
-				for (Host host_el: task.getOrchestrator().getHostList()) {
-					for (Vm vm_el : host_el.getVmList()){
-						if (offloadingIsPossible(task, vm_el, architecture)
-								//custom conditions can be set here
-								//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-
-						){
-							vm = vmList.indexOf(vm_el);
-							//System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
-						}
-					}
-				}
-				//If I didn't find a VM and the orchestrator has a leader the new orchestrator became this leader
-				if (vm < 0 && ((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null){
-					task.setOrchestrator(((LeaderEdgeDevice) task.getOrchestrator()).getLeader());
-					vm=-2;
-				}
-				break;
-
-			case 1:
-				//Cycle through all the orchestrator's leader's hosts and VMs
-				for (Host host_el: task.getOrchestrator().getHostList()) {
-					for (Vm vm_el : host_el.getVmList()){
-						if (offloadingIsPossible(task, vm_el, architecture)
-								//custom conditions can be set here
-								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/10000
-
-						){
-							vm = vmList.indexOf(vm_el);
-							//System.err.println("Offload su leader " + vm_el.getHost().getDatacenter().getName());
-						}
-					}
-				}
-				// If I don't find a suitable VM in the leader I search in every subordinate
-				// I assume to have an omniscent leader
-				if (vm < 0){
-					List<LeaderEdgeDevice>  subordinate = ((LeaderEdgeDevice) task.getOrchestrator()).subordinates;
-					if (!subordinate.isEmpty()){
-						for (LeaderEdgeDevice sub: subordinate) {
-							//Avoid checking again on the orchestrator
-							//	I can no longer do this check
-							//if (sub != task.getOrchestrator()) {
-								for (Host host_el : sub.getHostList()) {
-									for (Vm vm_el : host_el.getVmList()) {
-										if (offloadingIsPossible(task, vm_el, architecture)
-												//custom conditions can be set here
-												&& task.getLength() / vm_el.getMips() < task.getMaxLatency()/10000
-
-										) {
-											vm = vmList.indexOf(vm_el);
-											//System.err.println("Offload su subordinates" + vm_el.getHost().getDatacenter().getName());
-										}
-									}
-								}
-							//}
-						}
-					}
-					if (vm < 0){
-						//In case of leader chaining -2 is returned so the task will be rescheduled to the leader of
-						//	the current leader
-						if (((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null){
-							task.setOrchestrator(((LeaderEdgeDevice) task.getOrchestrator()).getLeader());
-							//simLog.print("Leader Chaining");
-							vm=-2;
-						}
-						else{
-							vm = -3;
-							//I assume that only one Cloud Data Center is orchestrator
-							for (DataCenter dc : this.simulationManager.getServersManager().getOrchestratorsList()) {
-								if (dc.getType().equals(SimulationParameters.TYPES.CLOUD) && dc.isOrchestrator()) {
-									task.setOrchestrator(dc);
-								}
-							}
-						}
-					}
-				}
-				if (((LeaderEdgeDevice) task.getOrchestrator()).getLeader() != null){
-					simLog.print("Leader Chaining");
-				}
-				break;
-
-			case 2:
-				String[] Architecture = { "Cloud" };
-				//System.out.println("Offload su Cloud");
-				vm = increseLifetime(Architecture, task);
-		}
-
-		return vm;
-		*/
-		/*
-		//Cycle through all the orchestrator hosts and VMs
-		for (Host host_el: task.getOrchestrator().getHostList()) {
-			for (Vm vm_el : host_el.getVmList()){
-				if (offloadingIsPossible(task, vm_el, architecture)
-						//custom conditions can be set here
-						&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/10000
-
-				){
-					vm = vmList.indexOf(vm_el);
-					System.err.println("Offload su Orchestratore "+ vm_el.getHost().getDatacenter().getName());
-				}
-			}
-		}
-
-		//If the task can't be offloaded on the orchestrator then tries on the leader
-		//Cycle through all the orchestrator's leader's hosts and VMs
-		LeaderEdgeDevice leader=null;
-		if (vm<0 && task.getOrchestrator().getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)) {
-			leader = ((LeaderEdgeDevice) task.getOrchestrator()).getLeader();
-			if (leader!=null){
-				for (Host host_el: leader.getHostList()) {
-					for (Vm vm_el : host_el.getVmList()){
-						if (offloadingIsPossible(task, vm_el, architecture)
-								//custom conditions can be set here
-								&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/1000
-
-								){
-							vm = vmList.indexOf(vm_el);
-							System.err.println("Offload su leader " + vm_el.getHost().getDatacenter().getName());
-						}
-					}
-				}
-			}
-		}
-
-		//If the task can't be offloaded on the leader then tries on all the subordinates of it
-		//Cycle through all the subordinates's hosts and VMs
-		if (vm<0 && leader!=null) {
-			List<LeaderEdgeDevice>  subordinate = leader.subordinates;
-			if (!subordinate.isEmpty()){
-				for (LeaderEdgeDevice sub: subordinate) {
-					//Avoid checking again on the orchestrator
-					if (sub != task.getOrchestrator()) {
-						for (Host host_el : sub.getHostList()) {
-							for (Vm vm_el : host_el.getVmList()) {
-								if (offloadingIsPossible(task, vm_el, architecture)
-										//custom conditions can be set here
-										&& task.getLength() / vm_el.getMips() < task.getMaxLatency()
-
-								) {
-									vm = vmList.indexOf(vm_el);
-									System.err.println("Offload su subordinates" + vm_el.getHost().getDatacenter().getName());
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		//If the task can't be offloaded on subordinates then it tries on Cloud with INCREASE_LIFETIME algorithm
-		if (vm<0) {
-			String[] Architecture = { "Cloud" };
-			System.out.println("Ho fatto l'offload su Cloud");
-			return increseLifetime(Architecture, task);
-		}
-
-		// assign the tasks to the found vm
-		return vm;
-
 		 */
 	}
 

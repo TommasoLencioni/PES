@@ -1,5 +1,7 @@
 package test;
 import com.mechalikh.pureedgesim.MainApplication;
+import com.mechalikh.pureedgesim.tasksorchestration.DefaultEdgeOrchestrator;
+import examples.CustomEdgeOrchestrator;
 
 public class MyMain extends MainApplication {
     // Below is the path for the settings folder of this example
@@ -28,12 +30,10 @@ public class MyMain extends MainApplication {
 
         // tell PureEdgeSim to use this custom orchestrator and orchestration algorithm
         setCustomEdgeOrchestrator(LeaderEdgeOrchestrator.class);
+        //setCustomEdgeOrchestrator(DefaultEdgeOrchestrator.class);
 
         // Leadering
         setCustomEdgeDataCenters(LeaderEdgeDevice.class);
-
-        //Clustering
-        //setCustomEdgeDataCenters(ClusterEdgeDevice.class);
 
         //Network Model
         setCustomNetworkModel(LeaderNetworkModel.class);

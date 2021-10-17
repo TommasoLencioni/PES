@@ -22,6 +22,7 @@ package test;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
+import com.mechalikh.pureedgesim.datacentersmanager.ServersManager;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
@@ -86,6 +87,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				break;
 			case LEADER_CONFIRMATION:
 				if (this.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+						&& this.isOrchestrator
 						&& "LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
 					confirmation();
 				}
@@ -198,6 +200,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			//Condition for evaluating a datacenter
 			if ((this != candidate)
 					&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
+					&& candidate.isOrchestrator()
 					&& (getDistance(this, candidate) <= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
 				community.add((LeaderEdgeDevice) candidate);
 			}

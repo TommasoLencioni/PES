@@ -258,6 +258,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 	*/
 
 	//LEADER
+	/*
 	private void sendFromOrchToDestination(Task task) {
 		if (taskFailed(task, 1))
 			return;
@@ -304,6 +305,49 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 		} else { // The task will be executed locally / no offloading or will be executed where
 					// the orchestrator is deployed (no network usage)
+			scheduleNow(this, EXECUTE_TASK, task);
+		}
+	}
+	 */
+
+	//LEADER (without leader algorithm)
+	private void sendFromOrchToDestination(Task task) {
+		if (taskFailed(task, 1))
+			return;
+
+		// Find the best VM for executing the task
+		((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
+		//edgeOrchestrator.initialize(task);
+
+		// Stop in case no resource was available for this task, the offloading is
+		// failed
+		if (task.getVm() == Vm.NULL) {
+			if(((LeaderEdgeDevice) task.getOrchestrator()).getLeader()!=null) {
+				//System.err.println("Offload su Orchestratore "+ task.getOrchestrator().getName());
+				scheduleNow(((LeaderEdgeDevice) task.getOrchestrator()).getLeader(), LeaderEdgeDevice.TASK_OFFLOAD, task);
+				//scheduleFirst();
+				return;
+			}
+			else if (((LeaderEdgeDevice) task.getOrchestrator()).isLeader){
+				//System.err.println("Offload su Orchestratore "+ task.getOrchestrator().getName());
+				scheduleNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_OFFLOAD, task);
+				return;
+			}
+			simLog.incrementTasksFailedLackOfRessources(task);
+			tasksCount++;
+			return;
+		} else {
+			simLog.taskSentFromOrchToDest(task);
+		}
+
+		// If the task is offloaded
+		// and the orchestrator is not the offloading destination
+		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()
+				&& task.getOrchestrator() != ((DataCenter) task.getVm().getHost().getDatacenter())) {
+			scheduleNow(getNetworkModel(), NetworkModelAbstract.SEND_REQUEST_FROM_ORCH_TO_DESTINATION, task);
+
+		} else { // The task will be executed locally / no offloading or will be executed where
+			// the orchestrator is deployed (no network usage)
 			scheduleNow(this, EXECUTE_TASK, task);
 		}
 	}
@@ -475,6 +519,44 @@ public class SimulationManager extends SimulationManagerAbstract {
 		// the edge device location (that generated this task)
 		if (phase == 1 && task.getOrchestrator() != null
 				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+			//		&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())
+		){
+			boolean sameloc=false;
+			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null &&
+					((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
+				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
+			}
+			else sameloc=sameLocation(task.getEdgeDevice(), task.getOrchestrator());
+			if(!sameloc) {
+				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+				simLog.incrementTasksFailedMobility(task);
+				return setFailed(task);
+			}
+		}
+		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
+				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+			//		&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
+		){
+			boolean sameloc=false;
+			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null &&
+					((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
+				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
+			}
+			else sameloc=sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()));
+
+			if(!sameloc) {
+				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+				simLog.incrementTasksFailedMobility(task);
+				return setFailed(task);
+			}
+		}
+		return false;
+	}
+
+	//Original version for mobility failure
+	/*
+	if (phase == 1 && task.getOrchestrator() != null
+				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
 				&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
 			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
 			simLog.incrementTasksFailedMobility(task);
@@ -489,6 +571,49 @@ public class SimulationManager extends SimulationManagerAbstract {
 		}
 		return false;
 	}
+	 */
+
+	//My version for mobility failure
+	/*
+	if (phase == 1 && task.getOrchestrator() != null
+			&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+	//		&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())
+		){
+		boolean sameloc=false;
+		if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null){
+			LeaderEdgeDevice leader = ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader();
+			if (leader.current_tasks.containsKey(task)){
+				sameloc=sameLocation(task.getEdgeDevice(), leader.current_tasks.get(task));
+			}
+			else sameloc=sameLocation(task.getEdgeDevice(), task.getOrchestrator());
+		}
+		if(!sameloc) {
+			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+			simLog.incrementTasksFailedMobility(task);
+			return setFailed(task);
+		}
+	}
+		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
+			&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+	//		&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
+		){
+		boolean sameloc=false;
+		if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null){
+			LeaderEdgeDevice leader = ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader();
+			if (leader.current_tasks.containsKey(task)){
+				sameloc=sameLocation(task.getEdgeDevice(), leader.current_tasks.get(task));
+			}
+			else sameloc=sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()));
+		}
+		if(!sameloc) {
+			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+			simLog.incrementTasksFailedMobility(task);
+			return setFailed(task);
+		}
+	}
+		return false;
+	}
+	*/
 
 	private boolean setFailed(Task task) {
 		failedTasksCount++;
