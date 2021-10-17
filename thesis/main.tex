@@ -48,8 +48,8 @@ Relatori: Prof. Patrizio Dazzi, Prof. Antonio Brogi}
 \pagebreak
 
 \paragraph*{Abstract}
-This thesis tries to...
-
+This thesis aims to expose advantages of an hybrid architecture that collocate itself between the big computational power but high delay price of Cloud computing and the low delay but small computational power of Edge computing.
+This is done by simulating a simple leader algorithm and analyzing the results.
 
 \part*{Introduction}
 \chapter{Introduction to application allocation problem}
@@ -58,24 +58,34 @@ The growing interest in the cloud computing paradigm and its application in the 
 In this case particular attention is put on the creation of a distributed edge-oriented environment that integrates heterogeneous resources like edge devices, specialized on-site nodes and cloud.
 
 \section{Application Placement}
-The application placement problem is a concern for every large scale Fog infrastructure.
+The application placement problem is a concern for every large scale  infrastructure.
 
 When the number of task generated and computational device rise the nearest/strongest offload location is not always the best.
 
-This leads to the need of a methodology to find a suitable device for the task.
+A centralized computation is not an option when the requirement (mainly in terms of latency) are strict.
+
+This leads to the need to have methodologies to find a suitable device for the task.
 
 
 \section{State of the art}
-The state of the art
+The state of the art for Cloud Brokering involve static and dynamic analysis of tasks and available nodes in order to establish load distribution prior to the actual deployment.\\
+Algorithms that accomplish this use mathematical, algorithmic and machine learning techniques.\\
+An overview of those can be taken in this paper from Brogi et al \cite{BrogiFGL20}.
+
 
 \chapter{Scenario}
-The scenario considered in this thesis is an intelligent vehicles environment. The way different components interact emulate a real world use although the application of some of the solutions described in the following sections are just for research purposes.
+The scenario considered in this thesis is an intelligent vehicles environment. The way different components interact emulate a real world use although the some parts of the solutions described in the following sections are just for research purposes.
 
 \section{Vehicles}
-The users (vehicles) are represented as edge devices with no computational power that generate tasks in an interval of time.\\
-They are mobile to simulate a realistic e behavior, this leads to strict delay and mobility requirements.
+The users (vehicles) are represented as edge devices with no computational power (more on that in the following section) that generate tasks in an interval of time.\\
+They are mobile to simulate a realistic behavior.
+This leads to strict delay and mobility requirements that the nodes where the tasks are offloaded must satisfy.\\
+Is with those very constraints that a hybrid model is shown to be effective.
 
 \subsection{Applications}
+I analyzed which tasks an actual vehicle would generate.\\
+To maintain the focus on the thesis objective I simplified the complex structure underneath tasks inside the device and decided to represent just the jobs that actually leaves the vehicle.\\
+Doing this way I take for granted all the intra-node processing and communication thus considering every vehicle as an edge device with no computational power.
 The proposed tasks are the following:
 \begin{enumerate}
 \item
@@ -83,34 +93,46 @@ The proposed tasks are the following:
 		SENSOR_DATA_COMMUNICATION
 	\end{verbatim}
 	Application that simulates the gathering and communication of data originated by vehicle's sensors.\\
-	We take for granted a preliminary elaboration and anonymization of the data collected by the car done in respect of the privacy limits established with the end user.
+	This task has a strict limit in terms of delay but the overall computation is light.\\
+	As stated above, we take for granted a preliminary elaboration and anonymization of the data collected by the car done in respect of the privacy limits established with the end user.
 	\item
 	\begin{verbatim}
 		ENTERTAINMENT
 	\end{verbatim}
-	Application that simulates the use of infotainment (music streaming, webradio, etc.)
+	Application that simulates the use of infotainment (music streaming, webradio, etc.)\\
+	This task admits longer delay but is computationally heavier than the previous one. 
 \end{enumerate}
 
 \section{Road site units}
-Road side unit are devices that lay on the border of the road (possibly integrated in traffic light/sign).
+Road side unit are devices that lay on the border of the road frequently integrated in traffic lights or signs.
 
 Those data centers are simulated with edge data centers.
 
 They represent a first point of arrival of the task sent by the devices.
 
-The communication between the two happens through LAN and undergoes the limitation imposed by both edge devices's range and the edge data center's range.\\
+The communication between the two happens through LAN and undergoes the limitation imposed by both edge device's range and the edge data center's range.\\
 They have computational power and can act as orchestrator.
 
-This means that a device asks the data center to offload the task for it, extending in fact the range on which suitable computational power can be found at the expense of the introduction of some communication delay.\\
-They don't generate tasks and they are the core actor in my \nameref{leader algo}.
+This means that a device asks the data center to offload the task for it, extending in fact the range on which suitable computational power can be found at the expense of the introduction of communication delay.\\
+They don't generate tasks and they are the core actor in my \nameref{leader algo}.\\
+
+Every operation that involves manipulating data coming from the edge devices is simulated by the time taken from the final executor to compute the task returning the result to the source (the edge device).
 
 \section{Cloud}
 The Cloud is present as last resort due to high delay introduced in the offload on it.
-It offer computational power and is reachable from every device through WAN without the physical limitation of the LAN.
 
+It is reachable from every device through WAN without the physical limitation of the LAN.\\
+
+We assume it has an unlimited computational power.
+
+Therefore the only  (and huge, in environments of this kind) downside is the time it takes to execute all the tasks queued, making them fail for exceed of  delay.
 
 \section{Thesis's goal}
-The goal of this thesis is to analyze how the previously described system can be simulated with a simulation software (\ref{PES}) and to propose an algorithm that makes the edge data centers follow a hierarchy model.
+The goal of this thesis is to:
+\begin{itemize}
+	\item analyze how the previously described system can be simulated with a simulation software (\hyperref[PES]{Pure Edge Simulator}),
+	\item how edge data centers organized in communities with a leader through a simple algorithm can represent a valid intermediate solution between pure edge and cloud computation.
+\end{itemize}
 
 \part*{Metodology}
 \chapter{Pure Edge Sim}
@@ -120,9 +142,7 @@ The tool used is \textbf{Pure Edge Simulator} (from here after \textit{PES}).
 \textit{PES} is a simulation framework for performance evaluation developed by a group of Tunisian researchers focused on cloud, fog, and pure edge computing environments.
 
 \section{Requirements}
-The project is in Java and I used an IDE for my whole work.
-
-This simplify the dependencies management but nullify the possibilities of scripting the tests.
+The project is in Java and I used an IDE for my whole work, this simplify the dependencies management.
 
 \section{Features and limitations}
 \textit{PES} is a task oriented simulator.
@@ -130,6 +150,16 @@ This simplify the dependencies management but nullify the possibilities of scrip
 This trait is inherited from its parent tool Cloud Sim.\\
 Although this approach to simulations is suitable for testing task scheduling on Cloud and Edge, such decoupling represents a major barrier for the implementation of consequentials events involving more than one architecture layer.
 An insight of the structure can be take in the paper proposed by the authors \cite{MechalikhTM21}.
+\\
+For my work I had both to
+\begin{itemize}
+	\item extend some classes using a mechanism provided by the authors
+	\item modify core classes that the simulator doesn't plan to be changed.
+	
+	Every change (mainly workarounds for PES limitations) has been done preserving the working properties of all the project regardless of the type of simulation executed.
+\end{itemize}
+
+
 
 \section{Starting a simulation}
 Starting from main in MainApplication the method launchSimulation is called.\\
@@ -168,6 +198,7 @@ Otherwise a new transfer with
 is added to \textbf{transferProgressList} in order to simulate the request traveling through the network from the source to the orchestrator. Let's consider this case.\\
 
 \subsection*{Network transfers}
+\label{network_transfer}
 The \textbf{transferProgressList} is an ArrayList initialized at the creation of the Network Model object.
 
 It is loaded with transfers objects to simulate any kind of displacement of information.
@@ -200,27 +231,34 @@ In Simulation Manager the corresponding switch case is caught in processEvent an
 Here there is a check if the task is failed. After that the a suitable VM is searched for the task.
 
 \subsection*{VM Choice}
-The method initialize of the Simulation Manager's orchestrator is called. The architecture of the simulation is evaluated and the respective method is called. Whatever method is called the only difference is the array of strings Architecture (containing the names of the supported architectures in this simulation) passed to the method nesting of assignTaskToVM and findVM.
+The method \textbf{initialize} of SimulationManager's orchestrator is called. The architecture of the simulation is evaluated and the respective method is invoked. Whatever method is chosen the only difference is the array of strings Architecture (containing the names of the supported architectures in this simulation) passed to the method nesting of assignTaskToVM and findVM.
 
 The latter is up to implementation and utilizes the simulation algorithm to find the suitable VM.\\
-In my case I customized it in order to implement the \nameref{leader algo}.
-
-I used negative integers returned from my\_initialize in order to distinguish the step of leader offload.
+In my case I customized it starting from the proposed Round Robin algorithm aiming to adapt it to my \nameref{leader algo} orchestration deployment.
 
 assignTaskToVM evaluates the VM (-1 results in a failure for lack of resources) and assign it to the task. 
 
 %TODO fai capire che e' finita la sottosezione di VM Choice
 \vspace{0.5cm}
-There is a second evaluation for the VM=Null (this time in the Simulation Manager) then there is a check:
+There is a second evaluation for \textit{task.getVm() == Vm.NULL}, this time in SimulationManager.
+
+Here I modified the default behavior adding a second check whether the orchestrator of the task has a leader.
+\begin{itemize}
+	\item If it's the case an event containing the task is scheduled to it with tag \textbf{TASK\_OFFLOAD} and the method returns.
+	\item Otherwise there is a further check whether the orchestrator of the task is also a leader (hence being an isolated leader, more on that later). %TODO cite that part.
+	In this case the same event is scheduled to the orchestrator of the task (being the very leader) and the method returns.
+\end{itemize}
+If the \textit{task.getVm() == Vm.NULL} check fails the number of task failed for lack of resources increases and the method returns.\\
+But if the VM is found there is a check:
 \begin{itemize}
 	\item If the device that generated the task isn't the same that contains the assigned VM and the orchestrator of the task isn't the data center that contains the assigned VM then a task with tag \seqsplit{SEND\_REQUEST\_FROM\_ORCH\_TO\_DESTINATION} and destination the Network model is scheduled immediately.
 	\item Otherwise the task is scheduled to this (Simulation Model) with tag EXECUTE\_TASK.
 \end{itemize}
 Let's consider the firts case.
 
-In network model the corresponding case is caught and sendRequestFromOrchToDest is called.
+In network model the corresponding case is caught and \mbox{\textbf{sendRequestFromOrchToDest}} is called.
 
-A transfer is added to the queue with tag TASK. The transfer behavior is the same as mentioned in the Network transfer subsection. %TODO citalo.
+A transfer is added to the queue with tag TASK. The transfer behavior is the same as mentioned in the \hyperref[network_transfer]{Network transfer subsection}.\\
 Upon finishing the transfer the corresponding if is caught and executeTaskOrDownloadContainer is called.
 
 Here there is a check for the ENABLE\_REGISTRY, in that case a new task with tag DOWNLOAD\_CONTAINER is scheduled.
@@ -264,9 +302,9 @@ In Simulation Model the corresponding case i caught. A failure check is done, th
 \paragraph*{Idea}
 An edge data center should be able to elect a leader among the other edge data centers in reach if they meet some arbitrary conditions.
 
-A leader (that can have a leader as well) can execute tasks on its VM or offload them to its subordinates.\\
+A leader (which can't have a leader) receives tasks from edge data centers in its community when they can't execute them and tries to offload them to other nodes in its community.\\
 
-As last chance, hence when the hierarchy is fully resolved and no VM is found, the task is offloaded on the Cloud.
+As last chance, hence when there are no data center left in the community and still no suitable VM is found, the task is offloaded on the Cloud.
 
 This implies that both Edge and Cloud must be present in computation paradigm in order to accomplish this.
 
@@ -275,39 +313,63 @@ This implies that both Edge and Cloud must be present in computation paradigm in
 \subsubsection*{LeaderEdgeDevice class}
 The custom class \textit{LeaderEdgeDevice} extends DefaultDataCenter.
 
-In \textit{startInternal} a task with custom tag LEADER\_ELECTION is scheduled with INITIALIZATION\_TIME + 1 delay.
+\paragraph*{Community discovery} In \textit{startInternal} a task with custom tag COMMUNITY\_DISCOVERY is scheduled with INITIALIZATION\_TIME + 1 delay.
 
 In \textit{processEvent} the tag is caught.
 
 There is a check for:
- 	\begin{itemize}
- 		\item the device being an edge data center,
- 		\item the device being an orchestrator.
+\begin{itemize}
+ 	\item the device being an edge data center,
+ 	\item the device being an orchestrator,
+ 	\item "LEADER" being the orchestrator deployment method.
+\end{itemize}
+This allows that only orchestrator data centers, if the simulation uses leaders, to have/be a leader and being part of a community.\\
+  	
+
+If everything is true then the method \textbf{discover} is called.
+This procedure allows every edge data center that takes part in the leader algorithm to have its own community of neighbor nodes.
+\begin{itemize}
+	\item in a loop every datacenter is taken into account and is checked whether the candidate:
+	\begin{itemize}
+		\item is not the same data center as the one evaluating,
+		\item is an edge data center
+		\item it is an orchestrator
+		\item is in data center range with the one evaluating.
+ 	\end{itemize}
+	If every condition is met the candidate is added to a personal list (community).
+	\item At the end of the loop the community is sorted in descending order according to the data center MIPS.
+\end{itemize}
+
+ 	
+\paragraph*{Leader settlement}After INITIALIZATION\_TIME + 10 delay an event with tag LEADER\_SETTLE is scheduled.
+
+In \textit{processEvent} the tag is caught.
+There is the same check as COMMUNITY\_DISCOVERY, then the \textbf{settle} method is called.
+\begin{itemize}
+	\item A data center should lead if:
+	\begin{itemize}
+		\item its community is empty.	
+	
+		In this case the edge data center is isolated therefore is leader of its own.
+		\item its MIPS are greater of the one of the first data center in its community (thus being the strongest among the one it have in range).
+	\end{itemize}
+ 	\item If the condition above aren't met there is a check whether one of the node in its community has it as first element (thus possible leader). Also in this case the node should lead.
+ 	\item If a node should lead it's removed from the communities that don't have it as first data center in terms of MIPS.
+ 	\item Then if a node should lead its community is rebuild with nodes that are weaker and have it as first element in their community.
+ 	
+ 	The method terminates with a further sorting of the newly build community.
+\end{itemize}
  		
- 		This allows data centers not flagged as orchestrators to not have a leader (although possibly being elected as such by other data centers, even that case is easily adjustable).
- 		\item "LEADER" is the orchestration method,
-  	\end{itemize}
+\paragraph*{Leader confirmation}After INITIALIZATION\_TIME + 20 delay an event with tag LEADER\_CONFIRMATION is scheduled.
 
-If everything is true then the method \textbf{leader} is called.
-  	\begin{itemize}
- 		\item in a loop every datacenter is taken into account and is checked whether:
- 		\begin{itemize}
- 			\item it is not the same data center as the one evaluating,
- 			\item it is an edge data center
- 			\item the distance between the two data centers is smaller than the range of the edge data centers.
- 		\end{itemize}
- 		\item If it is the case then there is an evaluation about the MIPS (I used that criterion for electing a leader).
- 		\begin{itemize}
- 			\item If the MIPS of the candidate are greater than ones of the evaluator
- 			\item and the max MIPS of the data center seen until that point is lower than the MIPS of the candidate
- 		\end{itemize}
-
-then the candidate becomes the (potentially temporary) leader, the max MIPS seen until that point is set to the new leader's MIPS.
-
-Upon ending the loop if a leader has been found the current datacenter is added to its subordinates list and the flag isLeader is set to true (in case it has a leader as well).
+In \textit{processEvent} the tag is caught.
+There is the same check as the two branches above, then the \textbf{confirmation} method is called.
+%TODO HERE
+Upon ending the loop if a leader has been found the current data center is added to its subordinates list and the flag isLeader is set to true (in case it has a leader as well).
  		
 Otherwise the orchestrator flag is removed as well as the data center presence in Orchestrators List.
-  	\end{itemize}
+
+  	I choose a static criterion but it's customizable and can be dynamic. It's sufficient to reschedule the events %TODO
 \subsubsection*{Leader algorithm}
 \paragraph{Simulation Manager}
 

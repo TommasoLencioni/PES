@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  27 SEP 2021 17:24
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 21.1) (preloaded format=pdflatex 2021.2.14)  17 OCT 2021 14:48
 entering extended mode
 **./main.tex
 (main.tex
@@ -813,113 +813,139 @@ l.49
 Chapter 1.
 [4
 
-]
+] [5]
 Chapter 2.
-[5
+[6
 
-] [6] [7
+]
+Underfull \hbox (badness 10000) in paragraph at lines 116--118
+
+ []
+
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 124--125
+
+ []
+
+[8] [9
 
 ]
 Chapter 3.
+[10
 
-Overfull \hbox (4.9834pt too wide) in paragraph at lines 135--140
+]
+Overfull \hbox (4.9834pt too wide) in paragraph at lines 165--170
 \OT1/cmr/m/n/12 Starting from main in MainAp-pli-ca-tion the method launch-Sim-
 u-la-tion is called. 
  []
 
-[8
 
-]
-Overfull \hbox (6.86131pt too wide) in paragraph at lines 153--164
+Overfull \hbox (6.86131pt too wide) in paragraph at lines 183--194
 \OT1/cmr/m/n/12 Due to the SEND[]TO[]ORCH flag set be-fore the method \OT1/cmr/
 bx/n/12 send-Task-ToOrches-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 153--164
+Underfull \hbox (badness 10000) in paragraph at lines 183--194
 
  []
 
-[9]
-Underfull \hbox (badness 10000) in paragraph at lines 168--169
+[11]
+Underfull \hbox (badness 10000) in paragraph at lines 198--199
 
  []
 
 
-Overfull \hbox (57.24806pt too wide) in paragraph at lines 175--176
+Overfull \hbox (57.24806pt too wide) in paragraph at lines 206--207
 \OT1/cmr/m/n/12 DATE[]PROGRESS is sched-uled and re-peated ev-ery NET-WORK[]UPD
 ATE[]INTERVAL
  []
 
 
-Overfull \hbox (21.30023pt too wide) in paragraph at lines 184--192
+Overfull \hbox (21.30023pt too wide) in paragraph at lines 215--223
 \OT1/cmr/m/n/12 In this part a cru-cial role is played by the flag RE-AL-IS-TIC
 []NETWORK[]MODEL.
  []
 
 
-Overfull \hbox (6.54344pt too wide) in paragraph at lines 184--192
+Overfull \hbox (6.54344pt too wide) in paragraph at lines 215--223
 \OT1/cmr/m/n/12 be-tween the old re-main-ing file size and the NET-WORK[]UPDATE
 []INTERVAL
  []
 
-[10] [11] [12]
-Overfull \hbox (11.36487pt too wide) in paragraph at lines 251--253
+[12] [13]
+Overfull \hbox (79.43446pt too wide) in paragraph at lines 259--260
+[]\OT1/cmr/m/n/12 In net-work model the cor-re-spond-ing case is caught and []
+ []
+
+[14]
+Overfull \hbox (11.36487pt too wide) in paragraph at lines 289--291
 \OT1/cmr/m/n/12 Cloud. In that case the task with tag SEND[]RESULT[]FROM[]ORCH[
 ]TO[]DEV
  []
 
-
-Overfull \hbox (8.55266pt too wide) in paragraph at lines 256--257
+[15]
+Overfull \hbox (8.55266pt too wide) in paragraph at lines 294--295
 \OT1/cmr/m/n/12 ToDev is called. Here a new file trans-fer is added with tag RE
 -SULTS[]TO[]DEV. 
  []
 
 
-Overfull \hbox (84.03398pt too wide) in paragraph at lines 258--261
+Overfull \hbox (84.03398pt too wide) in paragraph at lines 296--299
 []\OT1/cmr/m/n/12 Upon fin-ish-ing the trans-fer the last else is caught and th
 e method []
  []
 
-[13]
-Underfull \hbox (badness 10000) in paragraph at lines 267--268
+
+Underfull \hbox (badness 10000) in paragraph at lines 305--306
 
  []
 
-[14] [15]
-Underfull \hbox (badness 10000) in paragraph at lines 339--341
+[16]
+Underfull \hbox (badness 10000) in paragraph at lines 326--327
 
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 342--343
-
+[17]
+Overfull \hbox (0.44951pt too wide) in paragraph at lines 363--364
+ []\OT1/cmr/bx/n/12 Leader con-fir-ma-tion \OT1/cmr/m/n/12 Af-ter INI-TIAL-IZA-
+TION[]TIME + 20 de-lay an event
  []
 
-
-Underfull \hbox (badness 10000) in paragraph at lines 348--349
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 358--359
+[18]
+Underfull \hbox (badness 10000) in paragraph at lines 401--403
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 361--364
+Underfull \hbox (badness 10000) in paragraph at lines 404--405
 
  []
 
-[16] [17] [18]
+
+Underfull \hbox (badness 10000) in paragraph at lines 410--411
+
+ []
+
+[19]
+Underfull \hbox (badness 10000) in paragraph at lines 420--421
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 423--426
+
+ []
+
+[20] [21]
 Chapter 4.
-[19
+[22
 
 ]
 Chapter 5.
-[20
+[23
 
-] [21
+] [24
 
 ] (main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
@@ -929,10 +955,10 @@ Package logreq Info: Writing requests to 'main.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 17618 strings out of 479618
- 303887 string characters out of 2865026
- 1011616 words of memory out of 3000000
- 34466 multiletter control sequences out of 15000+200000
+ 17628 strings out of 479618
+ 304087 string characters out of 2865026
+ 1012712 words of memory out of 3000000
+ 34469 multiletter control sequences out of 15000+200000
  411784 words of font info for 56 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  71i,6n,74p,1845b,1731s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -944,9 +970,9 @@ type1/public/amsfonts/cm/cmr12.pfb><C:/Users/lenci/AppData/Local/Programs/MiKTe
 X/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/lenci/AppData/Local/Progra
 ms/MiKTeX/fonts/type1/public/amsfonts/cm/cmti12.pfb><C:/Users/lenci/AppData/Loc
 al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
-Output written on main.pdf (22 pages, 294561 bytes).
+Output written on main.pdf (25 pages, 305434 bytes).
 PDF statistics:
- 269 PDF objects out of 1000 (max. 8388607)
- 66 named destinations out of 1000 (max. 500000)
+ 293 PDF objects out of 1000 (max. 8388607)
+ 73 named destinations out of 1000 (max. 500000)
  150 words of extra memory for PDF output out of 10000 (max. 10000000)
 
