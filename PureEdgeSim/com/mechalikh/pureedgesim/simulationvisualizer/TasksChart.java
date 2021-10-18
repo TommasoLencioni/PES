@@ -46,7 +46,7 @@ public class TasksChart extends Chart {
 			for (int i = 0; i <= clock; i++)
 				time[i] = i;
 			tasksFailedList.add(tasksFailed);
-			updateSeries(getChart(), "Failed tasks", time, toArray(tasksFailedList),
+			updateSeries(getChart(), "Failed tasks", time, time,
 					SeriesMarkers.NONE, Color.BLACK);
 		}
 	}
