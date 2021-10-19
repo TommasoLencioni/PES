@@ -41,9 +41,10 @@ public class LeaderNetworkModel extends NetworkModel{
                     }
                 }
             }
-            if (!closerNode.equals(task.getOrchestrator()))
-                System.err.println("Cambio orchestratore a  " + closerNode.getName());
-            task.setOrchestrator(closerNode);
+            if (!closerNode.equals(task.getOrchestrator())) {
+                //System.err.println(task.getId() + " Cambio orchestratore da "+ task.getOrchestrator().getName() +" a  " + closerNode.getName());
+                task.setOrchestrator(closerNode);
+            }
         }
         catch (Exception ignored) {
 

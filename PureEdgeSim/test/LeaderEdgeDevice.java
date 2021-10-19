@@ -110,6 +110,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							}
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 							//SimLog.println("Mi e' arrivato da me perche' ho la community vuota");
+							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
+							current_tasks.remove(task);
 							return;
 						}
 						if(!community.contains(sub)) {
@@ -129,18 +131,15 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						//Otherwise I go to the next dc in the community
 						else next = community.indexOf(sub)+1;
 						//If the first dc is also the original orch I further increment by 1 the position of the next executor
-						if (sub.equals(current_tasks.get(task))){
-							SimLog.println("Salto l'orch originale");
-							next = community.indexOf(sub)+1;
-						}
-						if(next>=community.size()){
+						if(next==community.size()){
 							//Schedule al Cloud
 							SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
 							//Schedule al Cloud
 							//tofix make a non trivial cloud VM assignment
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
-									task.setVm(dc.getHost(0).getVmList().get(0));
+									//task.setVm(dc.getHost(0).getVmList().get(0));
+									task.setOrchestrator(dc);
 									break;
 								}
 							}
@@ -150,6 +149,28 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							return;
 						}
 						LeaderEdgeDevice next_orch=community.get(next);
+						if (next_orch.equals(current_tasks.get(task))){
+							next = community.indexOf(sub)+1;
+							//SimLog.println(this.getName() +" " + task.getId() + ", next e' "+ next + " e la dim comm e' "+ community.size());
+						}
+						//Todo fix boilerplate
+						if(next==community.size()){
+							//Schedule al Cloud
+							SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
+							//Schedule al Cloud
+							//tofix make a non trivial cloud VM assignment
+							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
+								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
+									//task.setVm(dc.getHost(0).getVmList().get(0));
+									task.setOrchestrator(dc);
+									break;
+								}
+							}
+							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
+							current_tasks.remove(task);
+							return;
+						}
 						task.setOrchestrator(next_orch);
 						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 					}

@@ -88,17 +88,19 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 					// if this is the first time,
 					// or new min found, so we choose it as the best VM
 					// set the first vm as the best one
+					//System.out.println("+++" + (vmList.get(vmList.indexOf(task.getOrchestrator().getHost(i).getVmList().get(j))).getCpuPercentUtilization()));
 					host=i;
 					vm = j;
 				}
 			}
 		}
 		if(minTasksCount>250){
+			//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
 			return null;
 		}
 		// assign the tasks to the found vm
 		try{
-			System.out.println("Il minimo aveva "+ orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).size() + " tasks");
+			//System.out.println("Il minimo aveva "+ orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).size() + " tasks");
 			return task.getOrchestrator().getHost(host).getVmList().get(vm);
 		}
 		catch (Exception e){
