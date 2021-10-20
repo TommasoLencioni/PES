@@ -11,7 +11,7 @@
 		<maxPauseDuration>3</maxPauseDuration><!-- the maximum delay before moving to a new location-->
 		<minMobilityDuration>1</minMobilityDuration><!-- the minimum delay before stopping-->
 		<maxMobilityDuration>100</maxMobilityDuration><!-- the maximum delay before stopping-->
-		<battery>true</battery> <!-- relies on battery? -->
+		<battery>false</battery> <!-- relies on battery? -->
 		<percentage>100</percentage> <!-- percentage of this device type -->
 		<batteryCapacity>18.75</batteryCapacity> <!-- battery capacity in Watt-Hour -->
 		<idleConsumption>4</idleConsumption><!-- idle energy consumption/

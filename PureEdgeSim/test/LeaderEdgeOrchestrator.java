@@ -94,9 +94,13 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 				}
 			}
 		}
-		if(minTasksCount>250){
+		//100*10
+		//System.out.println("Simul time "+ (int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/600));
+		if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500)){
+		//if(minTasksCount>250){
 			//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
-			return null;
+			if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) return null;
+			//return null;
 		}
 		// assign the tasks to the found vm
 		try{

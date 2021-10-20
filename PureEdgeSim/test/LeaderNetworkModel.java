@@ -17,7 +17,7 @@ public class LeaderNetworkModel extends NetworkModel{
     public void sendResultFromDevToOrch(Task task) {
         if (task.getOrchestrator() != task.getEdgeDevice()) {
             //System.out.println("Sto usando il mio");
-            closerNode(task);
+            task.setOrchestrator(closerNode(task));
             transferProgressList.add(new FileTransferProgress(task, task.getOutputSize() * 8,
                     FileTransferProgress.Type.RESULTS_TO_ORCH));
         }
@@ -25,7 +25,7 @@ public class LeaderNetworkModel extends NetworkModel{
             scheduleNow(this, NetworkModel.SEND_RESULT_FROM_ORCH_TO_DEV, task);
     }
 
-    public void closerNode(Task task){
+    public LeaderEdgeDevice closerNode(Task task){
         try {
             int minDist = SimulationParameters.AREA_LENGTH;
             LeaderEdgeDevice closerNode = (LeaderEdgeDevice) task.getOrchestrator();
@@ -43,11 +43,13 @@ public class LeaderNetworkModel extends NetworkModel{
             }
             if (!closerNode.equals(task.getOrchestrator())) {
                 //System.err.println(task.getId() + " Cambio orchestratore da "+ task.getOrchestrator().getName() +" a  " + closerNode.getName());
-                task.setOrchestrator(closerNode);
+                //task.setOrchestrator(closerNode);
+                return closerNode;
             }
+            else return (LeaderEdgeDevice) task.getOrchestrator();
         }
-        catch (Exception ignored) {
-
+        catch (Exception e) {
+            return (LeaderEdgeDevice) task.getOrchestrator();
         }
     }
 }

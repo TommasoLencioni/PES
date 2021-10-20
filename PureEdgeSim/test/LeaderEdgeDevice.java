@@ -97,17 +97,21 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				if (task!=null){
 					LeaderEdgeDevice sub = (LeaderEdgeDevice) task.getOrchestrator();
 					if (sub!=null){
-						//System.out.println(this.getName() + " ricevo un task da "+ sub.getName());
+						//System.out.println(this.getName() + " ricevo task "+ task.getId() +" da "+ sub.getName());
 						//The second condition should be redundant but avoid bugs
 						if(this.equals(sub) || community.isEmpty()){
+							boolean change=false;
 							//I have empty community and I cannot make the offload to my VMs, schedule to Cloud
 							//tofix limited to one cloud
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 									task.setOrchestrator(dc);
+									task.setMaxLatency(Integer.MAX_VALUE);
+									change=true;
 									break;
 								}
 							}
+							//if(change) System.out.println("Offload a cloud");
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 							//SimLog.println("Mi e' arrivato da me perche' ho la community vuota");
 							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
@@ -115,8 +119,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							return;
 						}
 						if(!community.contains(sub)) {
-							SimLog.println("");
-							SimLog.println("A task arrived to a stranger leader");
+							//SimLog.println("");
+							//SimLog.println("A task arrived to a stranger leader");
 							// Cancel the simulation
 							SimulationParameters.STOP = true;
 							simulationManager.getSimulation().terminate();
@@ -124,25 +128,38 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						int next;
 						//If it's the first time that I see the task I save the orignal orch in an HashMap
 						//	and set the next executor to the first dc in the community
+						//System.out.println("-----");
+
+						//System.out.println("Nelle curr task ho " + current_tasks.size());
+						//for(Map.Entry<Task, LeaderEdgeDevice> x: current_tasks.entrySet()){
+							//System.out.println(x.getKey() + " " + x.getValue());
+						//}
+						//System.out.println("-----");
 						if(!current_tasks.containsKey(task)){
+						//	System.out.println("Entro 1");
 							current_tasks.put(task, sub);
 							next=0;
 						}
 						//Otherwise I go to the next dc in the community
-						else next = community.indexOf(sub)+1;
+						else next = community.indexOf(sub)+2;
+						//System.out.println("Fuori 1, next "+ next);
 						//If the first dc is also the original orch I further increment by 1 the position of the next executor
-						if(next==community.size()){
+						if(next>=community.size()-1){
+							boolean change=false;
 							//Schedule al Cloud
-							SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
+							//SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
 							//Schedule al Cloud
 							//tofix make a non trivial cloud VM assignment
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 									//task.setVm(dc.getHost(0).getVmList().get(0));
 									task.setOrchestrator(dc);
+									change=true;
+									task.setMaxLatency(Integer.MAX_VALUE);
 									break;
 								}
 							}
+							//if(change) System.out.println("Offload a cloud");
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
 							current_tasks.remove(task);
@@ -150,27 +167,34 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						}
 						LeaderEdgeDevice next_orch=community.get(next);
 						if (next_orch.equals(current_tasks.get(task))){
+						//if (next_orch.equals(task.getOrchestrator()){
 							next = community.indexOf(sub)+1;
 							//SimLog.println(this.getName() +" " + task.getId() + ", next e' "+ next + " e la dim comm e' "+ community.size());
 						}
 						//Todo fix boilerplate
-						if(next==community.size()){
+						if(next>=community.size()-1){
+							boolean change=false;
 							//Schedule al Cloud
-							SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
+							//SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
 							//Schedule al Cloud
 							//tofix make a non trivial cloud VM assignment
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 									//task.setVm(dc.getHost(0).getVmList().get(0));
 									task.setOrchestrator(dc);
+									task.setMaxLatency(Integer.MAX_VALUE);
+									change=true;
 									break;
 								}
 							}
+							//if(change) System.out.println("Offload a cloud");
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
 							current_tasks.remove(task);
 							return;
 						}
+						next_orch=community.get(next);
+						//System.out.println("Ora e' "+ task.getOrchestrator().getName() + " dopo sara' "+ next_orch.getName());
 						task.setOrchestrator(next_orch);
 						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 					}
@@ -227,11 +251,13 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			}
 		}
 		community.sort(((o1, o2) -> (int) ((o2.getResources().getTotalMips()) - o1.getResources().getTotalMips())));
-		System.out.println(this.getName() +" i miei vicini  sono:");
-		for (DataCenter dc: community){
-			System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
+		if(SimulationParameters.DEBUG) {
+			System.out.println(this.getName() + " i miei vicini  sono:");
+			for (DataCenter dc : community) {
+				System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
+			}
+			System.out.println("+++++");
 		}
-		System.out.println("+++++");
 	}
 
 	private void settle(){
@@ -242,7 +268,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		else{
 			for (LeaderEdgeDevice dc : community) {
 				if (!dc.getCommunity().isEmpty() && dc.getCommunity().get(0).equals(this) && dc.getResources().getTotalMips() <= this.getResources().getTotalMips()) {
-					System.out.println(this.getName() + " dovrei essere leader");
+					//System.out.println(this.getName() + " dovrei essere leader");
 					should_lead = true;
 				}
 			}
@@ -268,11 +294,13 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		}
 
 		//Debug
-		System.out.println(this.getName() +" nella community ho:");
-		for (DataCenter dc: community){
-			System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
+		if(SimulationParameters.DEBUG) {
+			System.out.println(this.getName() + " nella community ho:");
+			for (DataCenter dc : community) {
+				System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
+			}
+			System.out.println("---");
 		}
-		System.out.println("---");
 	}
 
 	private void confirmation(){
@@ -281,7 +309,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			this.setAsOrchestrator(true);
 			this.simulationManager.getServersManager().getOrchestratorsList().add(this);
 			//Debug
-			System.out.println(this.getName() +" sono leader ma sono solo");
+			if(SimulationParameters.DEBUG) System.out.println(this.getName() +" sono leader ma sono solo");
 			return;
 		}
 		if (this.getResources().getTotalMips()>community.get(0).getResources().getTotalMips()){
@@ -289,22 +317,23 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			this.setAsOrchestrator(false);
 			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
 			//Debug
-			System.out.println(this.getName() +" sono il leader di");
-			for (DataCenter dc: community){
-				System.out.println(dc.getName() + " "+ dc.getResources().getTotalMips());
+			if(SimulationParameters.DEBUG) {
+				System.out.println(this.getName() + " sono il leader di");
+				for (DataCenter dc : community) {
+					System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
+				}
+				System.out.println("######");
 			}
-			System.out.println("######");
 			return;
 		}
 		//Debug
-		if(!isLeader){
-			this.leader=community.get(0);
-			System.out.println(this.getName() +" con "+ this.getResources().getTotalMips() +" il mio leader e' "+ leader.getName() +" con "+ leader.getResources().getTotalMips());
+		if(SimulationParameters.DEBUG) {
+			if (!isLeader) {
+				this.leader = community.get(0);
+				System.out.println(this.getName() + " con " + this.getResources().getTotalMips() + " il mio leader e' " + leader.getName() + " con " + leader.getResources().getTotalMips());
+			}
+			System.out.println("######");
 		}
-
-		System.out.println("######");
-
-
 	}
 
 	public LeaderEdgeDevice getLeader() {

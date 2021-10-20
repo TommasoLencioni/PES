@@ -37,6 +37,8 @@ public class MyMain extends MainApplication {
 
         //Network Model
         setCustomNetworkModel(LeaderNetworkModel.class);
+        //setCustomNetworkModel(PaperNetworkModel.class);
+
         // Launch the simulation
         MyMain.launchSimulation();
     }

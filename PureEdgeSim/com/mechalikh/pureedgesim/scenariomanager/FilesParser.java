@@ -140,6 +140,10 @@ public class FilesParser {
 				SimulationParameters.QUADRANT_ARRANGEMENT = Boolean
 						.parseBoolean(prop.getProperty("quadrant_arrangement").trim());
 			}
+			if(prop.getProperty("debug") != null){
+				SimulationParameters.DEBUG = Boolean
+						.parseBoolean(prop.getProperty("debug").trim());
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

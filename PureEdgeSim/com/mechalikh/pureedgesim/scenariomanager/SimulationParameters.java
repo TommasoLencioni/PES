@@ -95,4 +95,5 @@ public class SimulationParameters {
 	public static int MAX_ORCH;
 
 	public static boolean QUADRANT_ARRANGEMENT;
+	public static boolean DEBUG;
 }

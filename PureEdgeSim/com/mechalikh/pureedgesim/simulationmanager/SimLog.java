@@ -31,10 +31,8 @@ import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+
 import org.cloudbus.cloudsim.vms.Vm;
 
 import com.mechalikh.pureedgesim.MainApplication;
@@ -437,6 +435,25 @@ public class SimLog {
 							+ " (s) : " + newLine;
 				log.add(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) + " - simulation time "
 						+ newLine);
+
+				try {
+					File csv_file = new File(MainApplication.getOutputFolder() + "/" + simStartTime + "/my.csv");
+					csv_file.getParentFile().mkdirs();
+					csv_file.createNewFile();
+					FileWriter fw = new FileWriter(csv_file, true);
+					BufferedWriter bw = new BufferedWriter(fw);
+					bw.write((int) (simulationManager.getSimulation().clock() - SimulationParameters.INITIALIZATION_TIME) + "," + tasksFailed);
+					bw.newLine();
+					bw.close();
+						//log.add(simulationManager.getSimulation().clock() - SimulationParameters.INITIALIZATION_TIME + " " + String.valueOf(tasksFailed));
+					//}
+				}
+				catch (Exception e){
+					e.printStackTrace();
+					System.err.println("Errore scrittura");
+				}
+
+
 				break;
 			case NO_TIME:
 				log.add(newLine);

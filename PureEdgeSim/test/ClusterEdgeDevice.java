@@ -86,10 +86,10 @@ public class ClusterEdgeDevice extends DefaultDataCenter {
 			}
 			else scheduleFirstNow(this, TASK_REJECTION, task);
 			break;
-		case TASK_FROM_NEIGHBOR:
-			Task task1 = (Task) ev.getData();
-			scheduleNow(this.simulationManager, SimulationManager.TASK_SENT_FROM_NEIGHBOR, task1);
-			break;
+		//case TASK_FROM_NEIGHBOR:
+		//	Task task1 = (Task) ev.getData();
+		//	scheduleNow(this.simulationManager, SimulationManager.TASK_SENT_FROM_NEIGHBOR, task1);
+		//	break;
 		case TASK_REJECTION:
 			Task task2 = (Task) ev.getData();
 			for(DataCenter dc: this.simulationManager.getServersManager().getDatacenterList()){

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
+import com.mechalikh.pureedgesim.network.NetworkModel;
 import com.mechalikh.pureedgesim.network.NetworkModelAbstract;
 import com.mechalikh.pureedgesim.scenariomanager.Scenario;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
@@ -37,6 +38,7 @@ import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 import test.LeaderEdgeDevice;
 import test.LeaderEdgeOrchestrator;
+import test.LeaderNetworkModel;
 
 public class SimulationManager extends SimulationManagerAbstract {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
@@ -49,7 +51,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 	public static final int UPDATE_REAL_TIME_CHARTS = Base + 7;
 	public static final int SEND_TASK_FROM_ORCH_TO_DESTINATION = Base + 8;
 	//Custom
-	public static final int TASK_SENT_FROM_NEIGHBOR = Base + 10;
+	public static final int DEBUG = Base + 10;
 	private int lastWrittenNumber = 0;
 	private int oldProgress = -1;
 	private double failedTasksCount = 0;
@@ -97,6 +99,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 		// Show simulation progress
 		schedule(this, SimulationParameters.INITIALIZATION_TIME, SHOW_PROGRESS);
 
+
+		//schedule(this, SimulationParameters.INITIALIZATION_TIME, DEBUG);
 		simLog.printSameLine("Simulation progress : [", "red");
 	}
 
@@ -204,6 +208,26 @@ public class SimulationManager extends SimulationManagerAbstract {
 			// Terminate the simulation
 			simulation.terminate();
 			break;
+
+		case DEBUG:
+			System.out.println("+++++");
+				for(DataCenter dc: serversManager.getOrchestratorsList()){
+					System.out.println(dc.getName());
+					if(dc.getType().equals(TYPES.EDGE_DATACENTER)){
+						for(Host h: dc.getHostList()){
+							for(Vm vm: h.getVmList()){
+								System.out.println(vm.getCloudletScheduler().getCloudletFinishedList().size());
+
+							}
+						}
+
+					}
+				}
+			System.out.println("+++++");
+			schedule(this, 10, DEBUG);
+			break;
+
+
 		default:
 			simLog.print("Unknown event type");
 			break;
@@ -318,12 +342,11 @@ public class SimulationManager extends SimulationManagerAbstract {
 		// Find the best VM for executing the task
 		((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
 		//edgeOrchestrator.initialize(task);
-
 		// Stop in case no resource was available for this task, the offloading is
 		// failed
 		if (task.getVm() == Vm.NULL) {
 			if(((LeaderEdgeDevice) task.getOrchestrator()).getLeader()!=null) {
-				//System.err.println("Offload su Orchestratore "+ task.getOrchestrator().getName());
+				//System.err.println("Offload su Orchestratore "+ task.getOrchestrator().getName() + " "+ task.getOrchestrator().getType());
 				scheduleNow(((LeaderEdgeDevice) task.getOrchestrator()).getLeader(), LeaderEdgeDevice.TASK_OFFLOAD, task);
 				//scheduleFirst();
 				return;
@@ -514,6 +537,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 			simLog.incrementFailedBeacauseDeviceDead(task);
 			return setFailed(task);
 		}
+
 		// A simple representation of task failure due to
 		// device mobility, if the vm location doesn't match
 		// the edge device location (that generated this task)
@@ -521,13 +545,17 @@ public class SimulationManager extends SimulationManagerAbstract {
 				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
 			//		&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())
 		){
+			//((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+			//System.out.println("fase 1");
 			boolean sameloc=false;
 			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null &&
 					((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
-				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
+				//sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
+				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderNetworkModel) getNetworkModel()).closerNode(task));
 			}
 			else sameloc=sameLocation(task.getEdgeDevice(), task.getOrchestrator());
 			if(!sameloc) {
+				//System.out.println("Fallisco 1");
 				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
 				simLog.incrementTasksFailedMobility(task);
 				return setFailed(task);
@@ -537,6 +565,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
 			//		&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
 		){
+			((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+			//System.out.println("fase 2");
 			boolean sameloc=false;
 			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null &&
 					((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
@@ -545,6 +575,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 			else sameloc=sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()));
 
 			if(!sameloc) {
+				//System.out.println("Fallisco con dev "+ task.getEdgeDevice().getName());
 				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
 				simLog.incrementTasksFailedMobility(task);
 				return setFailed(task);
@@ -575,45 +606,78 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 	//My version for mobility failure
 	/*
-	if (phase == 1 && task.getOrchestrator() != null
-			&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
-	//		&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())
+		if (phase == 1 && task.getOrchestrator() != null
+				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+			//		&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())
 		){
-		boolean sameloc=false;
-		if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null){
-			LeaderEdgeDevice leader = ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader();
-			if (leader.current_tasks.containsKey(task)){
-				sameloc=sameLocation(task.getEdgeDevice(), leader.current_tasks.get(task));
+			((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+			System.out.println("fase 1");
+			boolean sameloc=false;
+			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null &&
+					((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
+				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
 			}
 			else sameloc=sameLocation(task.getEdgeDevice(), task.getOrchestrator());
+			if(!sameloc) {
+				System.out.println("Fallisco 1");
+				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+				simLog.incrementTasksFailedMobility(task);
+				return setFailed(task);
+			}
 		}
-		if(!sameloc) {
-			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
-			simLog.incrementTasksFailedMobility(task);
-			return setFailed(task);
-		}
-	}
 		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
-			&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
-	//		&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
+				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+			//		&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
 		){
-		boolean sameloc=false;
-		if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null){
-			LeaderEdgeDevice leader = ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader();
-			if (leader.current_tasks.containsKey(task)){
-				sameloc=sameLocation(task.getEdgeDevice(), leader.current_tasks.get(task));
+			((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+			System.out.println("fase ");
+			boolean sameloc=false;
+			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null &&
+					((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
+				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
 			}
 			else sameloc=sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()));
+
+			if(!sameloc) {
+				System.out.println("Fallisco 2");
+				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+				simLog.incrementTasksFailedMobility(task);
+				return setFailed(task);
+			}
 		}
-		if(!sameloc) {
-			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
-			simLog.incrementTasksFailedMobility(task);
-			return setFailed(task);
-		}
-	}
 		return false;
 	}
+
 	*/
+
+	/*Bugged version
+	if (phase == 1 && task.getOrchestrator() != null
+				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+				&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
+			((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+			if (!sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
+				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+				simLog.incrementTasksFailedMobility(task);
+				return setFailed(task);
+			}
+		}
+		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
+				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+				&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
+			((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+			if (!sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
+				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+				simLog.incrementTasksFailedMobility(task);
+				return setFailed(task);
+			}
+		}
+		return false;
+	}
+
+
+
+
+	 */
 
 	private boolean setFailed(Task task) {
 		failedTasksCount++;
