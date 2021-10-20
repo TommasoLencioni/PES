@@ -136,6 +136,10 @@ public class FilesParser {
 				SimulationParameters.MAX_ORCH = Integer
 						.parseInt(prop.getProperty("max_orch").trim());
 			}
+			if(prop.getProperty("quadrant_arrangement") != null){
+				SimulationParameters.QUADRANT_ARRANGEMENT = Boolean
+						.parseBoolean(prop.getProperty("quadrant_arrangement").trim());
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

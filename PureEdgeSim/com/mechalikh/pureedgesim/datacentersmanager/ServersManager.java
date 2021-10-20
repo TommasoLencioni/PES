@@ -64,6 +64,9 @@ public class ServersManager {
 
 	//my
 	private int i=0;
+	private int base = SimulationParameters.AREA_LENGTH/4;
+	private int offset = SimulationParameters.AREA_LENGTH/2;
+	private int current = 0;
 
 	public ServersManager(SimulationManager simulationManager, Class<? extends Mobility> mobilityManager,
 			Class<? extends EnergyModel> energyModel, Class<? extends DataCenter> edgedatacenter) {
@@ -175,11 +178,8 @@ public class ServersManager {
 		float devicesInstances = getSimulationManager().getScenario().getDevicesCount() * instancesPercentage / 100;
 
 		for (int j = 0; j < devicesInstances; j++) {
-			//if (datacentersList.size() > getSimulationManager().getScenario().getDevicesCount()
-			//		+ SimulationParameters.NUM_OF_EDGE_DATACENTERS) {
-				//my
 			if (datacentersList.size() > getSimulationManager().getScenario().getDevicesCount()
-					+ SimulationParameters.NUM_OF_EDGE_DATACENTERS + SimulationParameters.NUM_OF_CLOUD_DATACENTERS) {
+					+ SimulationParameters.NUM_OF_EDGE_DATACENTERS) {
 				getSimulationManager().getSimulationLogger().print(
 						"ServersManager- Wrong percentages values (the sum is superior than 100%), check edge_devices.xml file !");
 				break;
@@ -252,8 +252,22 @@ public class ServersManager {
 			datacenter.setTasksGeneration(Boolean
 					.parseBoolean(datacenterElement.getElementsByTagName("generateTasks").item(0).getTextContent()));
 			// Generate random location for edge devices
-			datacenterLocation = new Location(new Random().nextInt(SimulationParameters.AREA_LENGTH),
-					new Random().nextInt(SimulationParameters.AREA_LENGTH));
+			if(SimulationParameters.QUADRANT_ARRANGEMENT) {
+				current++;
+				if (current < (getSimulationManager().getScenario().getDevicesCount()) / 4) {
+					datacenterLocation = new Location(base, base);
+				} else if (current < (getSimulationManager().getScenario().getDevicesCount()) / 2) {
+					datacenterLocation = new Location(base, base + offset);
+				} else if (current < 3 * (getSimulationManager().getScenario().getDevicesCount()) / 4) {
+					datacenterLocation = new Location(base + offset, base);
+				} else if (current <= (getSimulationManager().getScenario().getDevicesCount())) {
+					datacenterLocation = new Location(base + offset, base + offset);
+				}
+			}
+			else datacenterLocation = new Location(new Random().nextInt(SimulationParameters.AREA_LENGTH), new Random().nextInt(SimulationParameters.AREA_LENGTH));
+			//datacenterLocation = new Location(new Random().nextInt(SimulationParameters.AREA_LENGTH), new Random().nextInt(SimulationParameters.AREA_LENGTH));
+			//datacenterLocation = new Location(0, 0);
+			//datacenterLocation = new Location((double)SimulationParameters.AREA_LENGTH /2, (double)SimulationParameters.AREA_LENGTH /2);
 			getSimulationManager().getSimulationLogger().deepLog("ServersManager- Edge device:" + datacentersList.size()
 					+ "    location: ( " + datacenterLocation.getXPos() + "," + datacenterLocation.getYPos() + " )");
 		}

@@ -93,4 +93,6 @@ public class SimulationParameters {
 	// Custom parameter
 	public static boolean ORCH_SCALING;
 	public static int MAX_ORCH;
+
+	public static boolean QUADRANT_ARRANGEMENT;
 }
