@@ -175,7 +175,8 @@ public class SimLog {
 	public void printTasksRelatedResults() {
 		print("");
 		print("------------------------------------------------------- OUTPUT -------------------------------------------------------");
-		print("");
+		print("Number of calls to the leader: "+ simulationManager.offload_to_leader);
+		print("Simulation Duration "+ (SimulationParameters.SIMULATION_TIME-SimulationParameters.INITIALIZATION_TIME)/60);
 		print("SimLog- Tasks not sent because device died (low energy)                         :"
 				+ padLeftSpaces(decimalFormat.format(notGeneratedBecDeviceDead / generatedTasksCount), 20) + " % ("
 				+ notGeneratedBecDeviceDead + " tasks)");
@@ -437,22 +438,33 @@ public class SimLog {
 						+ newLine);
 
 				try {
-					File csv_file = new File(MainApplication.getOutputFolder() + "/" + simStartTime + "/my.csv");
+					File csv_file = new File(MainApplication.getOutputFolder() + "/" + simStartTime + "/" + simulationManager.getSimulationId()+ "my.csv");
 					csv_file.getParentFile().mkdirs();
 					csv_file.createNewFile();
 					FileWriter fw = new FileWriter(csv_file, true);
 					BufferedWriter bw = new BufferedWriter(fw);
-					bw.write((int) (simulationManager.getSimulation().clock() - SimulationParameters.INITIALIZATION_TIME) + "," + tasksFailed);
-					bw.newLine();
+					if((int) (simulationManager.getSimulation().clock() - SimulationParameters.INITIALIZATION_TIME)>=0) {
+						synchronized (simulationManager.offload_to_leader) {
+							bw.write((int) (simulationManager.getSimulation().clock() - SimulationParameters.INITIALIZATION_TIME) //0
+									+ "," + generatedTasksCount //1
+									+ "," + tasksFailed //2
+									+ "," + tasksFailedLatency //3
+									+ "," + tasksFailedMobility //4
+									+ "," + tasksExecutedOnCloud //5
+									+ "," + tasksFailedCloud //6
+									+ "," + tasksExecutedOnEdge //7
+									+ "," + tasksFailedEdge //8
+									+ "," + simulationManager.getNetworkModel().getWanUtilization() //9
+									+ "," + simulationManager.offload_to_leader); //10
+						}
+						bw.newLine();
+					}
 					bw.close();
-						//log.add(simulationManager.getSimulation().clock() - SimulationParameters.INITIALIZATION_TIME + " " + String.valueOf(tasksFailed));
-					//}
 				}
 				catch (Exception e){
 					e.printStackTrace();
 					System.err.println("Errore scrittura");
 				}
-
 
 				break;
 			case NO_TIME:
@@ -476,7 +488,7 @@ public class SimLog {
 	}
 
 	public void deepLog(String line) {
-		if (SimulationParameters.DEEP_LOGGING)
+		//if (SimulationParameters.DEEP_LOGGING)
 			print(line, DEFAULT);
 	}
 
