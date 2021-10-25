@@ -50,12 +50,13 @@ public class SimulationManager extends SimulationManagerAbstract {
 	public static final int SEND_TO_ORCH = Base + 6;
 	public static final int UPDATE_REAL_TIME_CHARTS = Base + 7;
 	public static final int SEND_TASK_FROM_ORCH_TO_DESTINATION = Base + 8;
-	//Custom
-	public static final int DEBUG = Base + 10;
 	private int lastWrittenNumber = 0;
 	private int oldProgress = -1;
 	private double failedTasksCount = 0;
 	private int tasksCount = 0;
+	//Custom
+	public static final int DEBUG = Base + 10;
+	public Integer offload_to_leader = 0;
 
 	public SimulationManager(SimLog simLog, CloudSim simulation, int simulationId, int iteration, Scenario scenario) {
 		super(simLog, simulation, simulationId, iteration, scenario);
@@ -187,7 +188,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 				schedule(this, 10, PRINT_LOG);
 				break;
 			}
-			System.err.println("Mancano ancora " + (simLog.getGeneratedTasks() - tasksCount) + " da eseguire");
+			//System.err.println("Mancano ancora " + (simLog.getGeneratedTasks() - tasksCount) + " da eseguire");
 			simLog.printSameLine(" 100% ]", "red");
 
 			if (SimulationParameters.DISPLAY_REAL_TIME_CHARTS && !SimulationParameters.PARALLEL) {
