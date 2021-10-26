@@ -88,51 +88,23 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 					// if this is the first time,
 					// or new min found, so we choose it as the best VM
 					// set the first vm as the best one
-					//System.out.println("+++" + (vmList.get(vmList.indexOf(task.getOrchestrator().getHost(i).getVmList().get(j))).getCpuPercentUtilization()));
 					host=i;
 					vm = j;
 				}
 			}
 		}
-		//100*10
-		//System.out.println("Simul time "+ (int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/600));
-		if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500)){
-		//if(minTasksCount>250){
+		if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500*SimulationParameters.FACTOR)){
+			//In case of flushing the history
 			//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
 			if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) return null;
-			//return null;
 		}
 		// assign the tasks to the found vm
 		try{
-			//System.out.println("Il minimo aveva "+ orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).size() + " tasks");
 			return task.getOrchestrator().getHost(host).getVmList().get(vm);
 		}
 		catch (Exception e){
 			return null;
 		}
-		/*
-		Vm vm = null;
-		out:
-		//todo remove randomness
-		if ((new Random()).nextBoolean() || (new Random()).nextBoolean()) {
-		//if ((new Random()).nextBoolean()) {
-			for (Host host_el : task.getOrchestrator().getHostList()) {
-				//Use this to choose a VM randomly
-				//Vm vm_el = host_el.getVmList().get((new Random()).nextInt(host_el.getVmList().size()));
-				for (Vm vm_el : host_el.getVmList()) {
-					if (offloadingIsPossible(task, vm_el, architecture)
-						//Custom conditions can be set here
-						//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-
-					) {
-						vm = vm_el;
-						break out;
-					}
-				}
-			}
-		}
-		return vm;
-		 */
 	}
 
 	protected int increseLifetime(String[] architecture, Task task) {
@@ -238,54 +210,6 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		return vmfound;
 	}
 
-	public Vm my_initialize2(Task task) {
-		Vm vmfound=null;
-		if ("CLOUD_ONLY".equals(architecture)) {
-			//vmfound=cloudOnly(task);
-		} else if ("MIST_ONLY".equals(architecture)) {
-			//vmfound=mistOnly(task);
-		} else if ("EDGE_AND_CLOUD".equals(architecture)) {
-			vmfound=edgeAndCloud(task);
-		} else if ("ALL".equals(architecture)) {
-			//vmfound=all(task);
-		} else if ("EDGE_ONLY".equals(architecture)) {
-			//vmfound=edgeOnly(task);
-		} else if ("MIST_AND_CLOUD".equals(architecture)) {
-			//vmfound=mistAndCloud(task);
-		}
-		else {
-			System.err.println("Architecture not recognized, please specify orchestration_architectures in simulation_parameters.properties");
-			System.exit(-1);
-		}
-
-		return vmfound;
-	}
-
-	// If the orchestration scenario is MIST_ONLY send Tasks only to edge devices
-	private int mistOnly(Task task) {
-		String[] Architecture = { "Mist" };
-		int vmfound;
-		vmfound=findVM(Architecture, task);
-		if (vmfound<0){
-			return -1;
-		}
-		assignTaskToVm(vmfound, task);
-		return vmfound;
-	}
-
-	// If the orchestration scenario is ClOUD_ONLY send Tasks (cloudlets) only to
-	// cloud virtual machines (vms)
-	private int cloudOnly(Task task) {
-		String[] Architecture = { "Cloud" };
-		int vmfound;
-		vmfound=findVM(Architecture, task);
-		if (vmfound<0){
-			return -1;
-		}
-		assignTaskToVm(vmfound, task);
-		return vmfound;
-	}
-
 	// If the orchestration scenario is EDGE_AND_CLOUD send Tasks only to edge data
 	// centers or cloud virtual machines (vms)
 	private Vm edgeAndCloud(Task task) {
@@ -297,45 +221,6 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		}
 		return vmfound;
 
-	}
-
-	// If the orchestration scenario is MIST_AND_CLOUD send Tasks only to edge
-	// devices or cloud virtual machines (vms)
-	private int mistAndCloud(Task task) {
-		String[] Architecture = { "Cloud", "Mist" };
-		int vmfound;
-		vmfound=findVM(Architecture, task);
-		if (vmfound<0){
-			return -1;
-		}
-		assignTaskToVm(vmfound, task);
-		return vmfound;
-	}
-
-	// If the orchestration scenario is EDGE_ONLY send Tasks only to edge data
-	// centers
-	private int edgeOnly(Task task) {
-		String[] Architecture = { "Edge" };
-		int vmfound;
-		vmfound=findVM(Architecture, task);
-		if (vmfound<0){
-			return -1;
-		}
-		assignTaskToVm(vmfound, task);
-		return vmfound;
-	}
-
-	// If the orchestration scenario is ALL send Tasks to any virtual machine (vm)
-	// or device
-	private int all(Task task) {
-		String[] Architecture = { "Cloud", "Edge", "Mist" };
-		int vmfound;
-		vmfound=findVM(Architecture, task);
-		if (vmfound<0){
-			return -1;
-		}
-		assignTaskToVm(vmfound, task);
-		return vmfound;
 	}
 
 	public boolean offloadingispossible(Task task, Vm vm, String[] architecture) {

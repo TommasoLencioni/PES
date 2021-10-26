@@ -156,6 +156,10 @@ public class FilesParser {
 			if(prop.getProperty("seed") == null || Long.parseLong(prop.getProperty("seed").trim())==0){
 				SimulationParameters.SEED = new Random();
 			}
+			if(prop.getProperty("factor") != null){
+				SimulationParameters.FACTOR = Double
+						.parseDouble(prop.getProperty("factor").trim());
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
