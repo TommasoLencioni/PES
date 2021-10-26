@@ -121,7 +121,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 			break;
 
 		case EXECUTE_TASK:
-			//System.out.println("Eseguo il task");
 			// Execute the task
 			if (taskFailed(task, 2))
 				return;
@@ -283,59 +282,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 	*/
 
 	//LEADER
-	/*
-	private void sendFromOrchToDestination(Task task) {
-		if (taskFailed(task, 1))
-			return;
-
-		//HERE This is the original section
-		// The limitation in the simulator forces to modify a non-customizable class such as SimulationManager
-
-		// Find the best VM for executing the task
-		//edgeOrchestrator.initialize(task);
-
-		//
-
-		//HERE This is the custom section
-
-		// Find the best VM for executing the task
-		((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
-
-		// Stop in case no resource was available for this task, the offloading is
-		// failed
-		if (task.getVm() == Vm.NULL) {
-			if(((LeaderEdgeDevice) task.getOrchestrator()).getLeader()!=null) {
-				//System.err.println("Offload su Orchestratore "+ task.getOrchestrator().getName());
-				scheduleNow(((LeaderEdgeDevice) task.getOrchestrator()).getLeader(), LeaderEdgeDevice.TASK_OFFLOAD, task);
-				//scheduleFirst();
-			}
-			else if (((LeaderEdgeDevice) task.getOrchestrator()).isLeader){
-				//System.err.println("Offload su Orchestratore "+ task.getOrchestrator().getName());
-				scheduleNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_OFFLOAD, task);
-			}
-			else {
-				simLog.incrementTasksFailedLackOfRessources(task);
-				tasksCount++;
-			}
-			return;
-		} else {
-			simLog.taskSentFromOrchToDest(task);
-		}
-		//SimLog.println(task.getOrchestrator().getName() + " eseguo un task");
-		// If the task is offloaded
-		// and the orchestrator is not the offloading destination
-		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()
-				&& task.getOrchestrator() != ((DataCenter) task.getVm().getHost().getDatacenter())) {
-			scheduleNow(getNetworkModel(), NetworkModelAbstract.SEND_REQUEST_FROM_ORCH_TO_DESTINATION, task);
-
-		} else { // The task will be executed locally / no offloading or will be executed where
-					// the orchestrator is deployed (no network usage)
-			scheduleNow(this, EXECUTE_TASK, task);
-		}
-	}
-	 */
-
-	//LEADER (without leader algorithm)
 	private void sendFromOrchToDestination(Task task) {
 		if (taskFailed(task, 1))
 			return;
@@ -376,97 +322,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 		}
 	}
 
-	/*NEIGHBOR
-	private void sendFromOrchToDestination(Task task) {
-		if (taskFailed(task, 1))
-			return;
-
-		task.setExecutor(task.getOrchestrator());
-
-		edgeOrchestrator.initialize(task);
-
-		// Find the best VM for executing the task
-		for (Host host_el: task.getOrchestrator().getHostList()) {
-			for (Vm vm_el : host_el.getVmList()){
-				if (((ClusterEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
-				//custom conditions can be set here
-				//&& task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-				){
-					task.setVm(vm_el);
-				}
-			}
-		}
-
-
-
-		// Stop in case no resource was available for this task, the offloading is
-		// failed
-		if (task.getVm() == Vm.NULL){
-			if(!((ClusterEdgeDevice) task.getOrchestrator()).neighborhood.isEmpty()) {
-				System.out.println("Chiedo ai vicini");
-				scheduleFirstNow(task.getOrchestrator(), LeaderEdgeDevice.TASK_REJECTION, task);
-			}
-			else{
-				simLog.incrementTasksFailedLackOfRessources(task);
-				tasksCount++;
-			}
-			return;
-		} else {
-			simLog.taskSentFromOrchToDest(task);
-		}
-
-		// If the task is offloaded
-		// and the orchestrator is not the offloading destination
-		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()
-				&& task.getOrchestrator() != ((DataCenter) task.getVm().getHost().getDatacenter())) {
-			scheduleNow(getNetworkModel(), NetworkModelAbstract.SEND_REQUEST_FROM_ORCH_TO_DESTINATION, task);
-
-		} else { // The task will be executed locally / no offloading or will be executed where
-			// the orchestrator is deployed (no network usage)
-			scheduleNow(this, EXECUTE_TASK, task);
-		}
-	}
-
-
-	private void sendFromNeighToDestination(Task task) {
-		if (taskFailed(task, 1))
-			return;
-
-		// Find the best VM for executing the task
-		for (Host host_el: task.getExecutor().getHostList()) {
-			for (Vm vm_el : host_el.getVmList()){
-				if (
-					((ClusterEdgeOrchestrator)edgeOrchestrator).offloadingispossible(task, vm_el, SimulationParameters.ORCHESTRATION_ARCHITECTURES)
-					//custom conditions can be set here
-					//task.getLength()/vm_el.getMips()<task.getMaxLatency()/100
-				){
-					task.setVm(vm_el);
-				}
-			}
-		}
-
-		// Stop in case no resource was available for this task, the offloading is
-		// failed
-		if (task.getVm() == Vm.NULL) {
-			scheduleNow(task.getOrchestrator(), ClusterEdgeDevice.TASK_TO_NEIGHBOR, task);
-			return;
-		}
-		//TODO the orchestrator could be the executor
-		//task.setOrchestrator(task.getExecutor());
-
-		// If the task is offloaded
-		// and the orchestrator is not the offloading destination
-		if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()
-				&& task.getOrchestrator() != ((DataCenter) task.getVm().getHost().getDatacenter())) {
-			scheduleNow(getNetworkModel(), NetworkModelAbstract.SEND_REQUEST_FROM_ORCH_TO_DESTINATION, task);
-
-		} else { // The task will be executed locally / no offloading or will be executed where
-			// the orchestrator is deployed (no network usage)
-			System.err.println("Non dovrebbe arrivare a questo punto");
-			scheduleNow(this, EXECUTE_TASK, task);
-		}
-	}
-*/
 
 	private void sendTaskToOrchestrator(Task task) {
 		if (taskFailed(task, 0))
@@ -650,35 +505,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 	}
 
 	*/
-
-	/*Bugged version
-	if (phase == 1 && task.getOrchestrator() != null
-				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
-				&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
-			((LeaderNetworkModel) getNetworkModel()).closerNode(task);
-			if (!sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
-				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
-				simLog.incrementTasksFailedMobility(task);
-				return setFailed(task);
-			}
-		}
-		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
-				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
-				&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
-			((LeaderNetworkModel) getNetworkModel()).closerNode(task);
-			if (!sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
-				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
-				simLog.incrementTasksFailedMobility(task);
-				return setFailed(task);
-			}
-		}
-		return false;
-	}
-
-
-
-
-	 */
 
 	private boolean setFailed(Task task) {
 		failedTasksCount++;

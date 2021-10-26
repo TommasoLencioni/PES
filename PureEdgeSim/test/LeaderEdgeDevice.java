@@ -63,8 +63,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	@Override
 	public void startInternal() {
 		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, COMMUNITY_DISCOVERY);
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 10, LEADER_SETTLE);
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 20, LEADER_CONFIRMATION);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 2, LEADER_SETTLE);
+		schedule(this, SimulationParameters.INITIALIZATION_TIME + 3, LEADER_CONFIRMATION);
 		super.startInternal();
 	}
 
@@ -197,21 +197,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 					}
 				}
 				break;
-			case TASK_REJECTION:
-				//Here the edge datacenter should consider executing the task
-				try {
-					Task task2 = (Task) ev.getData();
-					for (DataCenter dc: simulationManager.getServersManager().getDatacenterList())
-						if (dc.getType().equals(SimulationParameters.TYPES.CLOUD)) {
-							task2.setOrchestrator(dc);
-							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task2);
-							System.out.println("Provo ad eseguire il task assegnatomi dal discover");
-						}
-				}
-				catch (ClassCastException e){
-					super.processEvent(ev);
-				}
-				break;
 			default:
 				super.processEvent(ev);
 			break;
@@ -249,11 +234,11 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		}
 		community.sort(((o1, o2) -> (int) ((o2.getResources().getTotalMips()) - o1.getResources().getTotalMips())));
 		if(SimulationParameters.DEBUG) {
-			System.out.println(this.getName() + " i miei vicini  sono:");
+			//System.out.println(this.getName() + " i miei vicini  sono:");
 			for (DataCenter dc : community) {
-				System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
+				//System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
 			}
-			System.out.println("+++++");
+			//System.out.println("+++++");
 		}
 	}
 
@@ -292,11 +277,11 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 
 		//Debug
 		if(SimulationParameters.DEBUG) {
-			System.out.println(this.getName() + " nella community ho:");
+			//System.out.println(this.getName() + " nella community ho:");
 			for (DataCenter dc : community) {
-				System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
+			//	System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
 			}
-			System.out.println("---");
+			//System.out.println("---");
 		}
 	}
 
@@ -306,7 +291,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			this.setAsOrchestrator(true);
 			this.simulationManager.getServersManager().getOrchestratorsList().add(this);
 			//Debug
-			if(SimulationParameters.DEBUG) System.out.println(this.getName() +" sono leader ma sono solo");
+			//if(SimulationParameters.DEBUG) System.out.println(this.getName() +" sono leader ma sono solo");
 			return;
 		}
 		if (this.getResources().getTotalMips()>community.get(0).getResources().getTotalMips()){
@@ -315,21 +300,17 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			this.simulationManager.getServersManager().getOrchestratorsList().remove(this);
 			//Debug
 			if(SimulationParameters.DEBUG) {
-				System.out.println(this.getName() + " sono il leader di");
+				//System.out.println(this.getName() + " sono il leader di");
 				for (DataCenter dc : community) {
-					System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
+					//System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
 				}
-				System.out.println("######");
+				//System.out.println("######");
 			}
 			return;
 		}
-		//Debug
-		if(SimulationParameters.DEBUG) {
-			if (!isLeader) {
-				this.leader = community.get(0);
-				System.out.println(this.getName() + " con " + this.getResources().getTotalMips() + " il mio leader e' " + leader.getName() + " con " + leader.getResources().getTotalMips());
-			}
-			System.out.println("######");
+		if (!isLeader) {
+			this.leader = community.get(0);
+				//System.out.println(this.getName() + " con " + this.getResources().getTotalMips() + " il mio leader e' " + leader.getName() + " con " + leader.getResources().getTotalMips());
 		}
 	}
 

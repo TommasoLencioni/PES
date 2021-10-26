@@ -99,4 +99,5 @@ public class SimulationParameters {
 	public static boolean DEBUG;
 	public static boolean CLOUD_LATENCY;
 	public static Random SEED;
+	public static double FACTOR;
 }
