@@ -146,7 +146,7 @@ public class FilesParser {
 						.parseBoolean(prop.getProperty("debug").trim());
 			}
 			if(prop.getProperty("cloud_latency") != null){
-				SimulationParameters.DEBUG = Boolean
+				SimulationParameters.CLOUD_LATENCY = Boolean
 						.parseBoolean(prop.getProperty("cloud_latency").trim());
 			}
 			if(prop.getProperty("seed") != null){

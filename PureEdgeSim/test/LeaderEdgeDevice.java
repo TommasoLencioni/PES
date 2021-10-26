@@ -97,17 +97,18 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				if (task!=null){
 					LeaderEdgeDevice sub = (LeaderEdgeDevice) task.getOrchestrator();
 					if (sub!=null){
+						synchronized (simulationManager.offload_to_leader){
+							simulationManager.offload_to_leader++;
+						}
 						//System.out.println(this.getName() + " ricevo task "+ task.getId() +" da "+ sub.getName());
 						//The second condition should be redundant but avoid bugs
 						if(this.equals(sub) || community.isEmpty()){
-							boolean change=false;
 							//I have empty community and I cannot make the offload to my VMs, schedule to Cloud
 							//tofix limited to one cloud
 							for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 									task.setOrchestrator(dc);
-									task.setMaxLatency(Integer.MAX_VALUE);
-									change=true;
+									if(!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
 									break;
 								}
 							}
@@ -145,7 +146,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						//System.out.println("Fuori 1, next "+ next);
 						//If the first dc is also the original orch I further increment by 1 the position of the next executor
 						if(next>=community.size()-1){
-							boolean change=false;
 							//Schedule al Cloud
 							//SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
 							//Schedule al Cloud
@@ -154,8 +154,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 									//task.setVm(dc.getHost(0).getVmList().get(0));
 									task.setOrchestrator(dc);
-									change=true;
-									task.setMaxLatency(Integer.MAX_VALUE);
+									if(!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
 									break;
 								}
 							}
@@ -173,7 +172,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						}
 						//Todo fix boilerplate
 						if(next>=community.size()-1){
-							boolean change=false;
 							//Schedule al Cloud
 							//SimLog.println("Ho esaurito i datacenter ai quali proporre il task");
 							//Schedule al Cloud
@@ -182,8 +180,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 								if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 									//task.setVm(dc.getHost(0).getVmList().get(0));
 									task.setOrchestrator(dc);
-									task.setMaxLatency(Integer.MAX_VALUE);
-									change=true;
+									if(!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
 									break;
 								}
 							}
