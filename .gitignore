@@ -15,3 +15,6 @@ output/
 .project
 .settings/
 bin/
+
+#Ignore venv for scripts
+venv/
