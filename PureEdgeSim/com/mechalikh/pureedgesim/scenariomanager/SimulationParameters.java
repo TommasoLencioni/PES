@@ -22,6 +22,7 @@ package com.mechalikh.pureedgesim.scenariomanager;
  
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.mechalikh.pureedgesim.tasksgenerator.Application;
 public class SimulationParameters { 
@@ -96,4 +97,6 @@ public class SimulationParameters {
 
 	public static boolean QUADRANT_ARRANGEMENT;
 	public static boolean DEBUG;
+	public static boolean CLOUD_LATENCY;
+	public static Random SEED;
 }

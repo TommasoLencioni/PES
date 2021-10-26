@@ -264,8 +264,8 @@ public class ServersManager {
 					datacenterLocation = new Location(base + offset, base + offset);
 				}
 			}
-			else datacenterLocation = new Location(new Random().nextInt(SimulationParameters.AREA_LENGTH), new Random().nextInt(SimulationParameters.AREA_LENGTH));
-			//datacenterLocation = new Location(new Random().nextInt(SimulationParameters.AREA_LENGTH), new Random().nextInt(SimulationParameters.AREA_LENGTH));
+			else datacenterLocation = new Location(SimulationParameters.SEED.nextInt(SimulationParameters.AREA_LENGTH), SimulationParameters.SEED.nextInt(SimulationParameters.AREA_LENGTH));
+			//datacenterLocation = new LocatioFn(new Random().nextInt(SimulationParameters.AREA_LENGTH), new Random().nextInt(SimulationParameters.AREA_LENGTH));
 			//datacenterLocation = new Location(0, 0);
 			//datacenterLocation = new Location((double)SimulationParameters.AREA_LENGTH /2, (double)SimulationParameters.AREA_LENGTH /2);
 			getSimulationManager().getSimulationLogger().deepLog("ServersManager- Edge device:" + datacentersList.size()

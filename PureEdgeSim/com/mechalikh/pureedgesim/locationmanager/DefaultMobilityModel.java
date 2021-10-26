@@ -28,9 +28,9 @@ public class DefaultMobilityModel extends Mobility {
 	private boolean pause = false;
 	private double pauseDuration = -1;
 	private double mobilityDuration = (getMaxMobilityDuration() - getMinMobilityDuration()) > 0
-			? new Random().nextInt((int) (getMaxMobilityDuration() - getMinMobilityDuration())) + getMinMobilityDuration()
+			? SimulationParameters.SEED.nextInt((int) (getMaxMobilityDuration() - getMinMobilityDuration())) + getMinMobilityDuration()
 			: 0;
-	private int orientationAngle = new Random().nextInt(359);
+	private int orientationAngle = SimulationParameters.SEED.nextInt(359);
 
 	public DefaultMobilityModel(Location currentLocation, boolean mobile, double speed, double minPauseDuration,
 			double maxPauseDuration, double minMobilityDuration, double maxMobilityDuration) {
@@ -88,29 +88,29 @@ public class DefaultMobilityModel extends Mobility {
 
 	private void pause() {
 		// Pickup random duration from 50 to 200 seconds
-		pauseDuration = getMinPauseDuration() + new Random().nextInt((int) (getMaxPauseDuration() - getMinPauseDuration()));
+		pauseDuration = getMinPauseDuration() + SimulationParameters.SEED.nextInt((int) (getMaxPauseDuration() - getMinPauseDuration()));
 		// Pause mobility (the device will stay in its location for the randomly
 		// generated duration
 		pause = true;
 		// Reorientate the device to a new direction
-		orientationAngle = new Random().nextInt(359);
+		orientationAngle = SimulationParameters.SEED.nextInt(359);
 		// The mobility will be resumed for the following period of time
 		//here non ha senso che mobiliyduration venga impostato a un casuale tra 0 e 100 se ho una durata minima e massima di mobilita'
 		//mobilityDuration = new Random().nextInt(100);
 		mobilityDuration = (getMaxMobilityDuration() - getMinMobilityDuration()) > 0
-				? new Random().nextInt((int) (getMaxMobilityDuration() - getMinMobilityDuration())) + getMinMobilityDuration()
+				? SimulationParameters.SEED.nextInt((int) (getMaxMobilityDuration() - getMinMobilityDuration())) + getMinMobilityDuration()
 				: 0;
 	}
 
 	private void reoriontate(double x_position, double y_position) {
 		if (x_position >= SimulationParameters.AREA_LENGTH)
-			orientationAngle = -90 - new Random().nextInt(180);
+			orientationAngle = -90 - SimulationParameters.SEED.nextInt(180);
 		else if (x_position <= 0)
-			orientationAngle = -90 + new Random().nextInt(180);
+			orientationAngle = -90 + SimulationParameters.SEED.nextInt(180);
 		if (y_position >= SimulationParameters.AREA_WIDTH)
-			orientationAngle = -new Random().nextInt(180);
+			orientationAngle = - SimulationParameters.SEED.nextInt(180);
 		else if (y_position <= 0)
-			orientationAngle = new Random().nextInt(180);
+			orientationAngle = SimulationParameters.SEED.nextInt(180);
 	}
 
 }

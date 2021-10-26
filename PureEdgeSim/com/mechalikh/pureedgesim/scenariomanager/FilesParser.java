@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Random;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -143,6 +144,17 @@ public class FilesParser {
 			if(prop.getProperty("debug") != null){
 				SimulationParameters.DEBUG = Boolean
 						.parseBoolean(prop.getProperty("debug").trim());
+			}
+			if(prop.getProperty("cloud_latency") != null){
+				SimulationParameters.DEBUG = Boolean
+						.parseBoolean(prop.getProperty("cloud_latency").trim());
+			}
+			if(prop.getProperty("seed") != null){
+				SimulationParameters.SEED = new Random(Long
+						.parseLong(prop.getProperty("seed").trim()));
+			}
+			if(prop.getProperty("seed") == null || Long.parseLong(prop.getProperty("seed").trim())==0){
+				SimulationParameters.SEED = new Random();
 			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
