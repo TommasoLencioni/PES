@@ -45,6 +45,7 @@ import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
 
 import ch.qos.logback.classic.Level;
 import test.LeaderEdgeDevice;
+import test.MyMain;
 
 public class MainApplication extends MainApplicationAbstract{
 
@@ -121,7 +122,8 @@ public class MainApplication extends MainApplicationAbstract{
 
 	public void startSimulation() {
 		// File name prefix
-		String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+		//String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+		String startTime = MyMain.startTime;
 		int iteration = 1;
 		int simulationId = fromIteration + 1;
 		boolean isFirstIteration = true;

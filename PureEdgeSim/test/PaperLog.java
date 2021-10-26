@@ -77,7 +77,8 @@ public class PaperLog {
 	}
 
 	public String getFileName(String Name, String extension) {
-		String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+		//String startTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+		String startTime = MyMain.startTime;
 		String outputFilesName = MainApplication.getOutputFolder() + "Paper-Devices-" + SimulationParameters.MAX_NUM_OF_EDGE_DEVICES;
 		new File(outputFilesName).mkdirs();
 		outputFilesName+="/Paper-Devices-" + SimulationParameters.MAX_NUM_OF_EDGE_DEVICES + "-" + startTime + "-" + Name;
