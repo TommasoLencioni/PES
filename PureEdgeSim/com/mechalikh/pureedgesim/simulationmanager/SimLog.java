@@ -45,6 +45,7 @@ public class SimLog {
 	public static final int NO_TIME = 0;
 	public static final int SAME_LINE = 1;
 	public static final int DEFAULT = 2;
+	public static final int END = 3;
 	private List<String> resultsList = new ArrayList<String>();
 	private DecimalFormat decimalFormat;
 	private List<String> log = new ArrayList<String>();
@@ -173,54 +174,54 @@ public class SimLog {
 	}
 
 	public void printTasksRelatedResults() {
-		print("");
-		print("------------------------------------------------------- OUTPUT -------------------------------------------------------");
-		print("Number of calls to the leader: "+ simulationManager.offload_to_leader);
-		print("Simulation Duration "+ (SimulationParameters.SIMULATION_TIME-SimulationParameters.INITIALIZATION_TIME)/60);
+		print("", END);
+		print("------------------------------------------------------- OUTPUT -------------------------------------------------------", END);
+		print("Number of calls to the leader: "+ simulationManager.offload_to_leader, END);
+		print("Simulation Duration "+ (SimulationParameters.SIMULATION_TIME-SimulationParameters.INITIALIZATION_TIME)/60, END);
 		print("SimLog- Tasks not sent because device died (low energy)                         :"
 				+ padLeftSpaces(decimalFormat.format(notGeneratedBecDeviceDead / generatedTasksCount), 20) + " % ("
-				+ notGeneratedBecDeviceDead + " tasks)");
+				+ notGeneratedBecDeviceDead + " tasks)", END);
 		print("SimLog- Tasks sent from edge devices                                            :"
 				+ padLeftSpaces("" + decimalFormat.format(((double) tasksSent * 100) / ((double) generatedTasksCount)),
 						20)
-				+ " % (" + tasksSent + " among " + generatedTasksCount + " generated tasks)");
+				+ " % (" + tasksSent + " among " + generatedTasksCount + " generated tasks)", END);
 
 		print("-------------------------------------All values below are based on the sent tasks-------------------------------------");
 		print("SimLog- Tasks execution delay                                                   :"
-				+ padLeftSpaces(decimalFormat.format(totalExecutionTime), 20) + " seconds");
+				+ padLeftSpaces(decimalFormat.format(totalExecutionTime), 20) + " seconds", END);
 		print("SimLog- Average tasks execution delay                                           :"
-				+ padLeftSpaces(decimalFormat.format(totalExecutionTime / executedTasksCount), 20) + " seconds");
+				+ padLeftSpaces(decimalFormat.format(totalExecutionTime / executedTasksCount), 20) + " seconds", END);
 		print("SimLog- Tasks waiting time (from task submiting to the execution start)         :"
-				+ padLeftSpaces(decimalFormat.format(totalWaitingTime), 20) + " seconds");
+				+ padLeftSpaces(decimalFormat.format(totalWaitingTime), 20) + " seconds", END);
 		print("SimLog- Average tasks waiting time (from task submiting to the execution start) :"
-				+ padLeftSpaces(decimalFormat.format(totalWaitingTime / executedTasksCount), 20) + " seconds");
+				+ padLeftSpaces(decimalFormat.format(totalWaitingTime / executedTasksCount), 20) + " seconds", END);
 		print("SimLog- Tasks successfully executed                                             :"
 				+ padLeftSpaces("" + decimalFormat.format((double) (tasksSent - tasksFailed) * 100 / tasksSent), 20)
-				+ " % (" + (tasksSent - tasksFailed) + " among " + tasksSent + " sent tasks)");
+				+ " % (" + (tasksSent - tasksFailed) + " among " + tasksSent + " sent tasks)", END);
 
 		print("SimLog- Tasks failures");
 		print("                                       Not executed due to resources unavailable:"
 				+ padLeftSpaces(decimalFormat.format((double) tasksFailedRessourcesUnavailable * 100 / tasksSent), 20)
-				+ " % (" + tasksFailedRessourcesUnavailable + " tasks)");
+				+ " % (" + tasksFailedRessourcesUnavailable + " tasks)", END);
 		print("                              Successfully executed but failed due to high delay:"
 				+ padLeftSpaces(decimalFormat.format((double) tasksFailedLatency * 100 / tasksSent), 20) + " % ("
-				+ tasksFailedLatency + " tasks from " + tasksSent + " successfully sent tasks)");
+				+ tasksFailedLatency + " tasks from " + tasksSent + " successfully sent tasks)", END);
 		print("                 Tasks execution results not returned because the device is dead:"
 				+ padLeftSpaces(decimalFormat.format((double) tasksFailedBeacauseDeviceDead * 100 / tasksSent), 20)
-				+ " % (" + tasksFailedBeacauseDeviceDead + " tasks)");
+				+ " % (" + tasksFailedBeacauseDeviceDead + " tasks)", END);
 		print("                    Tasks execution results not returned due to devices mobility:"
 				+ padLeftSpaces(decimalFormat.format((double) tasksFailedMobility * 100 / tasksSent), 20) + " % ("
-				+ tasksFailedMobility + " tasks)");
+				+ tasksFailedMobility + " tasks)", END);
 
 		print("SimLog- Tasks executed on each level                                            :" + " Cloud="
 				+ padLeftSpaces("" + tasksExecutedOnCloud, 13) + " tasks (where "
-				+ (tasksExecutedOnCloud - tasksFailedCloud) + " were successfully executed )");
+				+ (tasksExecutedOnCloud - tasksFailedCloud) + " were successfully executed )", END);
 		print("                                                                                 " + " Edge="
 				+ padLeftSpaces("" + tasksExecutedOnEdge, 14) + " tasks (where "
-				+ (tasksExecutedOnEdge - tasksFailedEdge) + " were successfully executed )");
+				+ (tasksExecutedOnEdge - tasksFailedEdge) + " were successfully executed )", END);
 		print("                                                                                 " + " Mist="
 				+ padLeftSpaces("" + tasksExecutedOnMist, 14) + " tasks (where "
-				+ (tasksExecutedOnMist - tasksFailedMist) + " were successfully executed )");
+				+ (tasksExecutedOnMist - tasksFailedMist) + " were successfully executed )", END);
 
 		resultsList.add(currentOrchArchitecture + "," + currentOrchAlgorithm + "," + currentEdgeDevicesCount + ","
 				+ decimalFormat.format(totalExecutionTime) + ","
@@ -428,6 +429,7 @@ public class SimLog {
 		} else {
 			switch (flag) {
 			case DEFAULT:
+				/*
 				if (simulationManager.getSimulation().clock() < SimulationParameters.INITIALIZATION_TIME)
 					newLine = padLeftSpaces("0", 7) + " (s) : " + newLine;
 				else
@@ -437,6 +439,8 @@ public class SimLog {
 				log.add(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) + " - simulation time "
 						+ newLine);
 
+
+				 */
 				try {
 					File csv_file = new File(MainApplication.getOutputFolder() + "/" + simStartTime + "/" + simulationManager.getSimulationId()+ "my.csv");
 					csv_file.getParentFile().mkdirs();
@@ -473,6 +477,15 @@ public class SimLog {
 			case SAME_LINE:
 				log.set(log.size() - 1, log.get(log.size() - 1) + newLine);
 				break;
+			case END:
+					if (simulationManager.getSimulation().clock() < SimulationParameters.INITIALIZATION_TIME)
+						newLine = padLeftSpaces("0", 7) + " (s) : " + newLine;
+					else
+						newLine = padLeftSpaces(decimalFormat.format(
+								simulationManager.getSimulation().clock() - SimulationParameters.INITIALIZATION_TIME), 7)
+								+ " (s) : " + newLine;
+					log.add(new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date()) + " - simulation time "
+							+ newLine);
 			default:
 				break;
 			}
