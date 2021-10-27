@@ -149,18 +149,20 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 		case SHOW_PROGRESS:
 			// Calculate the simulation progress
-			int progress = 100 * broker.getCloudletFinishedList().size() / simLog.getGeneratedTasks();
-			if (oldProgress != progress) {
-				oldProgress = progress;
-				if (progress % 10 == 0 || (progress % 10 < 5) && lastWrittenNumber + 10 < progress) {
-					lastWrittenNumber = progress - progress % 10;
-					if (lastWrittenNumber != 100)
-						simLog.printSameLine(" " + lastWrittenNumber + " ", "red");
-				} else
-					simLog.printSameLine("#", "red");
+			if (simLog.getGeneratedTasks()>0) {
+				int progress = 100 * broker.getCloudletFinishedList().size() / simLog.getGeneratedTasks();
+				if (oldProgress != progress) {
+					oldProgress = progress;
+					if (progress % 10 == 0 || (progress % 10 < 5) && lastWrittenNumber + 10 < progress) {
+						lastWrittenNumber = progress - progress % 10;
+						if (lastWrittenNumber != 100)
+							simLog.printSameLine(" " + lastWrittenNumber + " ", "red");
+					} else
+						simLog.printSameLine("#", "red");
+				}
+				//here schedulato ogni SIMULATION_TIME / 100, semplicemente aggiorna la barra rossa di simulazione
+				schedule(this, SimulationParameters.SIMULATION_TIME / 100, SHOW_PROGRESS);
 			}
-			//here schedulato ogni SIMULATION_TIME / 100, semplicemente aggiorna la barra rossa di simulazione
-			schedule(this, SimulationParameters.SIMULATION_TIME / 100, SHOW_PROGRESS);
 			break;
 
 		case UPDATE_REAL_TIME_CHARTS:
@@ -175,7 +177,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 			// Print results when simulation is over
 			List<Task> finishedTasks = broker.getCloudletFinishedList();
 			// If some tasks have not been executed
-			if (SimulationParameters.WAIT_FOR_TASKS && (tasksCount / simLog.getGeneratedTasks()) < 1) {
+			if (simLog.getGeneratedTasks() >0 && SimulationParameters.WAIT_FOR_TASKS && (tasksCount / simLog.getGeneratedTasks()) < 1) {
 				// 1 = 100% , 0,9= 90%
 				// Some tasks may take hours to be executed that's why we don't wait until
 				// all of them get executed, but we only wait for 99% of tasks to be executed at
@@ -203,7 +205,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 				}
 			}
 			// Show results and stop the simulation
-			simLog.showIterationResults(finishedTasks);
+			if( simLog.getGeneratedTasks()>0) simLog.showIterationResults(finishedTasks);
 
 			// Terminate the simulation
 			simulation.terminate();
