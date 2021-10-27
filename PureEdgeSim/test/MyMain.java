@@ -29,7 +29,16 @@ public class MyMain extends MainApplication {
 
     public static void main(String[] args) {
         startTime= new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-        //From example 6
+
+        //The user can pass as argument the path to the settings and output folder
+        if(args.length>0 && args[0]!=null){
+            settingsPath=args[0];
+        }
+        if(args.length>1 && args[1]!=null){
+            outputPath=args[1];
+        }
+
+        //Set custom folder
         setCustomOutputFolder(outputPath);
         // changing the simulation settings folder
         setCustomSettingsFolder(settingsPath);
@@ -43,12 +52,11 @@ public class MyMain extends MainApplication {
 
         //Network Model
         setCustomNetworkModel(LeaderNetworkModel.class);
-        //setCustomNetworkModel(PaperNetworkModel.class);
-
-         //= new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
 
         // Launch the simulation
         MyMain.launchSimulation();
+
+        //Copy the simulation file to the output folder
         File src = new File(settingsPath + "simulation_parameters.properties");
         File target = new File(outputPath + startTime + "/simulation_parameters.properties") ;
         try{
