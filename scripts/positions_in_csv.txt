@@ -8,3 +8,4 @@ tasks_failed_on_cloud,6
 tasks_executed_on_edge,7
 tasks_failed_on_edge,8
 wan_utilization,9
+offload_to_leader,10
