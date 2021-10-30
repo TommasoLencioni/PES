@@ -31,7 +31,7 @@ def main():
     mobility = []
     edge = []
     cloud = []
-    for filename in os.listdir('./csvs'):
+    for filename in os.listdir('old/csvs'):
         if filename is not None:
             f_csv = csv.reader(open('./csvs/' + filename), delimiter=",")
         num = num + 1
