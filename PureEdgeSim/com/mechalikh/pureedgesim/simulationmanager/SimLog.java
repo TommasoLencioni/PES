@@ -442,6 +442,35 @@ public class SimLog {
 
 				 */
 				try {
+					int edgeDevicesCount = 0;
+					double averageCpuUtilization = 0;
+					double averageCloudCpuUtilization = 0;
+					double averageMistCpuUtilization = 0;
+					double averageEdgeCpuUtilization = 0;
+					List<? extends DataCenter> datacentersList = simulationManager.getServersManager().getDatacenterList();
+					for (DataCenter dc : datacentersList) {
+						if (dc.getType() == SimulationParameters.TYPES.CLOUD) {
+							averageCloudCpuUtilization += dc.getResources().getAvgCpuUtilization();
+						} else if (dc.getType() == SimulationParameters.TYPES.EDGE_DATACENTER) {
+							averageEdgeCpuUtilization += dc.getResources().getAvgCpuUtilization();
+						} else if (dc.getType() == SimulationParameters.TYPES.EDGE_DEVICE && dc.getResources().getVmList().size() > 0) {
+							// only devices with computing capability
+							// the devices that have no VM are considered simple sensors, and will not be
+							// counted here
+							averageMistCpuUtilization += dc.getResources().getAvgCpuUtilization();
+							edgeDevicesCount++;
+						}
+
+					}
+
+					averageCpuUtilization = (averageCloudCpuUtilization + averageMistCpuUtilization + averageEdgeCpuUtilization)
+							/ (edgeDevicesCount + SimulationParameters.NUM_OF_EDGE_DATACENTERS
+							+ SimulationParameters.NUM_OF_CLOUD_DATACENTERS);
+
+					averageCloudCpuUtilization = averageCloudCpuUtilization / SimulationParameters.NUM_OF_CLOUD_DATACENTERS;
+					averageEdgeCpuUtilization = averageEdgeCpuUtilization / SimulationParameters.NUM_OF_EDGE_DATACENTERS;
+					averageMistCpuUtilization = averageMistCpuUtilization / edgeDevicesCount;
+
 					File csv_file = new File(MainApplication.getOutputFolder() + "/" + simStartTime + "/" + simulationManager.getSimulationId()+ "my.csv");
 					csv_file.getParentFile().mkdirs();
 					csv_file.createNewFile();
@@ -459,17 +488,21 @@ public class SimLog {
 									+ "," + tasksExecutedOnEdge //7
 									+ "," + tasksFailedEdge //8
 									+ "," + simulationManager.getNetworkModel().getWanUtilization() //9
-									+ "," + simulationManager.offload_to_leader); //10
+									+ "," + simulationManager.offload_to_leader //10
+									+ "," + averageEdgeCpuUtilization
+									+ "," + averageCloudCpuUtilization);
 						}
 						bw.newLine();
 					}
 					bw.close();
 				}
 				catch (Exception e){
-					e.printStackTrace();
-					System.err.println("Errore scrittura");
+					//e.printStackTrace();
+					//System.err.println("Errore scrittura");
 				}
 
+				//simulationManager.getServersManager().getDatacenterList()
+						//todo per ogni data center controllo quali task ha attualmente, controlla lo status
 				break;
 			case NO_TIME:
 				log.add(newLine);

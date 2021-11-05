@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!--4 WEAK COMMUNITY LEADER-->
+<!--4 COMMUNITY-->
 <edge_datacenters>
     <!--LOW SX COMMUNITY-->
     <!--high dx-->
@@ -13,10 +13,10 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40000</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
@@ -24,81 +24,9 @@
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
-                </VMs>
-            </host>
-        </hosts>
-    </datacenter>
-    <!--low dx-->
-    <datacenter arch="x86" os="Linux" >
-        <idleConsumption>0.00015</idleConsumption>
-        <maxConsumption>0.016</maxConsumption>
-        <isOrchestrator>true</isOrchestrator>
-        <location>
-            <x_pos>188</x_pos>
-            <y_pos>63</y_pos>
-        </location>
-        <hosts>
-            <host>
-                <core>4</core>
-                <mips>40005</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
-                <VMs>
                     <VM>
                         <core>4</core>
-                        <mips>40005</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                </VMs>
-            </host>
-        </hosts>
-    </datacenter>
-    <!--high sx-->
-    <datacenter arch="x86" os="Linux" >
-        <idleConsumption>0.00015</idleConsumption>
-        <maxConsumption>0.016</maxConsumption>
-        <isOrchestrator>true</isOrchestrator>
-        <location>
-            <x_pos>63</x_pos>
-            <y_pos>188</y_pos>
-        </location>
-        <hosts>
-            <host>
-                <core>4</core>
-                <mips>40010</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
-                <VMs>
-                    <VM>
-                        <core>4</core>
-                        <mips>40010</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                </VMs>
-            </host>
-        </hosts>
-    </datacenter>
-    <!--low sx-->
-    <datacenter arch="x86" os="Linux" >
-        <idleConsumption>0.00015</idleConsumption>
-        <maxConsumption>0.016</maxConsumption>
-        <isOrchestrator>true</isOrchestrator>
-        <location>
-            <x_pos>63</x_pos>
-            <y_pos>63</y_pos>
-        </location>
-        <hosts>
-            <host>
-                <core>4</core>
-                <mips>40015</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
-                <VMs>
-                    <VM>
-                        <core>4</core>
-                        <mips>40015</mips>
+                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -126,25 +54,129 @@
             </host>
         </hosts>
     </datacenter>
-    <!--LEADER-->
+    <!--low dx-->
     <datacenter arch="x86" os="Linux" >
         <idleConsumption>0.00015</idleConsumption>
         <maxConsumption>0.016</maxConsumption>
         <isOrchestrator>true</isOrchestrator>
         <location>
-            <x_pos>125</x_pos>
-            <y_pos>125</y_pos>
+            <x_pos>188</x_pos>
+            <y_pos>63</y_pos>
         </location>
         <hosts>
             <host>
                 <core>8</core>
-                <mips>80020</mips>
+                <mips>80005</mips>
                 <ram>16000</ram>
                 <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
-                        <mips>40020</mips>
+                        <mips>40005</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+        </hosts>
+    </datacenter>
+    <!--high sx-->
+    <datacenter arch="x86" os="Linux" >
+        <idleConsumption>0.00015</idleConsumption>
+        <maxConsumption>0.016</maxConsumption>
+        <isOrchestrator>true</isOrchestrator>
+        <location>
+            <x_pos>63</x_pos>
+            <y_pos>188</y_pos>
+        </location>
+        <hosts>
+            <host>
+                <core>8</core>
+                <mips>80010</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40010</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+        </hosts>
+    </datacenter>
+    <!--low sx-->
+    <datacenter arch="x86" os="Linux" >
+        <idleConsumption>0.00015</idleConsumption>
+        <maxConsumption>0.016</maxConsumption>
+        <isOrchestrator>true</isOrchestrator>
+        <location>
+            <x_pos>63</x_pos>
+            <y_pos>63</y_pos>
+        </location>
+        <hosts>
+            <host>
+                <core>8</core>
+                <mips>80015</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40015</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -191,11 +223,37 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40000</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
                     <VM>
                         <core>4</core>
                         <mips>40000</mips>
@@ -217,14 +275,40 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40005</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80005</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
                         <mips>40005</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -243,14 +327,40 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40010</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80010</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
                         <mips>40010</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -269,40 +379,14 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40015</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
-                <VMs>
-                    <VM>
-                        <core>4</core>
-                        <mips>40015</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                </VMs>
-            </host>
-        </hosts>
-    </datacenter>
-    <!--LEADER-->
-    <datacenter arch="x86" os="Linux" >
-        <idleConsumption>0.00015</idleConsumption>
-        <maxConsumption>0.016</maxConsumption>
-        <isOrchestrator>true</isOrchestrator>
-        <location>
-            <x_pos>125</x_pos>
-            <y_pos>375</y_pos>
-        </location>
-        <hosts>
-            <host>
                 <core>8</core>
-                <mips>80020</mips>
+                <mips>80015</mips>
                 <ram>16000</ram>
                 <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
-                        <mips>40020</mips>
+                        <mips>40015</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -349,11 +433,37 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40000</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
                     <VM>
                         <core>4</core>
                         <mips>40000</mips>
@@ -375,14 +485,40 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40005</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80005</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
                         <mips>40005</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -401,14 +537,40 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40010</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80010</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
                         <mips>40010</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -427,40 +589,14 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40015</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
-                <VMs>
-                    <VM>
-                        <core>4</core>
-                        <mips>40015</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                </VMs>
-            </host>
-        </hosts>
-    </datacenter>
-    <!--LEADER-->
-    <datacenter arch="x86" os="Linux" >
-        <idleConsumption>0.00015</idleConsumption>
-        <maxConsumption>0.016</maxConsumption>
-        <isOrchestrator>true</isOrchestrator>
-        <location>
-            <x_pos>375</x_pos>
-            <y_pos>375</y_pos>
-        </location>
-        <hosts>
-            <host>
                 <core>8</core>
-                <mips>80020</mips>
+                <mips>80015</mips>
                 <ram>16000</ram>
                 <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
-                        <mips>40020</mips>
+                        <mips>40015</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -507,11 +643,37 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40000</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
                     <VM>
                         <core>4</core>
                         <mips>40000</mips>
@@ -533,14 +695,40 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40005</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80005</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
                         <mips>40005</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -559,14 +747,40 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40010</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
+                <core>8</core>
+                <mips>80010</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
                         <mips>40010</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                </VMs>
+            </host>
+            <host>
+                <core>8</core>
+                <mips>80000</mips>
+                <ram>16000</ram>
+                <storage>200000</storage>
+                <VMs>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
+                        <ram>4000</ram>
+                        <storage>20000</storage>
+                    </VM>
+                    <VM>
+                        <core>4</core>
+                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>
@@ -585,40 +799,14 @@
         </location>
         <hosts>
             <host>
-                <core>4</core>
-                <mips>40015</mips>
-                <ram>4000</ram>
-                <storage>20000</storage>
-                <VMs>
-                    <VM>
-                        <core>4</core>
-                        <mips>40015</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                </VMs>
-            </host>
-        </hosts>
-    </datacenter>
-    <!--LEADER-->
-    <datacenter arch="x86" os="Linux" >
-        <idleConsumption>0.00015</idleConsumption>
-        <maxConsumption>0.016</maxConsumption>
-        <isOrchestrator>true</isOrchestrator>
-        <location>
-            <x_pos>375</x_pos>
-            <y_pos>125</y_pos>
-        </location>
-        <hosts>
-            <host>
                 <core>8</core>
-                <mips>80020</mips>
+                <mips>80015</mips>
                 <ram>16000</ram>
                 <storage>200000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
-                        <mips>40020</mips>
+                        <mips>40015</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>

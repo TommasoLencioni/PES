@@ -29,6 +29,7 @@ import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
+import java.util.List;
 import java.util.Random;
 
 public class LeaderEdgeOrchestrator extends Orchestrator {
@@ -54,8 +55,9 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			return leader(architecture, task);
 		}
 		else if ("INCREASE_LIFETIME".equals(algorithm)) {
-			//return increseLifetime(architecture, task);
-			return null;
+			int vm= increseLifetime(architecture, task);
+			return vmList.get(vm);
+			//return null;
 		} else {
 			SimLog.println("");
 			SimLog.println("Default Orchestrator- Unknown orchestration algorithm '" + algorithm
@@ -82,8 +84,8 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		// get best vm for this task
 		for (int i=0; i< task.getOrchestrator().getHostList().size(); i++) {
 			for (int j = 0; j < task.getOrchestrator().getHost(i).getVmList().size(); j++) {
-				if (offloadingIsPossible(task, task.getOrchestrator().getHost(i).getVmList().get(i), architecture) && (minTasksCount == -1
-						|| minTasksCount > orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(i).getVmList().get(j))).size())) {
+				if (offloadingIsPossible(task, task.getOrchestrator().getHost(i).getVmList().get(i), architecture) && (minTasksCount == -1||
+								minTasksCount > orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(i).getVmList().get(j))).size())) {
 					minTasksCount = orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(i).getVmList().get(j))).size();
 					// if this is the first time,
 					// or new min found, so we choose it as the best VM
@@ -93,11 +95,65 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 				}
 			}
 		}
-		if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500*SimulationParameters.FACTOR)){
-			//In case of flushing the history
-			//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
-			if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) return null;
+		/*
+		int edgeDevicesCount = 0;
+		double averageCpuUtilization = 0;
+		double averageCloudCpuUtilization = 0;
+		double averageMistCpuUtilization = 0;
+		double averageEdgeCpuUtilization = 0;
+		List<? extends DataCenter> datacentersList = simulationManager.getServersManager().getDatacenterList();
+		for (DataCenter dc : datacentersList) {
+			if (dc.getType() == SimulationParameters.TYPES.CLOUD) {
+				averageCloudCpuUtilization += dc.getResources().getAvgCpuUtilization();
+			} else if (dc.getType() == SimulationParameters.TYPES.EDGE_DATACENTER) {
+				averageEdgeCpuUtilization += dc.getResources().getAvgCpuUtilization();
+			} else if (dc.getType() == SimulationParameters.TYPES.EDGE_DEVICE && dc.getResources().getVmList().size() > 0) {
+				// only devices with computing capability
+				// the devices that have no VM are considered simple sensors, and will not be
+				// counted here
+				averageMistCpuUtilization += dc.getResources().getAvgCpuUtilization();
+				edgeDevicesCount++;
+			}
 		}
+
+
+		averageCpuUtilization = (averageCloudCpuUtilization + averageMistCpuUtilization + averageEdgeCpuUtilization)
+				/ (edgeDevicesCount + SimulationParameters.NUM_OF_EDGE_DATACENTERS
+				+ SimulationParameters.NUM_OF_CLOUD_DATACENTERS);
+		averageCloudCpuUtilization = averageCloudCpuUtilization / SimulationParameters.NUM_OF_CLOUD_DATACENTERS;
+		averageEdgeCpuUtilization = averageEdgeCpuUtilization / SimulationParameters.NUM_OF_EDGE_DATACENTERS;
+		averageMistCpuUtilization = averageMistCpuUtilization / edgeDevicesCount;
+		 */
+		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null) {
+			((LeaderEdgeDevice) task.getOrchestrator()).getLeader().current_tasks.putIfAbsent(task, (LeaderEdgeDevice) task.getOrchestrator());
+		}
+		//System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
+		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getNumberOfPes()==4){
+			System.out.println("---");
+			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList());
+			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
+			System.out.println("---");
+		}
+		//if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500*SimulationParameters.FACTOR)){
+		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null){
+			if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.containsKey(task)){
+				//if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).equals((LeaderEdgeDevice)task.getOrchestrator())){
+				if(task.getOrchestrator().getResources().getAvgCpuUtilization()>30){
+					//System.out.println("entro");
+					//In case of flushing the history
+						//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
+						if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) return null;
+					}
+				//}
+				//else{
+					//if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)){
+						//System.out.println(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).getName() +
+						//		"è l'originale, io sono" + task.getOrchestrator().getName());
+					//}
+				//}
+			}
+		}
+
 		// assign the tasks to the found vm
 		try{
 			return task.getOrchestrator().getHost(host).getVmList().get(vm);
@@ -116,28 +172,30 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		// get best vm for this task
 		// here trova la VM sul quale schedulare
 		// cicla per ogni VM (cioe' la size dell'orchestrationHistory)
-		for (int i = 0; i < orchestrationHistory.size(); i++) {
-			if (offloadingIsPossible(task, vmList.get(i), architecture)) {
-				weight = getWeight(task, ((DataCenter) vmList.get(i).getHost().getDatacenter()));
+		for (int i=0; i< task.getOrchestrator().getHostList().size(); i++) {
+			for (int j = 0; j < task.getOrchestrator().getHost(i).getVmList().size(); j++) {
+				if (offloadingIsPossible(task, vmList.get(i), architecture)) {
+					weight = getWeight(task, ((DataCenter) vmList.get(i).getHost().getDatacenter()));
 
-				if (minTasksCount == -1) { // if it is the first iteration
-					// avoid devision by 0 (by adding 1)
-					minTasksCount = orchestrationHistory.get(i).size()
-							- vmList.get(i).getCloudletScheduler().getCloudletFinishedList().size() + 1;
-					// if this is the first time, set the first vm as the
-					vm = i; // best one
-					vmMips = vmList.get(i).getMips();
-					minWeight = weight;
-				} else if (vmMips / (minTasksCount * minWeight) < vmList.get(i).getMips()
-						/ ((orchestrationHistory.get(i).size()
-						- vmList.get(i).getCloudletScheduler().getCloudletFinishedList().size() + 1)
-						* weight)) {
-					// if this vm has more cpu mips and less waiting tasks
-					minWeight = weight;
-					vmMips = vmList.get(i).getMips();
-					minTasksCount = orchestrationHistory.get(i).size()
-							- vmList.get(i).getCloudletScheduler().getCloudletFinishedList().size() + 1;
-					vm = i;
+					if (minTasksCount == -1) { // if it is the first iteration
+						// avoid devision by 0 (by adding 1)
+						minTasksCount = orchestrationHistory.get(i).size()
+								- vmList.get(i).getCloudletScheduler().getCloudletFinishedList().size() + 1;
+						// if this is the first time, set the first vm as the
+						vm = i; // best one
+						vmMips = vmList.get(i).getMips();
+						minWeight = weight;
+					} else if (vmMips / (minTasksCount * minWeight) < vmList.get(i).getMips()
+							/ ((orchestrationHistory.get(i).size()
+							- vmList.get(i).getCloudletScheduler().getCloudletFinishedList().size() + 1)
+							* weight)) {
+						// if this vm has more cpu mips and less waiting tasks
+						minWeight = weight;
+						vmMips = vmList.get(i).getMips();
+						minTasksCount = orchestrationHistory.get(i).size()
+								- vmList.get(i).getCloudletScheduler().getCloudletFinishedList().size() + 1;
+						vm = i;
+					}
 				}
 			}
 		}
