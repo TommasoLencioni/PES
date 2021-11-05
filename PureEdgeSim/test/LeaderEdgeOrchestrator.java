@@ -128,9 +128,11 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			((LeaderEdgeDevice) task.getOrchestrator()).getLeader().current_tasks.putIfAbsent(task, (LeaderEdgeDevice) task.getOrchestrator());
 		}
 		//System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
-		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getNumberOfPes()==1){
-			//System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList());
+		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getNumberOfPes()==4){
+			System.out.println("---");
+			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList());
 			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
+			System.out.println("---");
 		}
 		//if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500*SimulationParameters.FACTOR)){
 		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null){
