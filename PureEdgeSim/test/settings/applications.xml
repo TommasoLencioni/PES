@@ -7,8 +7,8 @@
 		<container_size>15000</container_size><!--application/container size in kilobytes -->
 		<request_size>100</request_size><!-- the offloading request that will be sent to the orchestrator and then to the device where the task will be offloaded in kilobytes -->
 		<results_size>500</results_size><!-- the results of the offlaoded task in kilobytes -->
-		<task_length>10000</task_length><!--MI: million instructions -->
-		<required_core>1</required_core>
+		<task_length>4000</task_length><!--MI: million instructions -->
+		<required_core>1</required_core>TODO MODIFICA PARAMETRI PER SATURARE GLI EDGE
 	</application>
 	<application name="ENTERTAINMENT">
 		<rate>10</rate>
@@ -17,7 +17,7 @@
 		<container_size>5000</container_size><!--application/container size in kilobytes -->
 		<request_size>100</request_size><!-- the offloading request that will be sent to the orchestrator and then to the device where the task will be offloaded in kilobytes -->
 		<results_size>40000</results_size><!-- the results of the offlaoded task in kilobytes -->
-		<task_length>15000</task_length><!--MI: million instructions -->
+		<task_length>8000</task_length><!--MI: million instructions -->
 		<required_core>1</required_core>
 	</application>
 </applications>

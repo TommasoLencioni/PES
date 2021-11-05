@@ -47,7 +47,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	protected LeaderEdgeDevice leader;
 	public boolean isLeader;
 	public ArrayList<LeaderEdgeDevice> community;
-	public HashMap<Task, LeaderEdgeDevice> current_tasks;
+	public ConcurrentHashMap<Task, LeaderEdgeDevice> current_tasks;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
@@ -55,7 +55,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		leader=null;
 		isLeader=false;
 		community= new ArrayList<>();
-		current_tasks=new HashMap<>();
+		current_tasks=new ConcurrentHashMap<>();
 	}
 
 	// The clusters update will be done by scheduling events, the first event has to
@@ -136,9 +136,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							//System.out.println(x.getKey() + " " + x.getValue());
 						//}
 						//System.out.println("-----");
-						if(!current_tasks.containsKey(task)){
-						//	System.out.println("Entro 1");
-							current_tasks.put(task, sub);
+
+						if(current_tasks.putIfAbsent(task, sub)==null){
 							next=0;
 						}
 						//Otherwise I go to the next dc in the community
