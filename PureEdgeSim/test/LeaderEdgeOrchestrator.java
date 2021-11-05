@@ -127,12 +127,16 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null) {
 			((LeaderEdgeDevice) task.getOrchestrator()).getLeader().current_tasks.putIfAbsent(task, (LeaderEdgeDevice) task.getOrchestrator());
 		}
-
+		//System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
+		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getNumberOfPes()==1){
+			//System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList());
+			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
+		}
 		//if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500*SimulationParameters.FACTOR)){
 		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null){
 			if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.containsKey(task)){
 				//if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).equals((LeaderEdgeDevice)task.getOrchestrator())){
-				if(task.getOrchestrator().getResources().getAvgCpuUtilization()>10){
+				if(task.getOrchestrator().getResources().getAvgCpuUtilization()>30){
 					//System.out.println("entro");
 					//In case of flushing the history
 						//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
