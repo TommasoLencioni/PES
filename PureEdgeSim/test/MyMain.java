@@ -57,14 +57,36 @@ public class MyMain extends MainApplication {
         MyMain.launchSimulation();
 
         //Copy the simulation file to the output folder
-        File src = new File(settingsPath + "simulation_parameters.properties");
-        File target = new File(outputPath + startTime + "/simulation_parameters.properties") ;
+        File src_param = new File(settingsPath + "simulation_parameters.properties");
+        File src_app = new File(settingsPath + "applications.xml");
+        File src_devices = new File(settingsPath + "edge_devices.xml");
+        File src_edge_dc = new File(settingsPath + "edge_datacenter.xml");
+        File src_cloud = new File(settingsPath + "cloud.xml");
+
+        File target_param = new File(outputPath + startTime + "/simulation_parameters.properties") ;
+        File target_app= new File(outputPath + startTime + "/applications.xml") ;
+        File target_devices = new File(outputPath + startTime + "/edge_devices.xml") ;
+        File target_edge_dc = new File(outputPath + startTime + "/edge_datacenter.xml") ;
+        File target_cloud  = new File(outputPath + startTime + "/cloud.xml") ;
         try{
-            src.createNewFile();
-            java.nio.file.Files.copy(src.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            src_param.createNewFile();
+            java.nio.file.Files.copy(src_param.toPath(), target_param.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            src_app.createNewFile();
+            java.nio.file.Files.copy(src_app.toPath(), target_app.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            src_devices.createNewFile();
+            java.nio.file.Files.copy(src_devices.toPath(), target_devices.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            src_edge_dc.createNewFile();
+            java.nio.file.Files.copy(src_edge_dc.toPath(), target_edge_dc.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            src_cloud.createNewFile();
+            java.nio.file.Files.copy(src_cloud.toPath(), target_cloud.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
         catch (Exception e){
             e.printStackTrace();
         }
+
     }
 }
