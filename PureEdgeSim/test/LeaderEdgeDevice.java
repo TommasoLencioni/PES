@@ -97,9 +97,8 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				if (task!=null){
 					LeaderEdgeDevice sub = (LeaderEdgeDevice) task.getOrchestrator();
 					if (sub!=null){
-						synchronized (simulationManager.offload_to_leader){
-							simulationManager.offload_to_leader++;
-						}
+
+						//TODO EVALUATE HERE COMMUNITY CHARGE
 						//System.out.println(this.getName() + " ricevo task "+ task.getId() +" da "+ sub.getName());
 						//The second condition should be redundant but avoid bugs
 						if(this.equals(sub) || community.isEmpty()){
@@ -114,18 +113,45 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							}
 							//if(change) System.out.println("Offload a cloud");
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
-							//SimLog.println("Mi e' arrivato da me perche' ho la community vuota");
 							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
 							current_tasks.remove(task);
 							return;
 						}
 						if(!community.contains(sub)) {
-							//SimLog.println("");
-							//SimLog.println("A task arrived to a stranger leader");
+							//This shouldn't happend
 							// Cancel the simulation
 							SimulationParameters.STOP = true;
 							simulationManager.getSimulation().terminate();
 						}
+
+						for(int i=0; i<community.size()-1; i++){
+							LeaderEdgeDevice current = community.get(i);
+							//Skip the node that sent me the task
+							if(!current_tasks.get(task).equals(current)){
+								if (current.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size()>0){
+									task.setOrchestrator(current);
+									scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+									synchronized (simulationManager.offload_to_leader){
+										simulationManager.offload_to_leader++;
+									}
+									return;
+								}
+							}
+						}
+
+						for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
+							if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
+								task.setOrchestrator(dc);
+								if(!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
+								break;
+							}
+						}
+						//if(change) System.out.println("Offload a cloud");
+						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+						//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
+						current_tasks.remove(task);
+						return;
+						/*
 						int next;
 						//If it's the first time that I see the task I save the orignal orch in an HashMap
 						//	and set the next executor to the first dc in the community
@@ -193,6 +219,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						//System.out.println("Ora e' "+ task.getOrchestrator().getName() + " dopo sara' "+ next_orch.getName());
 						task.setOrchestrator(next_orch);
 						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+						 */
 					}
 				}
 				break;

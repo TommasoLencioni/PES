@@ -59,7 +59,7 @@ public class LeaderNetworkModel extends NetworkModel{
         return (PaperSettings.LATENCY_DELAY * device1.getMobilityManager().distanceTo(device2)) + PaperSettings.MIN_LATENCY_DELAY;
     }
 
-    /*
+
     @Override
     protected void transferFinished(FileTransferProgress transfer) {
         // Update logger parameters
@@ -127,12 +127,13 @@ public class LeaderNetworkModel extends NetworkModel{
         }
         // Results transferred to the device
         else {
-            double latency = CalculateLatency((DataCenter)transfer.getTask().getEdgeDevice(), transfer.getTask().getOrchestrator());
-            schedule(simulationManager, latency, SimulationManager.RESULT_RETURN_FINISHED, transfer.getTask());
+            if(transfer.getTask().getOrchestrator().getType()!= SimulationParameters.TYPES.CLOUD){
+                double latency = CalculateLatency((DataCenter)transfer.getTask().getEdgeDevice(), transfer.getTask().getOrchestrator());
+                schedule(simulationManager, latency, SimulationManager.RESULT_RETURN_FINISHED, transfer.getTask());
+            }
+            schedule(simulationManager, SimulationParameters.WAN_PROPAGATION_DELAY, SimulationManager.RESULT_RETURN_FINISHED, transfer.getTask());
             updateEnergyConsumption(transfer, "Result_Origin");
         }
 
     }
-
-     */
 }

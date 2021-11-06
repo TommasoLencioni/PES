@@ -60,13 +60,13 @@ public class MyMain extends MainApplication {
         File src_param = new File(settingsPath + "simulation_parameters.properties");
         File src_app = new File(settingsPath + "applications.xml");
         File src_devices = new File(settingsPath + "edge_devices.xml");
-        File src_edge_dc = new File(settingsPath + "edge_datacenter.xml");
+        File src_edge_dc = new File(settingsPath + "edge_datacenters.xml");
         File src_cloud = new File(settingsPath + "cloud.xml");
 
         File target_param = new File(outputPath + startTime + "/simulation_parameters.properties") ;
         File target_app= new File(outputPath + startTime + "/applications.xml") ;
         File target_devices = new File(outputPath + startTime + "/edge_devices.xml") ;
-        File target_edge_dc = new File(outputPath + startTime + "/edge_datacenter.xml") ;
+        File target_edge_dc = new File(outputPath + startTime + "/edge_datacenters.xml") ;
         File target_cloud  = new File(outputPath + startTime + "/cloud.xml") ;
         try{
             src_param.createNewFile();

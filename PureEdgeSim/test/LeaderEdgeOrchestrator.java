@@ -128,23 +128,30 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			((LeaderEdgeDevice) task.getOrchestrator()).getLeader().current_tasks.putIfAbsent(task, (LeaderEdgeDevice) task.getOrchestrator());
 		}
 		//System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
-		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getNumberOfPes()==4){
+		/*
+		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getNumberOfPes()==8){
 			System.out.println("---");
 			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList());
 			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
 			System.out.println("---");
 		}
+
+
+		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size()>1) {
+			System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size());
+		}
+		 */
 		//if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500*SimulationParameters.FACTOR)){
 		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null){
 			if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.containsKey(task)){
-				//if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).equals((LeaderEdgeDevice)task.getOrchestrator())){
-				if(task.getOrchestrator().getResources().getAvgCpuUtilization()>30){
-					//System.out.println("entro");
+				if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).equals((LeaderEdgeDevice)task.getOrchestrator())){
+				//if(task.getOrchestrator().getResources().getAvgCpuUtilization()>30){
+				if(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size()>0){
 					//In case of flushing the history
 						//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
 						if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) return null;
 					}
-				//}
+				}
 				//else{
 					//if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)){
 						//System.out.println(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).getName() +
