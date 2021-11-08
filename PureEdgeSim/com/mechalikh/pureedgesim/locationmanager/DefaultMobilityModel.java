@@ -65,6 +65,7 @@ public class DefaultMobilityModel extends Mobility {
 
 		// update the currentLocation of this device
 		return currentLocation = updateLocation(X_position, Y_position);
+		//return currentLocation = updateLocation(225, 225);
 
 	}
 

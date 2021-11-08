@@ -23,6 +23,7 @@ package test;
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.DefaultDataCenter;
 import com.mechalikh.pureedgesim.datacentersmanager.ServersManager;
+import com.mechalikh.pureedgesim.network.NetworkModelAbstract;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
@@ -62,9 +63,11 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	// be scheduled within the startInternal() method:
 	@Override
 	public void startInternal() {
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, COMMUNITY_DISCOVERY);
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 2, LEADER_SETTLE);
-		schedule(this, SimulationParameters.INITIALIZATION_TIME + 3, LEADER_CONFIRMATION);
+		if("LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)){
+			schedule(this, SimulationParameters.INITIALIZATION_TIME + 1, COMMUNITY_DISCOVERY);
+			schedule(this, SimulationParameters.INITIALIZATION_TIME + 2, LEADER_SETTLE);
+			schedule(this, SimulationParameters.INITIALIZATION_TIME + 3, LEADER_CONFIRMATION);
+		}
 		super.startInternal();
 	}
 
@@ -97,8 +100,6 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				if (task!=null){
 					LeaderEdgeDevice sub = (LeaderEdgeDevice) task.getOrchestrator();
 					if (sub!=null){
-
-						//TODO EVALUATE HERE COMMUNITY CHARGE
 						//System.out.println(this.getName() + " ricevo task "+ task.getId() +" da "+ sub.getName());
 						//The second condition should be redundant but avoid bugs
 						if(this.equals(sub) || community.isEmpty()){
@@ -111,10 +112,11 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 									break;
 								}
 							}
+							//TODO EVENTUALMENTE AGGIUNERE L'ESECUZIONE DIRETTA ANCHE QUI
 							//if(change) System.out.println("Offload a cloud");
 							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 							//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
-							current_tasks.remove(task);
+							//current_tasks.remove(task);
 							return;
 						}
 						if(!community.contains(sub)) {
@@ -124,11 +126,14 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 							simulationManager.getSimulation().terminate();
 						}
 
+						current_tasks.putIfAbsent(task, sub);
+
 						for(int i=0; i<community.size()-1; i++){
 							LeaderEdgeDevice current = community.get(i);
 							//Skip the node that sent me the task
 							if(!current_tasks.get(task).equals(current)){
-								if (current.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size()>0){
+								//System.out.println("ciao");
+								if (current.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size()==0){
 									task.setOrchestrator(current);
 									scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 									synchronized (simulationManager.offload_to_leader){
@@ -141,6 +146,26 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 
 						for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 							if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
+
+								//TEST
+								/*
+								task.setVm(dc.getResources().getVmList().get(0));
+								task.setOrchestrator(dc);
+								simulationManager.getSimulationLogger().taskSentFromOrchToDest(task);
+								// If the task is offloaded
+								// and the orchestrator is not the offloading destination
+								if (task.getEdgeDevice().getId() != task.getVm().getHost().getDatacenter().getId()
+										&& task.getOrchestrator() != ((DataCenter) task.getVm().getHost().getDatacenter())) {
+									scheduleNow(simulationManager.getNetworkModel(), NetworkModelAbstract.SEND_REQUEST_FROM_ORCH_TO_DESTINATION, task);
+								} else { // The task will be executed locally / no offloading or will be executed where
+									// the orchestrator is deployed (no network usage)
+									if (simulationManager.taskFailed(task, 1))
+										return;
+									scheduleNow(this, simulationManager.EXECUTE_TASK, task);
+								}
+
+								 */
+
 								task.setOrchestrator(dc);
 								if(!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
 								break;
@@ -149,7 +174,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						//if(change) System.out.println("Offload a cloud");
 						scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
 						//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
-						current_tasks.remove(task);
+						//current_tasks.remove(task);
 						return;
 						/*
 						int next;

@@ -35,6 +35,7 @@ public class LeaderNetworkModel extends NetworkModel{
                 for (LeaderEdgeDevice dc : ((LeaderEdgeDevice) task.getOrchestrator()).getLeader().community) {
                     tmpDist = (int) task.getEdgeDevice().getMobilityManager().distanceTo(dc);
                     //System.out.println(dc.getName() + " " + tmpDist + " rispetto agli attuali " + task.getOrchestrator().getName() + " " + actualDistante);
+                    //if ((tmpDist < minDist) && !(dc.isLeader)) {
                     if (tmpDist < minDist) {
                         minDist = tmpDist;
                         closerNode = dc;
@@ -42,6 +43,7 @@ public class LeaderNetworkModel extends NetworkModel{
                 }
             }
             if (!closerNode.equals(task.getOrchestrator())) {
+                //System.out.println("I MIPS del closer sono" + closerNode.getResources().getTotalMips());
                 //System.err.println(task.getId() + " Cambio orchestratore da "+ task.getOrchestrator().getName() +" a  " + closerNode.getName());
                 //task.setOrchestrator(closerNode);
                 return closerNode;
@@ -59,7 +61,7 @@ public class LeaderNetworkModel extends NetworkModel{
         return (PaperSettings.LATENCY_DELAY * device1.getMobilityManager().distanceTo(device2)) + PaperSettings.MIN_LATENCY_DELAY;
     }
 
-
+/*
     @Override
     protected void transferFinished(FileTransferProgress transfer) {
         // Update logger parameters
@@ -136,4 +138,6 @@ public class LeaderNetworkModel extends NetworkModel{
         }
 
     }
+
+ */
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!--4 WEAK COMMUNITY LEADER-->
+<!--1 WEAK COMMUNITY LEADER-->
 <edge_datacenters>
     <!--LOW SX COMMUNITY-->
     <!--high dx-->
@@ -104,26 +104,6 @@
                     </VM>
                 </VMs>
             </host>
-            <host>
-                <core>8</core>
-                <mips>80000</mips>
-                <ram>16000</ram>
-                <storage>200000</storage>
-                <VMs>
-                    <VM>
-                        <core>4</core>
-                        <mips>40000</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                    <VM>
-                        <core>4</core>
-                        <mips>40000</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                </VMs>
-            </host>
         </hosts>
     </datacenter>
     <!--LEADER-->
@@ -137,40 +117,14 @@
         </location>
         <hosts>
             <host>
-                <core>8</core>
-                <mips>80020</mips>
-                <ram>16000</ram>
-                <storage>200000</storage>
+                <core>4</core>
+                <mips>40020</mips>
+                <ram>4000</ram>
+                <storage>20000</storage>
                 <VMs>
                     <VM>
                         <core>4</core>
                         <mips>40020</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                    <VM>
-                        <core>4</core>
-                        <mips>40000</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                </VMs>
-            </host>
-            <host>
-                <core>8</core>
-                <mips>80000</mips>
-                <ram>16000</ram>
-                <storage>200000</storage>
-                <VMs>
-                    <VM>
-                        <core>4</core>
-                        <mips>40000</mips>
-                        <ram>4000</ram>
-                        <storage>20000</storage>
-                    </VM>
-                    <VM>
-                        <core>4</core>
-                        <mips>40000</mips>
                         <ram>4000</ram>
                         <storage>20000</storage>
                     </VM>

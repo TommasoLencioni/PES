@@ -124,9 +124,10 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		averageEdgeCpuUtilization = averageEdgeCpuUtilization / SimulationParameters.NUM_OF_EDGE_DATACENTERS;
 		averageMistCpuUtilization = averageMistCpuUtilization / edgeDevicesCount;
 		 */
-		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null) {
-			((LeaderEdgeDevice) task.getOrchestrator()).getLeader().current_tasks.putIfAbsent(task, (LeaderEdgeDevice) task.getOrchestrator());
-		}
+		//TODO ANDAVA BENE
+		//if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null) {
+		//	LeaderEdgeDevice old=((LeaderEdgeDevice) task.getOrchestrator()).getLeader().current_tasks.putIfAbsent(task, (LeaderEdgeDevice) task.getOrchestrator());
+		//}
 		//System.out.println(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletExecList());
 		/*
 		if(task.getOrchestrator().getHost(host).getVmList().get(vm).getNumberOfPes()==8){
@@ -143,10 +144,11 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		 */
 		//if(minTasksCount>(int)(simulationManager.getScenario().getDevicesCount()*SimulationParameters.SIMULATION_TIME/500*SimulationParameters.FACTOR)){
 		if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader()!=null){
-			if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.containsKey(task)){
-				if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).equals((LeaderEdgeDevice)task.getOrchestrator())){
+			//SE NON CONTIENE (LO INSERISCO NEL LEADER) GLI FACCIO VALUTARE
+			if(!((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.containsKey(task)){
+				//if(((LeaderEdgeDevice)task.getOrchestrator()).getLeader().current_tasks.get(task).equals((LeaderEdgeDevice)task.getOrchestrator())){
 				//if(task.getOrchestrator().getResources().getAvgCpuUtilization()>30){
-				if(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size()>0){
+				if(task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size()>SimulationParameters.FACTOR){
 					//In case of flushing the history
 						//orchestrationHistory.get(vmList.indexOf(task.getOrchestrator().getHost(host).getVmList().get(vm))).clear();
 						if(!task.getOrchestrator().getType().equals(SimulationParameters.TYPES.CLOUD)) return null;
@@ -158,8 +160,26 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 						//		"è l'originale, io sono" + task.getOrchestrator().getName());
 					//}
 				//}
+			//}
+		}
+
+		if(!"LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)) {
+			if (task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size() > SimulationParameters.FACTOR) {
+				for (DataCenter dc : simulationManager.getServersManager().getDatacenterList()) {
+					if (dc.getType().equals(SimulationParameters.TYPES.CLOUD)) {
+						if (!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
+						return dc.getResources().getVmList().get(0);
+					}
+				}
 			}
 		}
+
+		//if(change) System.out.println("Offload a cloud");
+		//simulationManager.scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+		//Try to mantain thin the HashMap by removing the tasks offloaded to the cloud
+		//current_tasks.remove(task);
+		//return;
+
 
 		// assign the tasks to the found vm
 		try{
