@@ -29,6 +29,7 @@ import com.mechalikh.pureedgesim.tasksorchestration.Orchestrator;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Random;
 
@@ -163,16 +164,35 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 			//}
 		}
 
+
 		if(!"LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)) {
 			if (task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size() > SimulationParameters.FACTOR) {
+				DataCenter candidate=null;
+				int max_MIPS=0;
 				for (DataCenter dc : simulationManager.getServersManager().getDatacenterList()) {
-					if (dc.getType().equals(SimulationParameters.TYPES.CLOUD)) {
-						if (!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
-						return dc.getResources().getVmList().get(0);
+					if (dc.getType().equals(SimulationParameters.TYPES.EDGE_DATACENTER)
+					&&
+					dc.getMobilityManager().distanceTo(task.getOrchestrator())<=SimulationParameters.EDGE_DATACENTERS_RANGE) {
+						if (dc.getResources().getTotalMips()>max_MIPS){
+							candidate=dc;
+							max_MIPS= (int) dc.getResources().getTotalMips();
+						}
+					}
+				}
+				if(candidate!=null && candidate.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size()<=SimulationParameters.FACTOR){
+					return candidate.getResources().getVmList().get(0);
+				}
+				else{
+					for (DataCenter dc : simulationManager.getServersManager().getDatacenterList()) {
+						if (dc.getType().equals(SimulationParameters.TYPES.CLOUD)) {
+							if (!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
+							return dc.getResources().getVmList().get(0);
+						}
 					}
 				}
 			}
 		}
+
 
 		//if(change) System.out.println("Offload a cloud");
 		//simulationManager.scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);

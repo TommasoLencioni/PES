@@ -407,6 +407,25 @@ public class SimulationManager extends SimulationManagerAbstract {
 			return setFailed(task);
 		}
 
+		if (phase == 1 && task.getOrchestrator() != null
+				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+				&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
+			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+			simLog.incrementTasksFailedMobility(task);
+			return setFailed(task);
+		}
+		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
+				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+				&& (!sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter())) &&
+				!sameLocation(task.getEdgeDevice(), task.getOrchestrator())) ) {
+			task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+			simLog.incrementTasksFailedMobility(task);
+			return setFailed(task);
+		}
+		return false;
+	}
+		//TODO RIPRISTINA
+	/*
 		// A simple representation of task failure due to
 		// device mobility, if the vm location doesn't match
 		// the edge device location (that generated this task)
@@ -463,6 +482,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 		}
 		return false;
 	}
+
+	 */
 
 	//Original version for mobility failure
 	/*
