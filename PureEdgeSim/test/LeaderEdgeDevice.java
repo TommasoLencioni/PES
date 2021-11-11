@@ -15,7 +15,7 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with PureEdgeSim. If not, see <http://www.gnu.org/licenses/>.
- *     
+ *
  *     @author Mechalikh
  **/
 package test;
@@ -127,23 +127,27 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 						}
 
 						current_tasks.putIfAbsent(task, sub);
-
+						int min=Integer.MAX_VALUE;
+						DataCenter candidate=null;
 						for(int i=0; i<community.size()-1; i++){
 							LeaderEdgeDevice current = community.get(i);
 							//Skip the node that sent me the task
 							if(!current_tasks.get(task).equals(current)){
-								//System.out.println("ciao");
-								if (current.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size()==0){
-									task.setOrchestrator(current);
-									scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
-									synchronized (simulationManager.offload_to_leader){
-										simulationManager.offload_to_leader++;
-									}
-									return;
+								if (current.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size()<= SimulationParameters.FACTOR
+										&& current.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size()<min){
+									candidate=current;
+									min=current.getResources().getVmList().get(0).getCloudletScheduler().getCloudletWaitingList().size();
 								}
 							}
 						}
-
+						if (candidate!=null){
+							task.setOrchestrator(candidate);
+							scheduleNow(simulationManager, SimulationManager.SEND_TASK_FROM_ORCH_TO_DESTINATION, task);
+							synchronized (simulationManager.offload_to_leader){
+								simulationManager.offload_to_leader++;
+							}
+							return;
+						}
 						for (DataCenter dc: simulationManager.getServersManager().getDatacenterList()){
 							if(dc.getType().equals(SimulationParameters.TYPES.CLOUD)){
 
@@ -250,7 +254,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				break;
 			default:
 				super.processEvent(ev);
-			break;
+				break;
 		}
 	}
 
@@ -265,7 +269,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 				.pow((device1.getMobilityManager().getCurrentLocation().getXPos()
 						- device2.getMobilityManager().getCurrentLocation().getXPos()), 2)
 				+ Math.pow((device1.getMobilityManager().getCurrentLocation().getYPos()
-						- device2.getMobilityManager().getCurrentLocation().getYPos()), 2)));
+				- device2.getMobilityManager().getCurrentLocation().getYPos()), 2)));
 	}
 
 	public LeaderEdgeDevice getOrchestrator() {
@@ -330,7 +334,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		if(SimulationParameters.DEBUG) {
 			//System.out.println(this.getName() + " nella community ho:");
 			for (DataCenter dc : community) {
-			//	System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
+				//	System.out.println(dc.getName() + " " + dc.getResources().getTotalMips());
 			}
 			//System.out.println("---");
 		}
@@ -361,7 +365,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		}
 		if (!isLeader) {
 			this.leader = community.get(0);
-				//System.out.println(this.getName() + " con " + this.getResources().getTotalMips() + " il mio leader e' " + leader.getName() + " con " + leader.getResources().getTotalMips());
+			//System.out.println(this.getName() + " con " + this.getResources().getTotalMips() + " il mio leader e' " + leader.getName() + " con " + leader.getResources().getTotalMips());
 		}
 	}
 

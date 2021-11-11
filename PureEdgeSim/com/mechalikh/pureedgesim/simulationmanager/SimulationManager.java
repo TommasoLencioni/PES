@@ -144,15 +144,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 			if (taskFailed(task, 0))
 				return;
 
-			//if(!(task.getOrchestrator().getType().equals(TYPES.CLOUD)) && ((LeaderEdgeDevice) task.getVm().getHost().getDatacenter()).getLeader()!= null){
-			if(((LeaderEdgeDevice) task.getVm().getHost().getDatacenter()).getLeader()!= null){
-				if(((LeaderEdgeDevice) task.getVm().getHost().getDatacenter()).getLeader().current_tasks.containsKey(task)){
-					System.out.println(((LeaderEdgeDevice) task.getVm().getHost().getDatacenter()).getType());
-					if(!((LeaderEdgeDevice) task.getVm().getHost().getDatacenter()).getLeader().current_tasks.get(task).equals(task.getOrchestrator())){
-						//System.out.println("Daje");
-					}
-				}
-			}
 			this.edgeOrchestrator.resultsReturned(task);
 			tasksCount++;
 			break;
@@ -295,7 +286,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 	//LEADER
 	private void sendFromOrchToDestination(Task task) {
-
+		if (taskFailed(task, 1))
+			return;
 
 		// Find the best VM for executing the task
 		((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
@@ -329,8 +321,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 		} else { // The task will be executed locally / no offloading or will be executed where
 			// the orchestrator is deployed (no network usage)
-			if (taskFailed(task, 1))
-				return;
+
 			scheduleNow(this, EXECUTE_TASK, task);
 		}
 	}

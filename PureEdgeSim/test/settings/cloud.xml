@@ -6,13 +6,13 @@
         <isOrchestrator>false</isOrchestrator>   <!-- it has a task orchestrator or not  -->
         <hosts>
             <host>
-                <core>1000</core>
+                <core>1</core>
                 <mips>99999999</mips>
                 <ram>16000</ram>
                 <storage>1000000</storage>
                 <VMs>
                     <VM>
-                        <core>1000</core>
+                        <core>1</core>
                         <mips>99999999</mips>
                         <ram>16000</ram>
                         <storage>1000000</storage>
