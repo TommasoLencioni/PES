@@ -328,8 +328,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 
 	private void sendTaskToOrchestrator(Task task) {
-		if (taskFailed(task, 0))
-			return;
+
 
 		simLog.incrementTasksSent();
 
@@ -398,58 +397,70 @@ public class SimulationManager extends SimulationManagerAbstract {
 			return setFailed(task);
 		}
 
-		// A simple representation of task failure due to
-		// device mobility, if the vm location doesn't match
-		// the edge device location (that generated this task)
-		if (phase == 1 && task.getOrchestrator() != null
-				&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
-			//		&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())
-		){
-			//((LeaderNetworkModel) getNetworkModel()).closerNode(task);
-			//System.out.println("fase 1");
-			boolean sameloc=false;
-			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null &&
-					((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
-				//sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
-				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderNetworkModel) getNetworkModel()).closerNode(task));
-			}
-			else sameloc=sameLocation(task.getEdgeDevice(), task.getOrchestrator());
-			if(!sameloc) {
-				//System.out.println("Fallisco 1");
+		if (!"LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)) {
+			if (phase == 1 && task.getOrchestrator() != null
+					&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+					&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())) {
 				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
 				simLog.incrementTasksFailedMobility(task);
 				return setFailed(task);
 			}
-		}
-		if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
-				&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
-			//		&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
-		)
-		{
-			//((LeaderNetworkModel) getNetworkModel()).closerNode(task);
-			//System.out.println("fase 2");
-			boolean sameloc=false;
-			if(((LeaderEdgeDevice)(task.getOrchestrator())).getLeader()!=null
+			if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
+					&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+					&& (!sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter())) &&
+					!sameLocation(task.getEdgeDevice(), task.getOrchestrator()))) {
+				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+				simLog.incrementTasksFailedMobility(task);
+				return setFailed(task);
+			}
+		} else {
+			if (phase == 1 && task.getOrchestrator() != null
+					&& task.getOrchestrator().getType() != SimulationParameters.TYPES.CLOUD
+				//		&& !sameLocation(task.getEdgeDevice(), task.getOrchestrator())
+			) {
+				//((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+				//System.out.println("fase 1");
+				boolean sameloc = false;
+				if (((LeaderEdgeDevice) (task.getOrchestrator())).getLeader() != null &&
+						((LeaderEdgeDevice) (task.getOrchestrator())).getLeader().current_tasks.containsKey(task)) {
+					//sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
+					sameloc = sameLocation(task.getEdgeDevice(), ((LeaderNetworkModel) getNetworkModel()).closerNode(task));
+				} else sameloc = sameLocation(task.getEdgeDevice(), task.getOrchestrator());
+				if (!sameloc) {
+					//System.out.println("Fallisco 1");
+					task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+					simLog.incrementTasksFailedMobility(task);
+					return setFailed(task);
+				}
+			}
+			if (phase == 2 && (task.getVm().getHost().getDatacenter()) != null
+					&& ((DataCenter) task.getVm().getHost().getDatacenter()).getType() != SimulationParameters.TYPES.CLOUD
+				//		&& !sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()))) {
+			) {
+				//((LeaderNetworkModel) getNetworkModel()).closerNode(task);
+				//System.out.println("fase 2");
+				boolean sameloc = false;
+				if (((LeaderEdgeDevice) (task.getOrchestrator())).getLeader() != null
 					//&& ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.containsKey(task) ){
-			){
-				//sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
-				//System.out.println("Entro qua con "+ task.getOrchestrator().getResources().getTotalMips());
-				sameloc=sameLocation(task.getEdgeDevice(), ((LeaderNetworkModel) getNetworkModel()).closerNode(task));
-			}
-			else {
-				//System.out.println("Entro qui con "+ task.getOrchestrator().getResources().getTotalMips());
-				sameloc=sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()));
-			}
+				) {
+					//sameloc=sameLocation(task.getEdgeDevice(), ((LeaderEdgeDevice)(task.getOrchestrator())).getLeader().current_tasks.get(task));
+					//System.out.println("Entro qua con "+ task.getOrchestrator().getResources().getTotalMips());
+					sameloc = sameLocation(task.getEdgeDevice(), ((LeaderNetworkModel) getNetworkModel()).closerNode(task));
+				} else {
+					//System.out.println("Entro qui con "+ task.getOrchestrator().getResources().getTotalMips());
+					sameloc = sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter()));
+				}
 
-			if(!sameloc) {
-				//System.out.println("Fallisco con dev "+ task.getEdgeDevice().getName());
-				//System.out.println(task.getEdgeDevice().getMobilityManager().distanceTo(((LeaderNetworkModel) getNetworkModel()).closerNode(task)));
-				//System.out.println(SimulationParameters.EDGE_DATACENTERS_RANGE);
-				//System.out.println(sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter())));
-				//System.out.println("orch " + task.getOrchestrator().getResources().getTotalMips() +", closer " +((LeaderNetworkModel) getNetworkModel()).closerNode(task).getResources().getTotalMips());
-				task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
-				simLog.incrementTasksFailedMobility(task);
-				return setFailed(task);
+				if (!sameloc) {
+					//System.out.println("Fallisco con dev "+ task.getEdgeDevice().getName());
+					//System.out.println(task.getEdgeDevice().getMobilityManager().distanceTo(((LeaderNetworkModel) getNetworkModel()).closerNode(task)));
+					//System.out.println(SimulationParameters.EDGE_DATACENTERS_RANGE);
+					//System.out.println(sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter())));
+					//System.out.println("orch " + task.getOrchestrator().getResources().getTotalMips() +", closer " +((LeaderNetworkModel) getNetworkModel()).closerNode(task).getResources().getTotalMips());
+					task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
+					simLog.incrementTasksFailedMobility(task);
+					return setFailed(task);
+				}
 			}
 		}
 		return false;

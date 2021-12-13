@@ -18,3 +18,9 @@ bin/
 
 #Ignore venv for scripts
 venv/
+
+#Ignore simulation graphs
+
+.simulations
+
+.old
