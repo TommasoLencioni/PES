@@ -321,8 +321,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 		} else { // The task will be executed locally / no offloading or will be executed where
 			// the orchestrator is deployed (no network usage)
-			if (taskFailed(task, 1))
-				return;
+
 			scheduleNow(this, EXECUTE_TASK, task);
 		}
 	}
