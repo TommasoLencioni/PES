@@ -138,6 +138,13 @@ public class ServersManager {
 					orchestratorsList.add(edgeDataCenter);
 					i++;
 				}
+				else if ("NEIGHBOUR".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)
+						&& ((edgeDataCenter.getType() == SimulationParameters.TYPES.EDGE_DATACENTER)
+						|| (edgeDataCenter.getType() == SimulationParameters.TYPES.CLOUD))) {
+					edgeDataCenter.setAsOrchestrator(true);
+					orchestratorsList.add(edgeDataCenter);
+					i++;
+				}
 			}
 		}
 		//System.out.println("Qui si controllano gli orchestratori che sono "+ orchestratorsList.size());

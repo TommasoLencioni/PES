@@ -20,4 +20,7 @@ bin/
 venv/
 
 #Ignore simulation graphs
-.simulations/**/*.png
+
+.simulations
+
+.old

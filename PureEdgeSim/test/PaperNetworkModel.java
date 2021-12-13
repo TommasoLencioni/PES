@@ -119,6 +119,7 @@ public class PaperNetworkModel extends NetworkModel {
 			// delay
 			double latency = CalculateLatency((DataCenter)transfer.getTask().getVm().getHost().getDatacenter(), transfer.getTask().getOrchestrator());
 			if (transfer.getTask().getOrchestrator().getType().equals(TYPES.CLOUD)
+					//TODO remove cloud
 					|| ((DataCenter) transfer.getTask().getVm().getHost().getDatacenter()).getType().equals(TYPES.CLOUD))
 				schedule(this, SimulationParameters.WAN_PROPAGATION_DELAY + latency, NetworkModel.SEND_RESULT_FROM_ORCH_TO_DEV,
 						transfer.getTask());
