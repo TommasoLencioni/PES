@@ -295,7 +295,8 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 	//LEADER
 	private void sendFromOrchToDestination(Task task) {
-
+		if (taskFailed(task, 1))
+			return;
 
 		// Find the best VM for executing the task
 		((LeaderEdgeOrchestrator)edgeOrchestrator).my_initialize(task);
