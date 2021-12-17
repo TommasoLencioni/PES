@@ -52,6 +52,7 @@ import com.mechalikh.pureedgesim.locationmanager.Location;
 import com.mechalikh.pureedgesim.locationmanager.Mobility;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
+import test.LeaderEdgeDevice;
 
 public class ServersManager {
 	private List<DataCenter> datacentersList;
@@ -241,6 +242,15 @@ public class ServersManager {
 			x_position = Integer.parseInt(location.getElementsByTagName("x_pos").item(0).getTextContent());
 			y_position = Integer.parseInt(location.getElementsByTagName("y_pos").item(0).getTextContent());
 			datacenterLocation = new Location(x_position, y_position);
+
+			//Random edge data center range within parametric bounds
+			if(SimulationParameters.MIN_EDGE_DC_COVERAGE!=null) {
+				((LeaderEdgeDevice) datacenter).range =
+						SimulationParameters.SEED.nextInt(SimulationParameters.MAX_EDGE_DC_COVERAGE - SimulationParameters.MIN_EDGE_DC_COVERAGE + 1) + SimulationParameters.MIN_EDGE_DC_COVERAGE;
+				//System.out.println(datacenter.getName() + " il range e' " + ((LeaderEdgeDevice) datacenter).range);
+			}
+			else ((LeaderEdgeDevice) datacenter).range=SimulationParameters.EDGE_DATACENTERS_RANGE;
+
 		} else if (type == SimulationParameters.TYPES.EDGE_DEVICE) {
 			mobile = Boolean.parseBoolean(datacenterElement.getElementsByTagName("mobility").item(0).getTextContent());
 			speed = Double.parseDouble(datacenterElement.getElementsByTagName("speed").item(0).getTextContent());

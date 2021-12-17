@@ -160,6 +160,16 @@ public class FilesParser {
 				SimulationParameters.FACTOR = Double
 						.parseDouble(prop.getProperty("factor").trim());
 			}
+			System.out.println("-"+prop.getProperty("edge_datacenters_coverage_min")+"-");
+
+			if(prop.getProperty("edge_datacenters_coverage_min") != null && prop.getProperty("edge_datacenters_coverage_max")!= null) {
+				if (!prop.getProperty("edge_datacenters_coverage_min").equals("") && !prop.getProperty("edge_datacenters_coverage_max").equals("")) {
+					SimulationParameters.MIN_EDGE_DC_COVERAGE = Integer
+							.parseInt(prop.getProperty("edge_datacenters_coverage_min").trim()); // meters
+					SimulationParameters.MAX_EDGE_DC_COVERAGE = Integer
+							.parseInt(prop.getProperty("edge_datacenters_coverage_max").trim()); // meters
+				}
+			}
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {

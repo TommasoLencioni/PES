@@ -96,8 +96,17 @@ public class SimulationParameters {
 	public static int MAX_ORCH;
 
 	public static boolean QUADRANT_ARRANGEMENT;
+
 	public static boolean DEBUG;
+
 	public static boolean CLOUD_LATENCY;
+
 	public static Random SEED;
+
 	public static double FACTOR;
+
+	public static Integer MIN_EDGE_DC_COVERAGE;
+	public static Integer MAX_EDGE_DC_COVERAGE;
+
+
 }

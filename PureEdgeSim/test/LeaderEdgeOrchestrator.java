@@ -70,14 +70,6 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		return null;
 	}
 
-	/***
-		Get best vm for this task
-		This algorith checks whether offload is possible on the orchestrator
-	 		else tries on the orchestrator's leader
-	 		else tries on the leader's subordinates
-	 		else tries on the Cloud with the increseLifetime
-	 		else it fails
-	 */
 	private Vm leader(String[] architecture, Task task) {
 		int host=-1;
 		int vm = -1;
@@ -165,7 +157,18 @@ public class LeaderEdgeOrchestrator extends Orchestrator {
 		}
 
 
-		if(!"LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)) {
+		if("NEIGHBOUR".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)) {
+			if (task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size() > SimulationParameters.FACTOR) {
+				for (DataCenter dc : simulationManager.getServersManager().getDatacenterList()) {
+					if (dc.getType().equals(SimulationParameters.TYPES.CLOUD)) {
+						if (!SimulationParameters.CLOUD_LATENCY) task.setMaxLatency(Integer.MAX_VALUE);
+						return dc.getResources().getVmList().get(0);
+					}
+				}
+			}
+		}
+
+		else if(!"LEADER".equals(SimulationParameters.DEPLOY_ORCHESTRATOR)) {
 			if (task.getOrchestrator().getHost(host).getVmList().get(vm).getCloudletScheduler().getCloudletWaitingList().size() > SimulationParameters.FACTOR) {
 				DataCenter candidate=null;
 				int max_MIPS=0;

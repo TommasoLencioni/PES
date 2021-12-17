@@ -23,6 +23,7 @@ package com.mechalikh.pureedgesim.tasksorchestration;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mechalikh.pureedgesim.network.FileTransferProgress;
 import org.cloudbus.cloudsim.vms.Vm;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
@@ -30,6 +31,7 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 import com.mechalikh.pureedgesim.simulationmanager.SimLog;
 import com.mechalikh.pureedgesim.simulationmanager.SimulationManager;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
+import test.LeaderEdgeDevice;
 
 public abstract class Orchestrator {
 	protected List<List<Integer>> orchestrationHistory;
@@ -139,6 +141,11 @@ public abstract class Orchestrator {
 		if (device2.getType() == SimulationParameters.TYPES.CLOUD)
 			return true;
 		double distance = device1.getMobilityManager().distanceTo(device2);
+		if(SimulationParameters.MIN_EDGE_DC_COVERAGE!=null){
+			if(device1.getType()== SimulationParameters.TYPES.EDGE_DATACENTER) {
+				RANGE = ((LeaderEdgeDevice) device1).range;
+			}
+		}
 		return (distance < RANGE);
 	}
 

@@ -49,6 +49,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 	public boolean isLeader;
 	public ArrayList<LeaderEdgeDevice> community;
 	public ConcurrentHashMap<Task, LeaderEdgeDevice> current_tasks;
+	public int range=0;
 
 	public LeaderEdgeDevice(SimulationManager simulationManager, List<? extends Host> hostList,
 							List<? extends Vm> vmList) {
@@ -283,7 +284,7 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 			if ((this != candidate)
 					&& candidate.getType() == SimulationParameters.TYPES.EDGE_DATACENTER
 					&& candidate.isOrchestrator()
-					&& (getDistance(this, candidate) <= SimulationParameters.EDGE_DATACENTERS_RANGE)) {
+					&& (getDistance(this, candidate) <= (Math.min(this.range, ((LeaderEdgeDevice) candidate).range)))) {
 				community.add((LeaderEdgeDevice) candidate);
 			}
 		}

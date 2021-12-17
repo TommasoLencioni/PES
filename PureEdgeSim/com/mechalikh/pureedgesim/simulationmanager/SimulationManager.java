@@ -452,11 +452,6 @@ public class SimulationManager extends SimulationManagerAbstract {
 				}
 
 				if (!sameloc) {
-					//System.out.println("Fallisco con dev "+ task.getEdgeDevice().getName());
-					//System.out.println(task.getEdgeDevice().getMobilityManager().distanceTo(((LeaderNetworkModel) getNetworkModel()).closerNode(task)));
-					//System.out.println(SimulationParameters.EDGE_DATACENTERS_RANGE);
-					//System.out.println(sameLocation(task.getEdgeDevice(), ((DataCenter) task.getVm().getHost().getDatacenter())));
-					//System.out.println("orch " + task.getOrchestrator().getResources().getTotalMips() +", closer " +((LeaderNetworkModel) getNetworkModel()).closerNode(task).getResources().getTotalMips());
 					task.setFailureReason(Task.Status.FAILED_DUE_TO_DEVICE_MOBILITY);
 					simLog.incrementTasksFailedMobility(task);
 					return setFailed(task);
@@ -544,8 +539,17 @@ public class SimulationManager extends SimulationManagerAbstract {
 			return true;
 		double distance = Dev1.getMobilityManager().distanceTo(Dev2);
 		int RANGE = SimulationParameters.EDGE_DEVICES_RANGE;
-		if (Dev1.getType() != Dev2.getType()) // One of them is an edge data center and the other is an edge device
-			RANGE = SimulationParameters.EDGE_DATACENTERS_RANGE;
+
+		if(SimulationParameters.MIN_EDGE_DC_COVERAGE!=null){
+			if(Dev1.getType()==TYPES.EDGE_DATACENTER){
+				RANGE=((LeaderEdgeDevice)Dev1).range;
+			}
+		}
+		else {
+			if (Dev1.getType() != Dev2.getType()) // One of them is an edge data center and the other is an edge device
+				RANGE = SimulationParameters.EDGE_DATACENTERS_RANGE;
+		}
+
 		return (distance < RANGE);
 	}
 
