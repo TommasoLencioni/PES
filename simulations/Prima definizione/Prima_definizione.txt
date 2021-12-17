@@ -1,4 +1,0 @@
-Prima definizione del possibile problema da affrontare: Date applicazioni multi-servizio e multi-utente trovare modo piazzare i loro servizi (alcuni su cloud, alcuni su car, alcuni su road side unit) tenendo conto di alcuni vincoli (p.e. latenza e/o banda).
-
-Tommaso può partire considerando un placement dato, e iniziare a vedere come riconfigurare placement (di parti) delle applicazioni per tenere conto p.e. dei numero veicoli in una cella (e quindi della mobilità dei veicoli), scalando e/o spostando pezzi su RSU.
-Tommaso prova a definire nero su bianco su carta (file) il primo scenario che considera e come mapparlo su PureEdgeSim.
