@@ -102,11 +102,11 @@ public class DefaultMobilityModel extends Mobility {
 	}
 
 	private void reoriontate(double x_position, double y_position) {
-		if (x_position >= SimulationParameters.AREA_LENGTH)
+		if (x_position >= SimulationParameters.AREA_WIDTH)
 			orientationAngle = -90 - SimulationParameters.SEED.nextInt(180);
 		else if (x_position <= 0)
 			orientationAngle = -90 + SimulationParameters.SEED.nextInt(180);
-		if (y_position >= SimulationParameters.AREA_WIDTH)
+		if (y_position >= SimulationParameters.AREA_LENGTH)
 			orientationAngle = - SimulationParameters.SEED.nextInt(180);
 		else if (y_position <= 0)
 			orientationAngle = SimulationParameters.SEED.nextInt(180);

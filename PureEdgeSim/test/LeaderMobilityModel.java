@@ -39,7 +39,7 @@ public class LeaderMobilityModel extends Mobility {
 	}
 
 	@Override
-	public Location getNextLocation() { 
+	public Location getNextLocation() {
 		double X_position = currentLocation.getXPos(); // Get the initial X coordinate assigned to this device
 		double Y_position = currentLocation.getYPos(); // Get the initial y coordinate assigned to this device
 
@@ -71,9 +71,10 @@ public class LeaderMobilityModel extends Mobility {
 			return currentLocation = updateLocation(-1, -1);
 		}
 		 */
-		return currentLocation = updateLocation((X_position+1)%300, (Y_position+1)%300);
+		//System.out.println(SimulationParameters.AREA_WIDTH);
+		//return currentLocation = updateLocation((X_position+4)%SimulationParameters.AREA_WIDTH, (Y_position+1)%SimulationParameters.AREA_LENGTH);
 		//return currentLocation = updateLocation((170+SimulationParameters.SEED.nextInt(40)), (170+SimulationParameters.SEED.nextInt(40)));
-
+		return currentLocation = updateLocation(X_position, Y_position);
 	}
 
 	private Location updateLocation(double X_position, double Y_position) {
@@ -111,11 +112,11 @@ public class LeaderMobilityModel extends Mobility {
 	}
 
 	private void reoriontate(double x_position, double y_position) {
-		if (x_position >= SimulationParameters.AREA_LENGTH)
+		if (x_position >= SimulationParameters.AREA_WIDTH)
 			orientationAngle = -90 - SimulationParameters.SEED.nextInt(180);
 		else if (x_position <= 0)
 			orientationAngle = -90 + SimulationParameters.SEED.nextInt(180);
-		if (y_position >= SimulationParameters.AREA_WIDTH)
+		if (y_position >= SimulationParameters.AREA_LENGTH)
 			orientationAngle = - SimulationParameters.SEED.nextInt(180);
 		else if (y_position <= 0)
 			orientationAngle = SimulationParameters.SEED.nextInt(180);
