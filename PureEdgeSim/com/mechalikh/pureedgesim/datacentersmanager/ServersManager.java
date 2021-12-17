@@ -187,7 +187,7 @@ public class ServersManager {
 
 		for (int j = 0; j < devicesInstances; j++) {
 			if (datacentersList.size() > getSimulationManager().getScenario().getDevicesCount()
-					+ SimulationParameters.NUM_OF_EDGE_DATACENTERS) {
+					+ SimulationParameters.NUM_OF_EDGE_DATACENTERS + SimulationParameters.NUM_OF_CLOUD_DATACENTERS) {
 				getSimulationManager().getSimulationLogger().print(
 						"ServersManager- Wrong percentages values (the sum is superior than 100%), check edge_devices.xml file !");
 				break;
