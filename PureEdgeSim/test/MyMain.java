@@ -53,6 +53,8 @@ public class MyMain extends MainApplication {
         //Network Model
         setCustomNetworkModel(LeaderNetworkModel.class);
 
+        //Mobility Model
+        setCustomMobilityModel(LeaderMobilityModel.class);
         // Launch the simulation
         MyMain.launchSimulation();
 

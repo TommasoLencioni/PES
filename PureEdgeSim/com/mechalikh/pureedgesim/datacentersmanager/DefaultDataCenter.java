@@ -53,7 +53,6 @@ public class DefaultDataCenter extends DataCenter {
 			if (!isDead()) {
 				schedule(this, SimulationParameters.UPDATE_INTERVAL, UPDATE_STATUS);
 			}
-
 			break;
 		default:
 			super.processEvent(ev);
@@ -71,6 +70,7 @@ public class DefaultDataCenter extends DataCenter {
 
 		// Update location
 		if (getMobilityManager().isMobile()) {
+			//Original "get next location"
 			getMobilityManager().getNextLocation();
 		}
 	}

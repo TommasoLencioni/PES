@@ -18,13 +18,13 @@
  *     
  *     @author Mechalikh
  **/
-package com.mechalikh.pureedgesim.locationmanager;
+package test;
 
-import java.util.Random;
-
+import com.mechalikh.pureedgesim.locationmanager.Location;
+import com.mechalikh.pureedgesim.locationmanager.Mobility;
 import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters;
 
-public class DefaultMobilityModel extends Mobility {
+public class LeaderMobilityModel extends Mobility {
 	private boolean pause = false;
 	private double pauseDuration = -1;
 	private double mobilityDuration = (getMaxMobilityDuration() - getMinMobilityDuration()) > 0
@@ -32,12 +32,11 @@ public class DefaultMobilityModel extends Mobility {
 			: 0;
 	private int orientationAngle = SimulationParameters.SEED.nextInt(359);
 
-	public DefaultMobilityModel(Location currentLocation, boolean mobile, double speed, double minPauseDuration,
-			double maxPauseDuration, double minMobilityDuration, double maxMobilityDuration) {
+	public LeaderMobilityModel(Location currentLocation, boolean mobile, double speed, double minPauseDuration,
+                               double maxPauseDuration, double minMobilityDuration, double maxMobilityDuration) {
 		super(currentLocation, mobile, speed, minPauseDuration, maxPauseDuration, minMobilityDuration,
 				maxMobilityDuration);
 	}
-
 
 	@Override
 	public Location getNextLocation() { 
@@ -64,7 +63,17 @@ public class DefaultMobilityModel extends Mobility {
 		}
 
 		// update the currentLocation of this device
-		return currentLocation = updateLocation(X_position, Y_position);
+		//return currentLocation = updateLocation(X_position, Y_position);
+		//return currentLocation = updateLocation(180, 180);
+		/*
+		if(SimulationParameters.SEED.nextInt()%2==0){
+
+			return currentLocation = updateLocation(-1, -1);
+		}
+		 */
+		return currentLocation = updateLocation((X_position+1)%300, (Y_position+1)%300);
+		//return currentLocation = updateLocation((170+SimulationParameters.SEED.nextInt(40)), (170+SimulationParameters.SEED.nextInt(40)));
+
 	}
 
 	private Location updateLocation(double X_position, double Y_position) {
