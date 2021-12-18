@@ -1,5 +1,6 @@
 *output/
 output/
+Final Results/
 
 #Ignore IntelliJ IDEA project files
 .idea/
@@ -23,4 +24,4 @@ venv/
 
 .simulations
 
-.old
+.old/
