@@ -378,5 +378,16 @@ public class LeaderEdgeDevice extends DefaultDataCenter {
 		return community;
 	}
 
+	private void updateStatus() {
+		// Check if the device is dead
+		if (getEnergyModel().isBatteryPowered()
+				&& this.getEnergyModel().getTotalEnergyConsumption() > getEnergyModel().getBatteryCapacity()) {
+			setDeath(true, simulationManager.getSimulation().clock());
+		}
 
+		// Update location
+		if (getMobilityManager().isMobile()) {
+			getMobilityManager().getNextLocation();
+		}
+	}
 }

@@ -39,7 +39,7 @@ public class LeaderMobilityModel extends Mobility {
 	}
 
 	@Override
-	public Location getNextLocation() {
+	public Location getNextLocation(){
 		double X_position = currentLocation.getXPos(); // Get the initial X coordinate assigned to this device
 		double Y_position = currentLocation.getYPos(); // Get the initial y coordinate assigned to this device
 
@@ -122,4 +122,43 @@ public class LeaderMobilityModel extends Mobility {
 			orientationAngle = SimulationParameters.SEED.nextInt(180);
 	}
 
+	public Location my_getNextLocation(int x, int y){
+		return currentLocation = new Location(x, y);
+		/*
+		double X_position = currentLocation.getXPos(); // Get the initial X coordinate assigned to this device
+		double Y_position = currentLocation.getYPos(); // Get the initial y coordinate assigned to this device
+
+		if (pause && pauseDuration > 0) {
+			// The device mobility is paused until that random delay finishes
+			pauseDuration -= SimulationParameters.UPDATE_INTERVAL;
+			return currentLocation;
+		}
+
+		// Make sure that the device stay in the simulation area
+		reoriontate(X_position, Y_position);
+
+		//here se sono in movimento da abbastanza mi fermo
+		if (mobilityDuration <= 0) {
+			pause();
+		}
+
+		//here se sono stato fermo abbastanza posso proseguire il movimento
+		if (pauseDuration <= 0) {
+			resume();
+		}
+
+		// update the currentLocation of this device
+		//return currentLocation = updateLocation(X_position, Y_position);
+		//return currentLocation = updateLocation(180, 180);
+		/*
+		if(SimulationParameters.SEED.nextInt()%2==0){
+
+			return currentLocation = updateLocation(-1, -1);
+		}
+		 */
+		//System.out.println(SimulationParameters.AREA_WIDTH);
+		//return currentLocation = updateLocation((X_position+4)%SimulationParameters.AREA_WIDTH, (Y_position+1)%SimulationParameters.AREA_LENGTH);
+		//return currentLocation = updateLocation((170+SimulationParameters.SEED.nextInt(40)), (170+SimulationParameters.SEED.nextInt(40)));
+		//return currentLocation = updateLocation(X_position, Y_position);
+	}
 }

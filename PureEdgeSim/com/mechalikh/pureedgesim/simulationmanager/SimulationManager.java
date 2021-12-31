@@ -20,10 +20,14 @@
  **/
 package com.mechalikh.pureedgesim.simulationmanager;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import com.mechalikh.pureedgesim.datacentersmanager.DataCenter;
+import com.mechalikh.pureedgesim.locationmanager.Location;
 import com.mechalikh.pureedgesim.network.NetworkModel;
 import com.mechalikh.pureedgesim.network.NetworkModelAbstract;
 import com.mechalikh.pureedgesim.scenariomanager.Scenario;
@@ -32,13 +36,19 @@ import com.mechalikh.pureedgesim.scenariomanager.SimulationParameters.TYPES;
 import com.mechalikh.pureedgesim.simulationvisualizer.SimulationVisualizer;
 import com.mechalikh.pureedgesim.tasksgenerator.Task;
 //import test.Task;
+import org.cloudbus.cloudsim.cloudlets.Cloudlet;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.events.SimEvent;
 import org.cloudbus.cloudsim.hosts.Host;
 import org.cloudbus.cloudsim.vms.Vm;
-import test.LeaderEdgeDevice;
-import test.LeaderEdgeOrchestrator;
-import test.LeaderNetworkModel;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import test.*;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class SimulationManager extends SimulationManagerAbstract {
 	public static final int Base = 1000; // avoid conflict with CloudSim Plus tags
@@ -57,6 +67,7 @@ public class SimulationManager extends SimulationManagerAbstract {
 	//Custom
 	public static final int DEBUG = Base + 10;
 	public Integer offload_to_leader = 0;
+	public static ArrayList<ConcurrentLinkedDeque<Timestep>> movements;
 
 	public SimulationManager(SimLog simLog, CloudSim simulation, int simulationId, int iteration, Scenario scenario) {
 		super(simLog, simulation, simulationId, iteration, scenario);
@@ -328,8 +339,14 @@ public class SimulationManager extends SimulationManagerAbstract {
 
 
 	private void sendTaskToOrchestrator(Task task) {
-
-
+		//Check whether the edge device is in the simulation area
+		// If it is not, the task count still increases, so the simulation can terminate
+		//if(task.getEdgeDevice().getMobilityManager().getCurrentLocation().getXPos()<0 || task.getEdgeDevice().getMobilityManager().getCurrentLocation().getYPos()<0) {
+		if(task.getEdgeDevice().isDead()) {
+			//task.setStatus(Cloudlet.Status.CANCELED);
+			tasksCount++;
+			return;
+		}
 		simLog.incrementTasksSent();
 
 		if (SimulationParameters.ENABLE_ORCHESTRATORS) {
@@ -553,4 +570,59 @@ public class SimulationManager extends SimulationManagerAbstract {
 		return (distance < RANGE);
 	}
 
+	static void routeXML(){
+		try {
+			File devicesFile = new File(MyMain.settingsPath+"/sim-output.xml");
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(devicesFile);
+			doc.getDocumentElement().normalize();
+			NodeList timesteps = doc.getElementsByTagName("timestep");
+			//System.out.println("Sono");
+			//System.out.println(timestamps.item(0).getTextContent());
+			//System.out.println(timestamps.getLength());
+			//System.out.println("dentro");
+
+			for (int i = 0; i < timesteps.getLength(); i++) {
+				Node step_node = timesteps.item(i);
+
+
+				if (step_node.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element) step_node;
+					//System.out.println("Sono");
+					//System.out.println(element.getNam);
+					//System.out.println("dentro");
+					NodeList vehiclesNodeList = element.getElementsByTagName("vehicle");
+					//System.out.println(vehiclesNodeList.item(0).getTextContent());
+
+					for (int j = 0; j < vehiclesNodeList.getLength(); j++) {
+						Node vehinode = vehiclesNodeList.item(j);
+						int step_time = (int)Float.parseFloat(step_node.getAttributes().getNamedItem("time").getTextContent());
+						int id = (int)Float.parseFloat(vehinode.getAttributes().getNamedItem("id").getTextContent());
+						int x = (int)Float.parseFloat(vehinode.getAttributes().getNamedItem("x").getTextContent());
+						int y = (int)Float.parseFloat(vehinode.getAttributes().getNamedItem("y").getTextContent());
+						Timestep ts = new Timestep(step_time, new Location(x,y));
+						//System.out.println("Tempo: "+ step_time + ", id: "+ id +" , x: " + x +" , y: "+ y);
+						//movements.get(id).put(ts);
+						movements.get(id).add(ts);
+					}
+
+				}
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+        /*
+        int i=0;
+        for(ConcurrentLinkedDeque<Timestep> el: movements){
+            while (!el.isEmpty()){
+                Timestep ts= (Timestep) el.poll();
+                System.out.println("Tempo: "+ ts.getTime() + ", id: "+ i +" , x: " + ts.getLocation().getXPos() +" , y: "+ ts.getLocation().getYPos());
+            }
+            i++;
+        }
+
+         */
+	}
 }
