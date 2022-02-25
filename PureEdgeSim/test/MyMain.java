@@ -41,15 +41,19 @@ public class MyMain extends MainApplication {
         super(fromIteration, step_);
     }
 
+    //Arraylist containing queues of Timesteps
+    //  The device N has timesteps queued at index N of the arraylist
     public static ArrayList<ConcurrentLinkedDeque<Timestep>> movements;
 
     public static void main(String[] args) {
         movements= new ArrayList<>();
         //TODO FIX THE FLAT NUMBER OF DEVICES
+        //Initialize the movements arraylist
         for(int i = 0; i<9999; i++){
             movements.add(i, new ConcurrentLinkedDeque());
         }
         startTime= new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+        //Call the method routeXML that loads SUMO simulation in the arraylist movements, after rotation
         routeXML();
         //The user can pass as argument the path to the settings and output folder
         if(args.length>0 && args[0]!=null){
@@ -121,25 +125,20 @@ public class MyMain extends MainApplication {
             Document doc = dBuilder.parse(devicesFile);
             doc.getDocumentElement().normalize();
             NodeList timesteps = doc.getElementsByTagName("timestep");
-            //System.out.println("Sono");
-            //System.out.println(timestamps.item(0).getTextContent());
-            //System.out.println(timestamps.getLength());
-            //System.out.println("dentro");
 
-            //TODO PARAMETRI DI CONFIG
-            //double translation_x = -625;
-            //double translation_y = -505;
+            //Configuration parameters for our map
             double translation_x = 625;
             double translation_y = 505;
 
             double min_angle = 10000;
 
+            //Check all the timesteps to enstablish the minimum angle
             for (int i = 0; i < timesteps.getLength(); i++) {
                 Node step_node = timesteps.item(i);
                 if (step_node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) step_node;
                     NodeList vehiclesNodeList = element.getElementsByTagName("vehicle");
-
+                    //Check every coordinate of all vehicles at the current timestep to find the minimum angle
                     for (int j = 0; j < vehiclesNodeList.getLength(); j++) {
                         Node vehinode = vehiclesNodeList.item(j);
                         //int step_time = (int) Float.parseFloat(step_node.getAttributes().getNamedItem("time").getTextContent());
@@ -195,7 +194,6 @@ public class MyMain extends MainApplication {
                             min_y = rot_y;
 
                         // Calcolo coppia massima, vertice in alto a destra
-
                         if ( rot_x > max_x)
                             max_x = rot_x;
 
@@ -204,13 +202,6 @@ public class MyMain extends MainApplication {
                     }
                 }
             }
-
-            //TEST
-            //max_x=2366;
-            //min_x=280;
-            //max_y=1062;
-            //min_y=495;
-
 
             System.out.println("Coordinate minime:"+ min_x+" "+ min_y);
             System.out.println("Coordinate massime:"+ max_x+" "+max_y);
@@ -240,45 +231,14 @@ public class MyMain extends MainApplication {
                         //Works for bottom and other
                         Timestep ts = new Timestep(step_time, new Location(rot_x-min_x,rot_y-min_y));
 
+                        //Add the rotated timestep to movement
                         movements.get(id).add(ts);
                     }
                 }
             }
-            /*NON ROTATED
-            for (int i = 0; i < timesteps.getLength(); i++) {
-                Node step_node = timesteps.item(i);
-                if (step_node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element element = (Element) step_node;
-                    //System.out.println("Sono");
-                    //System.out.println(element.getNam);
-                    //System.out.println("dentro");
-                    NodeList vehiclesNodeList = element.getElementsByTagName("vehicle");
-                    for (int j = 0; j < vehiclesNodeList.getLength(); j++) {
-                        Node vehinode = vehiclesNodeList.item(j);
-                        int step_time = (int)Float.parseFloat(step_node.getAttributes().getNamedItem("time").getTextContent());
-                        int id = (int)Float.parseFloat(vehinode.getAttributes().getNamedItem("id").getTextContent());
-                        int x = (int)Float.parseFloat(vehinode.getAttributes().getNamedItem("x").getTextContent());
-                        int y = (int)Float.parseFloat(vehinode.getAttributes().getNamedItem("y").getTextContent());
-
-                        Timestep ts = new Timestep(step_time, new Location(x,y));
-                        //movements.get(id).put(ts);
-                        movements.get(id).add(ts);
-                    }
-             */
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        /*
-        int i=0;
-        for(ConcurrentLinkedDeque<Timestep> el: movements){
-            while (!el.isEmpty()){
-                Timestep ts= (Timestep) el.poll();
-                System.out.println("Tempo: "+ ts.getTime() + ", id: "+ i +" , x: " + ts.getLocation().getXPos() +" , y: "+ ts.getLocation().getYPos());
-            }
-            i++;
-        }
-
-         */
     }
 }
