@@ -122,8 +122,9 @@ public class LeaderMobilityModel extends Mobility {
 			orientationAngle = SimulationParameters.SEED.nextInt(180);
 	}
 
-	public Location my_getNextLocation(int x, int y){
-		return currentLocation = new Location(x, y);
+	public Location my_getNextLocation(Location l){
+		//Custom method to assign the new location straight to the currentLocation of the device
+		return currentLocation = l;
 		/*
 		double X_position = currentLocation.getXPos(); // Get the initial X coordinate assigned to this device
 		double Y_position = currentLocation.getYPos(); // Get the initial y coordinate assigned to this device
