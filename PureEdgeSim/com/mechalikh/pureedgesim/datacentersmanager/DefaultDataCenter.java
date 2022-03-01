@@ -89,10 +89,13 @@ public class DefaultDataCenter extends DataCenter {
 						//Assegno come nuova location le coordinate ottenute dalla simulazione su SUMO
 						((LeaderMobilityModel) getMobilityManager()).my_getNextLocation(tmp_ts.getLocation());
 					}
+					/*
+					//TODO FIX THE GENERATION OF TASKS FOR DEVICES THAT ARE NOT YET IN MOVEMENT
 					//Non c'e' modo di far smettere ai devices di generare tasks
-					else if (MyMain.movements.get(id).getFirst().getTime() > ((int) simulationManager.getSimulation().clock())+100) {
+					else if (MyMain.movements.get(id).getFirst().getTime() > ((int) simulationManager.getSimulation().clock())) {
 						((LeaderMobilityModel) getMobilityManager()).my_getNextLocation(new Location(0,0));
 					}
+					*/
 				}
 				else{
 					//Essendo contigui, se non ci sono piu' movimenti per un device significa che non partecipera' piu' alla simulazione
